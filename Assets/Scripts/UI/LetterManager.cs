@@ -24,13 +24,13 @@ public class LetterManager : MonoBehaviour
 
     private void OnLetterExitClicked()
     {
-        GameManager.instance.ShowMainMenu();
+        UIManager.instance.ShowMainMenu();
     }
 
     private void OnLetterContinueClicked()
     {
         // call game manager to deactivate this 
-        GameManager.instance.LetterContinue();
+        UIManager.instance.LetterContinue();
     }
 
     public void SetExitButtonFalse()

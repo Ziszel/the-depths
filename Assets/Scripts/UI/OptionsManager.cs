@@ -62,7 +62,7 @@ public class OptionsManager : MonoBehaviour
     private void OnMainMenuClicked()
     {
         Debug.Log("OPTIONS MENU MAINMENU BUTTON CLICKED");
-        GameManager.instance.ShowMainMenu();
+        UIManager.instance.ShowMainMenu();
     }
     private void OnOptionsResumeClicked()
     {
