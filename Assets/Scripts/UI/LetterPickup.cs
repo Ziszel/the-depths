@@ -39,13 +39,13 @@ public class LetterPickup : MonoBehaviour, IInteractable
     public void AttemptToInteract()
     {
         _letterManager.SetLetterContents(_letterContents);
-        if (GameManager.instance.IsLetterActive())
+        if (UIManager.instance.IsLetterActive())
         {
-            GameManager.instance.DeactivateLetter();
+            UIManager.instance.DeactivateLetter();
         }
         else
         {
-            GameManager.instance.ActivateLetter();
+            UIManager.instance.ActivateLetter();
         }
         // Figure out a way to hide buttons (or hide one and edit text of other) if we're not in initial starting letter
     }
