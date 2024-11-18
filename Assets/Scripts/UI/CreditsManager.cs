@@ -12,7 +12,7 @@ public class CreditsManager : MonoBehaviour
     }
     private void OnCreditsToMainMenuClicked()
     {
-        GameManager.instance.ShowMainMenu();
+        UIManager.instance.ShowMainMenu();
     }
 
 }

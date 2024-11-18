@@ -14,7 +14,6 @@ public class MainMenuManager : MonoBehaviour
         _startGameBtn.onClick.AddListener(OnStartGameClicked);
         _optionsBtn.onClick.AddListener(OnOptionsClicked);
         _creditsBtn.onClick.AddListener(OnCreditsClicked);
-
     }
 
     private void OnStartGameClicked()
@@ -24,16 +23,16 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnOptionsClicked()
     {
-        GameManager.instance.ShowOptionsCanvas(true);
+        UIManager.instance.ShowOptionsCanvas(true);
     }
     private void OnCreditsClicked()
     {
-        GameManager.instance.ShowCreditsCanvas();
+        UIManager.instance.ShowCreditsCanvas();
     }
     private void OnCreditsToMainMenuClicked()
     {
         Debug.Log("OPTIONS MENU MAINMENU BUTTON CLICKED");
-        GameManager.instance.ShowMainMenu();
+        UIManager.instance.ShowMainMenu();
     }
 
     private void SetButtonReferences()
