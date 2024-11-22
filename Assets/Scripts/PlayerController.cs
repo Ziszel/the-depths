@@ -50,18 +50,18 @@ public class PlayerController : MonoBehaviour
     private GameObject _interactable;
     private FloorCollider _floorCollider;
     private PlayerAudio _playerAudio;
+    private Inventory _inventory;
     
     private void Awake()
     {
         _inputActions = new PlayerInput();
         _inputActions.Enable();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     private void Start()
     {
         _rb = GetComponent<Rigidbody>();
+        _inventory = GetComponent<Inventory>();
         _mainCamera = Camera.main;
         _monster = FindAnyObjectByType<Monster>();
         _floorCollider = GetComponentInChildren<FloorCollider>();
@@ -72,12 +72,26 @@ public class PlayerController : MonoBehaviour
         _isPlayerWalking = false;
         currentTimeUntilDetection = timeUntilDetectionTimer;
         
+        // Debug
+        // Cursor will be ALWAYS be shown and not locked at the start
+        // Cursor.lockState = CursorLockMode.Locked;
+        // Cursor.visible = false;
+        
         // Hook up events
-        _monster.OnPlayerWithinKillDistance += OnKillPlayer;
+        if (_monster)
+        {
+            _monster.OnPlayerWithinKillDistance += OnKillPlayer;
+        }
     }
 
     private void Update()
     {
+        // TEST INVENTORY
+        /*foreach (var item in _inventory.GetItems())
+        {
+            Debug.Log(item.itemName);
+        }*/
+        
         IsPlayerLookingAtMonster();
         
         // Handle timers
@@ -226,26 +240,29 @@ public class PlayerController : MonoBehaviour
 
     public void IsPlayerLookingAtMonster()
     {
-        Vector3 directionOfRay = (_monster.transform.position - transform.position).normalized;
-        Ray ray = new Ray(transform.position, directionOfRay);
-
-        if ((Vector3.Angle(directionOfRay, transform.forward)) < fieldOfViewAngle / 2)
+        if (_monster)
         {
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            Vector3 directionOfRay = (_monster.transform.position - transform.position).normalized;
+            Ray ray = new Ray(transform.position, directionOfRay);
+
+            if ((Vector3.Angle(directionOfRay, transform.forward)) < fieldOfViewAngle / 2)
             {
-                if (hit.collider.CompareTag("Monster"))
+                if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
                 {
-                    currentTimeUntilDetection += Time.deltaTime;
-                    if (currentTimeUntilDetection > timeUntilDetectionTimer)
+                    if (hit.collider.CompareTag("Monster"))
                     {
-                        OnPlayerLookingAtMonster?.Invoke(true);
-                        currentTimeUntilDetection = timeUntilDetectionTimer;
+                        currentTimeUntilDetection += Time.deltaTime;
+                        if (currentTimeUntilDetection > timeUntilDetectionTimer)
+                        {
+                            OnPlayerLookingAtMonster?.Invoke(true);
+                            currentTimeUntilDetection = timeUntilDetectionTimer;
+                        }
                     }
-                }
-                else
-                {
-                    OnPlayerLookingAtMonster?.Invoke(false);
-                    currentTimeUntilDetection = 0.0f;
+                    else
+                    {
+                        OnPlayerLookingAtMonster?.Invoke(false);
+                        currentTimeUntilDetection = 0.0f;
+                    }
                 }
             }
         }
