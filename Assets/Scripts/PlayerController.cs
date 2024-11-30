@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
     // Event delegates
     public Action<bool> OnPlayerLookingAtMonster;
     public Action OnPlayerDeath;
+    public Action OnFlashlightActivated;
+    public Action OnFlashlightDeActivated;
     
     [Header("Movement velocity")]
     [SerializeField] private float movementVelocity = 5.0f;
@@ -146,6 +148,19 @@ public class PlayerController : MonoBehaviour
             {
                 interactable.AttemptToInteract();
             }
+        }
+    }
+
+    public void OnUseItem(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            OnFlashlightActivated?.Invoke();
+        }
+
+        if (context.canceled)
+        {
+            OnFlashlightDeActivated?.Invoke();
         }
     }
 
