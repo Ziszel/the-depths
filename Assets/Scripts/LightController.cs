@@ -14,7 +14,6 @@ public class LightController : MonoBehaviour, ISwitchable, IMonsterInteractable
     void Start()
     {
         _flickeringLight = GetComponentInChildren<Light>();
-        Debug.Log(_flickeringLight);
     }
 
     void Update()
