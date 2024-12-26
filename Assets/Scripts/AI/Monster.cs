@@ -90,7 +90,6 @@ public class Monster : MonoBehaviour
                 }
                 isChasing = false;
                 _agent.speed = _pathSpeed;
-                
                 break;
             case MonsterState.ChasePath:
                 _agent.speed = _pathSpeed;

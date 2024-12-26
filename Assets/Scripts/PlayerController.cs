@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     // Event delegates
-    public Action<bool> OnPlayerLookingAtMonster;
     public Action OnPlayerDeath;
     public Action OnFlashlightActivated;
     public Action OnFlashlightDeActivated;

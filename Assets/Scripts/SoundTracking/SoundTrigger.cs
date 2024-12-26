@@ -11,6 +11,15 @@ public class SoundTrigger : MonoBehaviour
     // Where the sound occurs and where the monster could go.
     // We might not ALWAYS want it to happen at the trigger source (switch opening a door for example)
     [SerializeField] private Vector3 triggerLocation;
+    [SerializeField] private bool overwriteTransform;
+    
+    private void Start()
+    {
+        if (!overwriteTransform)
+        {
+            triggerLocation = GetComponentInParent<Transform>().position;
+        }
+    }
 
     public void TriggerSound()
     {
