@@ -31,11 +31,6 @@ public class PlayerController : MonoBehaviour
     [Header("Footstep play rates")] 
     [SerializeField] private float walkingRate = 1.0f;
     [SerializeField] private float sprintingRate = 0.5f;
-
-    [Header("Looking at monster timer")] [SerializeField]
-    private float timeUntilDetectionTimer = 1.5f;
-
-    private float currentTimeUntilDetection;
     
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
@@ -72,7 +67,6 @@ public class PlayerController : MonoBehaviour
         _interactable = null;
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _isPlayerWalking = false;
-        currentTimeUntilDetection = timeUntilDetectionTimer;
         
         // Debug
         // Cursor will be ALWAYS be shown and not locked at the start
@@ -93,8 +87,6 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log(item.itemName);
         }*/
-        
-        IsPlayerLookingAtMonster();
         
         // Handle timers
         if (_isPlayerWalking && !_isCrouching)
@@ -251,36 +243,6 @@ public class PlayerController : MonoBehaviour
         
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
-    }
-
-    public void IsPlayerLookingAtMonster()
-    {
-        if (_monster)
-        {
-            Vector3 directionOfRay = (_monster.transform.position - transform.position).normalized;
-            Ray ray = new Ray(transform.position, directionOfRay);
-
-            if ((Vector3.Angle(directionOfRay, transform.forward)) < fieldOfViewAngle / 2)
-            {
-                if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
-                {
-                    if (hit.collider.CompareTag("Monster"))
-                    {
-                        currentTimeUntilDetection += Time.deltaTime;
-                        if (currentTimeUntilDetection > timeUntilDetectionTimer)
-                        {
-                            OnPlayerLookingAtMonster?.Invoke(true);
-                            currentTimeUntilDetection = timeUntilDetectionTimer;
-                        }
-                    }
-                    else
-                    {
-                        OnPlayerLookingAtMonster?.Invoke(false);
-                        currentTimeUntilDetection = 0.0f;
-                    }
-                }
-            }
-        }
     }
 
     public Rigidbody GetRigidBody()

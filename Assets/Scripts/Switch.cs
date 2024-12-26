@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,11 +8,12 @@ public class Switch : MonoBehaviour, IInteractable
     [SerializeField] private float switchMovementTime = 2.0f;
     private Vector3 rotationVectorUp = new ( 0.0f, 0.0f, 60.0f );
     private Vector3 rotationVectorDown = new (0.0f, 0.0f, 125.0f);
-
-    private Animator _animator;
-    public Action<GameObject> SwitchAnimation;
     
+    public Action<GameObject> SwitchAnimation;
     public List<GameObject> Switchables;
+    public SoundTrigger soundTrigger;
+    
+    private Animator _animator;
     private PlayerController _player;
     private bool _isSwitchDown;
     private Transform _lever;
@@ -48,7 +48,8 @@ public class Switch : MonoBehaviour, IInteractable
         }
     }
 
-    private IEnumerator MoveSwitch()
+    // CANDIDATE FOR REMOVAL
+    /*private IEnumerator MoveSwitch()
     {
         Vector3 moveToRotation;
         if (!_isSwitchDown)
@@ -69,7 +70,7 @@ public class Switch : MonoBehaviour, IInteractable
                 _lever.eulerAngles = Vector3.Lerp(_lever.rotation.eulerAngles, moveToRotation, timeElapsed / switchMovementTime);
             }
             yield return null;
-        }*/
+        }#1#
 
         _lever.localEulerAngles = moveToRotation;
 
@@ -81,7 +82,7 @@ public class Switch : MonoBehaviour, IInteractable
         _lever.eulerAngles = moveToRotation;
         
         yield return null;
-    }
+    }*/
 
     public void AttemptToInteract()
     {
@@ -95,6 +96,12 @@ public class Switch : MonoBehaviour, IInteractable
                 SwitchAnimation?.Invoke(this.gameObject);
                 switchable.Toggle();
                 _switchAudio.PlaySfx();
+                this.soundTrigger.TriggerSound();
+            }
+
+            if (Switchable.TryGetComponent(out SoundTrigger soundTrigger))
+            {
+                soundTrigger.TriggerSound();
             }
         }
     }

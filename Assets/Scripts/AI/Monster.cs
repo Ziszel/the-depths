@@ -40,7 +40,6 @@ public class Monster : MonoBehaviour
     private int _previousNodeIndicator;
     private List<Vector3> _pathNodes;
     private readonly float _minimumDistanceToNode = 2.0f;
-    private bool _isPlayerLookingAtMe;
     
     // Chase helpers
     [SerializeField] private float minimumChaseTime = 2.0f;
@@ -60,7 +59,6 @@ public class Monster : MonoBehaviour
     private void Start()
     {
         _monsterState = MonsterState.None;
-        _isPlayerLookingAtMe = false;
         _levelManager = FindAnyObjectByType<LevelManager>();
         _agent = GetComponent<NavMeshAgent>();
         _player = FindAnyObjectByType<PlayerController>();
@@ -68,7 +66,6 @@ public class Monster : MonoBehaviour
         _currentChaseTime = 0.0f;
 
         // subscribe to events
-        _player.OnPlayerLookingAtMonster += SetIsPlayerLooking;
         _monsterAnimation = GetComponent<MonsterAnimation>();
         _monsterAnimation.SetStateToWalk();
     }
@@ -175,12 +172,6 @@ public class Monster : MonoBehaviour
         {
             return true;
         }
-
-        // Check if the player is looking at the monster
-        if (_isPlayerLookingAtMe)
-        {
-            return true;
-        }
         
         // Check if player is in line of sight of the monster
         Vector3 directionOfRay = (_player.transform.position - transform.position).normalized;
@@ -209,16 +200,6 @@ public class Monster : MonoBehaviour
         _previousNodeIndicator = oldNodeIndicator;
     }
 
-    private void SetIsPlayerLooking(bool newIsPlayerLooking)
-    {
-        _isPlayerLookingAtMe = newIsPlayerLooking;
-    }
-
-    private void OnDisable()
-    {
-        _player.OnPlayerLookingAtMonster -= SetIsPlayerLooking;
-    }
-
     // Only used for when monster state is setup to none
     public void SetMonsterState(MonsterState monsterState)
     {
@@ -227,16 +208,15 @@ public class Monster : MonoBehaviour
         _agent.enabled = false;
         transform.position = new Vector3(0.0f, -100.0f, 0.0f);
         _currentNodeIndicator = 0;
-        
         _monsterAnimation.SetStateToWalk();
     }
 
     public void SetMonsterState(MonsterState monsterState, List<Vector3> newPathNodes, Vector3 newPosition)
     {
         _agent.enabled = false;
-        Debug.Log("monster position: " + transform.position);
+        // Debug.Log("monster position: " + transform.position);
         transform.position = newPosition;
-        Debug.Log("monster position: " + transform.position);
+        // Debug.Log("monster position: " + transform.position);
         _agent.enabled = true;
         _monsterState = monsterState;
         _currentNodeIndicator = 0;
@@ -261,5 +241,23 @@ public class Monster : MonoBehaviour
     public MonsterState GetMonsterState()
     {
         return _monsterState;
+    }
+
+    public void ListenForSound(Vector3 soundPosition, float soundVolume)
+    {
+        if (Vector3.Distance(soundPosition, transform.position) <= soundVolume)
+        {
+            Debug.Log("monster heard noise!");
+        }
+    }
+
+    private void OnEnable()
+    {
+        SoundTrigger.OnSoundTriggered += ListenForSound;
+    }
+
+    private void OnDisable()
+    {
+        SoundTrigger.OnSoundTriggered -= ListenForSound;
     }
 }
