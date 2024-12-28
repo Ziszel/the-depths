@@ -13,7 +13,8 @@ public class Monster : MonoBehaviour
         None, // no state, do nothing
         ChasePath, // Follow a path but allow for chasing the player
         Chase,
-        SafePath // Follow a path but do NOT allow for chasing the player
+        SafePath, // Follow a path but do NOT allow for chasing the player (story elements)
+        Investigate // Move to a specific location, then chase OR decide new path (ChasePath state)
     }
 
     [Header("How far the monster can see")]
@@ -39,6 +40,7 @@ public class Monster : MonoBehaviour
     private int _currentNodeIndicator;
     private int _previousNodeIndicator;
     private List<Vector3> _pathNodes;
+    private List<Vector3> _previousPathNodes;
     private readonly float _minimumDistanceToNode = 2.0f;
     
     // Chase helpers
@@ -53,7 +55,8 @@ public class Monster : MonoBehaviour
     // Proximity to the player in units until they kill them
     [SerializeField] private float _killRange = 1.5f;
     // monster audio timers including how often it screeches based on those timers
-    [SerializeField] private float monsterScreechRate = 7.5f; 
+    [SerializeField] private float minMonsterScreechRate = 7.5f; // seconds
+    [SerializeField] private float maxMonsterScreechRate = 12.0f; // seconds
     private float _timeUntilScreech;
     
     private void Start()
@@ -156,11 +159,27 @@ public class Monster : MonoBehaviour
                 }
                 _timeUntilScreech -= Time.deltaTime;
                 break;
+            case MonsterState.Investigate:
+                _agent.speed = _pathSpeed;
+                
+                if (CanMonsterSeePlayer())
+                {
+                    _agent.destination = _player.transform.position;
+                    SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+                }
+
+                // Reached destination without seeing player, reset to hunting
+                if (Vector3.Distance(transform.position, _agent.destination) < _minimumDistanceToNode)
+                {
+                    _pathNodes = _previousPathNodes;
+                    SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
+                }
+                break;
         }
         if (_timeUntilScreech < 0.0f)
         {
             _monsterAudio.PlaySFX();
-            _timeUntilScreech = monsterScreechRate;
+            _timeUntilScreech = SetMonsterScreamTimer();
         }
     }
 
@@ -199,7 +218,12 @@ public class Monster : MonoBehaviour
         _previousNodeIndicator = oldNodeIndicator;
     }
 
-    // Only used for when monster state is setup to none
+    private float SetMonsterScreamTimer()
+    {
+        return Random.Range(minMonsterScreechRate, maxMonsterScreechRate);
+    }
+
+    // Only used for when monster state is setup to none (no path nodes required)
     public void SetMonsterState(MonsterState monsterState)
     {
         _agent.destination = transform.position;
@@ -212,11 +236,11 @@ public class Monster : MonoBehaviour
 
     public void SetMonsterState(MonsterState monsterState, List<Vector3> newPathNodes, Vector3 newPosition)
     {
+        // Disable agent to allow for teleporting to new position
         _agent.enabled = false;
-        // Debug.Log("monster position: " + transform.position);
         transform.position = newPosition;
-        // Debug.Log("monster position: " + transform.position);
         _agent.enabled = true;
+        
         _monsterState = monsterState;
         _currentNodeIndicator = 0;
         _pathNodes = newPathNodes;
@@ -231,10 +255,9 @@ public class Monster : MonoBehaviour
             _monsterAnimation.SetStateToWalk();
         }
 
-        // Always plays an SFX when state changes
-        Debug.Log("monster screeching on state change");
+        // Always plays an SFX when state changes | (is this desired?)
         _monsterAudio.PlaySFX();
-        _timeUntilScreech = monsterScreechRate;
+        _timeUntilScreech = SetMonsterScreamTimer();
     }
 
     public MonsterState GetMonsterState()
@@ -244,9 +267,19 @@ public class Monster : MonoBehaviour
 
     public void ListenForSound(Vector3 soundPosition, float soundVolume)
     {
-        if (Vector3.Distance(soundPosition, transform.position) <= soundVolume)
+        // sound based tracking is only relevant if the monster is hunting player
+        if (_monsterState == MonsterState.ChasePath)
         {
-            Debug.Log("monster heard noise!");
+            if (Vector3.Distance(soundPosition, transform.position) <= soundVolume)
+            {
+                // Store current path nodes for resetting after investigation
+                _previousPathNodes = _pathNodes;
+                // re-using a list but may be better to overwrite SetMonsterState
+                // again in the future
+                List<Vector3> investigationPoints = new List<Vector3>();
+                investigationPoints.Add(soundPosition);
+                SetMonsterState(MonsterState.Investigate, investigationPoints, transform.position);
+            }
         }
     }
 
