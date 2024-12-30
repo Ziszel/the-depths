@@ -1,4 +1,5 @@
 using System;
+using Mono.Cecil;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -47,6 +48,11 @@ public class PlayerController : MonoBehaviour
     private FloorCollider _floorCollider;
     private PlayerAudio _playerAudio;
     private Inventory _inventory;
+    private Stamina _stamina;
+    
+    // DEBUG
+    [Header("DEBUG")]
+    [SerializeField] private bool isDebug;
     
     private void Awake()
     {
@@ -58,6 +64,7 @@ public class PlayerController : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _inventory = GetComponent<Inventory>();
+        _stamina = GetComponent<Stamina>();
         _mainCamera = Camera.main;
         _monster = FindAnyObjectByType<Monster>();
         _floorCollider = GetComponentInChildren<FloorCollider>();
@@ -67,10 +74,12 @@ public class PlayerController : MonoBehaviour
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _isPlayerWalking = false;
         
-        // Debug
-        // Cursor will be ALWAYS be shown and not locked at the start
-        // Cursor.lockState = CursorLockMode.Locked;
-        // Cursor.visible = false;
+        if (isDebug)
+        {
+            // Force the cursor to hide to make game playable in test levels without level manager.
+            Cursor.lockState = CursorLockMode.Locked; 
+            Cursor.visible = false;
+        }
         
         // Hook up events
         if (_monster)
@@ -108,6 +117,23 @@ public class PlayerController : MonoBehaviour
             if (_floorCollider.IsOnGround() && !_isCrouching)
             {
                 _playerAudio.PlaySfx();
+            }
+        }
+        
+        // stamina
+        if (Mathf.Approximately(maxMovementVelocity, maxSprintVelocity))
+        {
+            _stamina.DepleteStamina();
+        }
+        else
+        {
+            if (!_stamina.GetRegeneratingFromZero())
+            {
+                _stamina.RegenerateStamina(_stamina.GetRegenerationRate());
+            }
+            else
+            {
+                _stamina.RegenerateStamina(_stamina.GetBottomOutRegenerationRate());
             }
         }
     }
@@ -198,7 +224,9 @@ public class PlayerController : MonoBehaviour
             }
         }
         // Check if sprinting
-        else if (Mathf.Approximately(_inputActions.Player.Sprint.ReadValue<float>(), 1.0f))
+        else if (Mathf.Approximately(_inputActions.Player.Sprint.ReadValue<float>(), 1.0f) 
+                 && _stamina.GetCurrentStamina() > 0.0f 
+                 && !_stamina.GetRegeneratingFromZero())
         {
             _cinemachineCamera.Target.TrackingTarget = head.transform;
             maxMovementVelocity = maxSprintVelocity;
