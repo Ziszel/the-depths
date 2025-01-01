@@ -86,6 +86,11 @@ public class LevelManager : MonoBehaviour
         _player.EnableInputActions();
         _player.GetCinemachineCamera().Lens.Dutch = 0.0f;
         _player.GetCinemachineCamera().Target.TrackingTarget = _player.GetCrouchTransform().transform;
+        if (_player.TryGetComponent(out HealthManager healthManager))
+        {
+            healthManager.SetHealth(healthManager.GetMaxHealth());
+            healthManager.ResetCooldownTimer();
+        }
         
         ResetMonster();
 
