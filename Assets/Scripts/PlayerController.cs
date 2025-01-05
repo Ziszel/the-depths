@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
     private Inventory _inventory;
     private Stamina _stamina;
     private HealthManager _healthManager;
+    private PlayerHUDUI _playerHUDUI;
     
     // DEBUG
     [Header("DEBUG")]
@@ -63,6 +64,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _playerHUDUI = GetComponentInChildren<PlayerHUDUI>();
         _healthManager = GetComponent<HealthManager>();
         _rb = GetComponent<Rigidbody>();
         _inventory = GetComponent<Inventory>();
@@ -208,6 +210,8 @@ public class PlayerController : MonoBehaviour
         // External classes such as UI should be listening for the event called by
         // this method call so do not implement such things on the player
         _healthManager.TakeDamage(1);
+        
+        _playerHUDUI.SetImageFromHP(_healthManager.GetHealth());
 
         if (_healthManager.GetHealth() <= 0)
         {
