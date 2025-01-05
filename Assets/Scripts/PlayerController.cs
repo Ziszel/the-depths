@@ -140,6 +140,15 @@ public class PlayerController : MonoBehaviour
                 _stamina.RegenerateStamina(_stamina.GetBottomOutRegenerationRate());
             }
         }
+        
+        // DEBUG CONTROLS
+        if (isDebug)
+        {
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                HealPlayerToFull();
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -202,6 +211,15 @@ public class PlayerController : MonoBehaviour
             }
             
         }
+    }
+
+    // Restoring health will currently make the player fully healthy again
+    // NOTE: This may change based on how design progresses.
+    private void HealPlayerToFull()
+    {
+        _healthManager.SetHealth(_healthManager.GetMaxHealth());
+        _playerHUDUI.SetImageFromHP(_healthManager.GetHealth());
+        _healthManager.ResetCooldownTimer();
     }
 
     public void DamagePlayer()
