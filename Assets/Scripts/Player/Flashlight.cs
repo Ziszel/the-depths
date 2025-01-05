@@ -36,11 +36,12 @@ public class Flashlight : MonoBehaviour
     private void ActivateFlashlight()
     {
         _flashlightAudio.PlaySfx();
-        StartCoroutine(LightActivationRoutine());
+        StartCoroutine("LightActivationRoutine");
     }
 
     private void DeactivateFlashlight()
     {
+        StopCoroutine("LightActivationRoutine");
         lightSource.enabled = false;
         _flashlightAudio.StopSfx();
     }

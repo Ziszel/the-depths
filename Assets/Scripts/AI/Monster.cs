@@ -268,7 +268,7 @@ public class Monster : MonoBehaviour
     public void ListenForSound(Vector3 soundPosition, float soundVolume)
     {
         // sound based tracking is only relevant if the monster is hunting player
-        if (_monsterState == MonsterState.ChasePath)
+        if (_monsterState == MonsterState.ChasePath || _monsterState == MonsterState.Investigate)
         {
             if (Vector3.Distance(soundPosition, transform.position) <= soundVolume)
             {
