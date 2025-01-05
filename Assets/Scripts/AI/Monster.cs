@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class Monster : MonoBehaviour
 {
-    public Action OnPlayerWithinKillDistance;
+    public Action OnPlayerWithinDamageDistance;
     
     public enum MonsterState
     {
@@ -68,7 +68,7 @@ public class Monster : MonoBehaviour
         _monsterAudio = GetComponentInChildren<MonsterAudio>();
         _currentChaseTime = 0.0f;
 
-        // subscribe to events
+        // Animation
         _monsterAnimation = GetComponent<MonsterAnimation>();
         _monsterAnimation.SetStateToWalk();
     }
@@ -80,7 +80,7 @@ public class Monster : MonoBehaviour
         {
             if (Vector3.Distance(transform.position, _player.transform.position) < _killRange)
             {
-                OnPlayerWithinKillDistance?.Invoke();
+                OnPlayerWithinDamageDistance?.Invoke();
             }
         }
 

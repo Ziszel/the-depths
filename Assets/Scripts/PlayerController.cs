@@ -49,6 +49,8 @@ public class PlayerController : MonoBehaviour
     private PlayerAudio _playerAudio;
     private Inventory _inventory;
     private Stamina _stamina;
+    private HealthManager _healthManager;
+    private PlayerHUDUI _playerHUDUI;
     
     // DEBUG
     [Header("DEBUG")]
@@ -62,6 +64,8 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _playerHUDUI = GetComponentInChildren<PlayerHUDUI>();
+        _healthManager = GetComponent<HealthManager>();
         _rb = GetComponent<Rigidbody>();
         _inventory = GetComponent<Inventory>();
         _stamina = GetComponent<Stamina>();
@@ -69,7 +73,7 @@ public class PlayerController : MonoBehaviour
         _monster = FindAnyObjectByType<Monster>();
         _floorCollider = GetComponentInChildren<FloorCollider>();
         _playerAudio = GetComponentInChildren<PlayerAudio>();
-        _cinemachineCamera = FindAnyObjectByType<CinemachineCamera>(); 
+        _cinemachineCamera = FindAnyObjectByType<CinemachineCamera>();
         _interactable = null;
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _isPlayerWalking = false;
@@ -84,7 +88,7 @@ public class PlayerController : MonoBehaviour
         // Hook up events
         if (_monster)
         {
-            _monster.OnPlayerWithinKillDistance += OnKillPlayer;
+            _monster.OnPlayerWithinDamageDistance += DamagePlayer;
         }
     }
 
@@ -134,6 +138,15 @@ public class PlayerController : MonoBehaviour
             else
             {
                 _stamina.RegenerateStamina(_stamina.GetBottomOutRegenerationRate());
+            }
+        }
+        
+        // DEBUG CONTROLS
+        if (isDebug)
+        {
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                HealPlayerToFull();
             }
         }
     }
@@ -200,6 +213,30 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Restoring health will currently make the player fully healthy again
+    // NOTE: This may change based on how design progresses.
+    private void HealPlayerToFull()
+    {
+        _healthManager.SetHealth(_healthManager.GetMaxHealth());
+        _playerHUDUI.SetImageFromHP(_healthManager.GetHealth());
+        _healthManager.ResetCooldownTimer();
+    }
+
+    public void DamagePlayer()
+    {
+        // 1 for now, no idea if this will ever change
+        // External classes such as UI should be listening for the event called by
+        // this method call so do not implement such things on the player
+        _healthManager.TakeDamage(1);
+        
+        _playerHUDUI.SetImageFromHP(_healthManager.GetHealth());
+
+        if (_healthManager.GetHealth() <= 0)
+        {
+            OnKillPlayer();
+        }
+    }
+    
     public void OnKillPlayer()
     {
         DisableInputActions();
@@ -304,6 +341,6 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         _inputActions.Player.Disable();
-        _monster.OnPlayerWithinKillDistance -= OnKillPlayer;
+        _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
     }
 }
