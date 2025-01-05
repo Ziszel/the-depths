@@ -94,12 +94,6 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // TEST INVENTORY
-        /*foreach (var item in _inventory.GetItems())
-        {
-            Debug.Log(item.itemName);
-        }*/
-        
         // Handle timers
         if (_isPlayerWalking && !_isCrouching)
         {
@@ -147,6 +141,15 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.H))
             {
                 HealPlayerToFull();
+            }
+
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                // Print the inventory
+                foreach (var item in _inventory.GetItems())
+                {
+                    Debug.Log(item.itemName);
+                }
             }
         }
     }
