@@ -11,12 +11,11 @@ public class Flashlight : MonoBehaviour
     
     // Components
     private FlashlightAudio _flashlightAudio;
-    private PlayerController _playerController;
+    public PlayerController _playerController;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        _playerController = GetComponentInParent<PlayerController>();
         lightSource = GetComponentInChildren<Light>();
         _flashlightAudio = GetComponentInChildren<FlashlightAudio>();
         lightSource.intensity = flashlightIntensity;
