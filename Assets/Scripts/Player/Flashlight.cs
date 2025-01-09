@@ -28,8 +28,7 @@ public class Flashlight : MonoBehaviour
         
         // Camera setup
         _cameraToFollow = Camera.main;
-        _offset = transform.position - _cameraToFollow.transform.position; 
-            //transform.position - _cameraToFollow.transform.position;
+        _offset = transform.position - playerController.transform.position;
         
         // Hook up external events
         playerController.OnFlashlightActivated += ActivateFlashlight;
@@ -38,8 +37,8 @@ public class Flashlight : MonoBehaviour
 
     private void Update()
     {
-        transform.position = _cameraToFollow.transform.position + _offset;
-        transform.rotation = Quaternion.Slerp(transform.rotation, _cameraToFollow.transform.rotation, 
+        transform.position = playerController.transform.position + _offset;
+        transform.rotation = Quaternion.Slerp(transform.rotation, playerController.transform.rotation, 
             Time.deltaTime * rotationSpeed);
     }
 
