@@ -35,7 +35,7 @@ public class Flashlight : MonoBehaviour
         playerController.OnFlashlightDeActivated += DeactivateFlashlight;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         transform.position = playerController.transform.position + _offset;
         transform.rotation = Quaternion.Slerp(transform.rotation, playerController.transform.rotation, 
