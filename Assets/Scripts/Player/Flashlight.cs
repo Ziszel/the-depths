@@ -28,7 +28,8 @@ public class Flashlight : MonoBehaviour
         
         // Camera setup
         _cameraToFollow = Camera.main;
-        _offset = transform.position - _cameraToFollow.transform.position;
+        _offset = transform.position - _cameraToFollow.transform.position; 
+            //transform.position - _cameraToFollow.transform.position;
         
         // Hook up external events
         playerController.OnFlashlightActivated += ActivateFlashlight;
