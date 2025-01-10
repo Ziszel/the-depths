@@ -4,6 +4,7 @@ using UnityEngine;
 public class Flashlight : MonoBehaviour
 {
     public PlayerController playerController;
+    public Transform flashlightAnchorTransform;
     
     [Header("light Properties")]
     [SerializeField] public Light lightSource;
@@ -14,7 +15,7 @@ public class Flashlight : MonoBehaviour
     
     // Components
     private FlashlightAudio _flashlightAudio;
-    private Vector3 _offset;
+    // private Vector3 _offset;
     private Camera _cameraToFollow;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -28,7 +29,9 @@ public class Flashlight : MonoBehaviour
         
         // Camera setup
         _cameraToFollow = Camera.main;
-        _offset = transform.position - playerController.transform.position;
+        // Offsetting by player or camera does not work when rotating with mouse
+        // anchor point does cause some shake but is the preferred option for now
+        // _offset = transform.position - _cameraToFollow.transform.position;
         
         // Hook up external events
         playerController.OnFlashlightActivated += ActivateFlashlight;
@@ -37,8 +40,9 @@ public class Flashlight : MonoBehaviour
 
     private void LateUpdate()
     {
-        transform.position = playerController.transform.position + _offset;
-        transform.rotation = Quaternion.Slerp(transform.rotation, playerController.transform.rotation, 
+        // transform.position = _cameraToFollow.transform.position + _offset;
+        transform.position = flashlightAnchorTransform.position;
+        transform.rotation = Quaternion.Slerp(transform.rotation, _cameraToFollow.transform.rotation, 
             Time.deltaTime * rotationSpeed);
     }
 
