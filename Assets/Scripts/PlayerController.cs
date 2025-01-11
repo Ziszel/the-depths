@@ -135,6 +135,10 @@ public class PlayerController : MonoBehaviour
             }
         }
         
+        SetMovementValues();
+        // Rotate the player to face the direction the camera is looking at
+        transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
+        
         // DEBUG CONTROLS
         if (isDebug)
         {
@@ -156,8 +160,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        SetMovementValues();
-        MoveAndRotate();
+        Move();
 
         if (_floorCollider.IsOnGround())
         {
@@ -284,7 +287,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void MoveAndRotate()
+    private void Move()
     {
         if (_floorCollider.IsOnGround())
         {
@@ -307,9 +310,6 @@ public class PlayerController : MonoBehaviour
         {
             _isPlayerWalking = false;
         }
-        
-        // Rotate the player to face the direction the camera is looking at
-        transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
     }
 
     public Rigidbody GetRigidBody()
