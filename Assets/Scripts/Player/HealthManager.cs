@@ -57,8 +57,6 @@ public class HealthManager : MonoBehaviour
             HealthChanged?.Invoke(_currentHealth);
             ResetCooldownTimer();
             
-            Debug.Log($"Health changed to {_currentHealth}");
-            
             // co-routine called using name of for reference to stopping specific co-routine later 
             StopCoroutine("RegenerateOverTime");
             StartCoroutine("RegenerateOverTime");
