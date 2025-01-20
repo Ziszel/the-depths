@@ -7,6 +7,7 @@ public class PlayerHUDUI : MonoBehaviour
     [SerializeField] private Sprite heavyWounds;
     
     private Image _image;
+    private HealthManager _healthManager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -49,5 +50,15 @@ public class PlayerHUDUI : MonoBehaviour
     {
         _image.enabled = true;
         _image.sprite = heavyWounds;
+    }
+
+    private void OnEnable()
+    {
+        HealthManager.HealthChanged += SetImageFromHP;
+    }
+
+    private void OnDisable()
+    {
+        HealthManager.HealthChanged -= SetImageFromHP;
     }
 }

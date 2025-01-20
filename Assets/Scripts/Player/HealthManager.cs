@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class HealthManager : MonoBehaviour
@@ -7,6 +8,7 @@ public class HealthManager : MonoBehaviour
     
     [SerializeField] private int maxHealth;
     [SerializeField] private float damageCooldownTimer;
+    [SerializeField] private float regenerationRate;
  
     private int _currentHealth;
     private float _currentDamageCooldownTimer;
@@ -41,6 +43,12 @@ public class HealthManager : MonoBehaviour
         return maxHealth;
     }
 
+    IEnumerator RegenerateOverTime()
+    {
+        yield return new WaitForSeconds(regenerationRate);
+        RestoreHealth(1);
+    }
+
     public void TakeDamage(int damage)
     {
         if (_currentDamageCooldownTimer <= 0.0f)
@@ -48,13 +56,31 @@ public class HealthManager : MonoBehaviour
             _currentHealth -= damage;
             HealthChanged?.Invoke(_currentHealth);
             ResetCooldownTimer();
+            
+            Debug.Log($"Health changed to {_currentHealth}");
+            
+            // co-routine called using name of for reference to stopping specific co-routine later 
+            StopCoroutine("RegenerateOverTime");
+            StartCoroutine("RegenerateOverTime");
         }
     }
 
     public void RestoreHealth(int restoreHealth)
     {
-        _currentHealth += restoreHealth;
-        HealthChanged?.Invoke(_currentHealth);
+        if (_currentHealth < maxHealth)
+        {
+            _currentHealth += restoreHealth;
+            HealthChanged?.Invoke(_currentHealth);
+            
+            Debug.Log($"Health changed to {_currentHealth}");
+
+            if (_currentHealth < maxHealth)
+            {
+                // co-routine called using name of for reference to stopping specific co-routine later
+                StopCoroutine("RegenerateOverTime");
+                StartCoroutine("RegenerateOverTime");
+            }
+        }
     }
 
     public void ResetCooldownTimer()

@@ -19,7 +19,6 @@ public class RotatingDoor : DoorBase, ISwitchable
 
     protected override IEnumerator OpenDoor()
     {
-        
         while (Quaternion.Angle(initialRotation, endRotation) > 0.01f)
         {
             // returns a quaternion rotated towards endRotation by the step value

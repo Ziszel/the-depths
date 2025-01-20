@@ -234,8 +234,6 @@ public class PlayerController : MonoBehaviour
         // External classes such as UI should be listening for the event called by
         // this method call so do not implement such things on the player
         _healthManager.TakeDamage(1);
-        
-        _playerHUDUI.SetImageFromHP(_healthManager.GetHealth());
 
         if (_healthManager.GetHealth() <= 0)
         {
