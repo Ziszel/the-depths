@@ -200,6 +200,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnLeanLeft(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            Debug.Log("Lean left");
+        }
+    }
+    
+    public void OnLeanRight(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            Debug.Log("Lean right");
+        }
+    }
+
     public void OnPause(InputAction.CallbackContext context)
     {
         if (context.started)
