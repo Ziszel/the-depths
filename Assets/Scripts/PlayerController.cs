@@ -1,5 +1,5 @@
 using System;
-using Mono.Cecil;
+using TMPro.Examples;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     [Header("Camera targets")]
     [SerializeField] private GameObject head;
     [SerializeField] private GameObject crouch;
+    [SerializeField] private GameObject leftLean;
+    [SerializeField] private GameObject rightLean;
 
     [Header("Footstep play rates")] 
     [SerializeField] private float walkingRate = 1.0f;
@@ -42,7 +44,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 _moveInput;
     private Rigidbody _rb;
     private Camera _mainCamera;
-    private CinemachineCamera _cinemachineCamera;
+    private CinemachineCamera _fpsCamera;
     private Monster _monster;
     private GameObject _interactable;
     private FloorCollider _floorCollider;
@@ -51,6 +53,7 @@ public class PlayerController : MonoBehaviour
     private Stamina _stamina;
     private HealthManager _healthManager;
     private PlayerHUDUI _playerHUDUI;
+    private CameraManager _cameraManager;
     
     // DEBUG
     [Header("DEBUG")]
@@ -64,6 +67,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _cameraManager = FindAnyObjectByType<CameraManager>();
         _playerHUDUI = GetComponentInChildren<PlayerHUDUI>();
         _healthManager = GetComponent<HealthManager>();
         _rb = GetComponent<Rigidbody>();
@@ -73,7 +77,7 @@ public class PlayerController : MonoBehaviour
         _monster = FindAnyObjectByType<Monster>();
         _floorCollider = GetComponentInChildren<FloorCollider>();
         _playerAudio = GetComponentInChildren<PlayerAudio>();
-        _cinemachineCamera = FindAnyObjectByType<CinemachineCamera>();
+        _fpsCamera = GameObject.Find("FPSCamera").GetComponent<CinemachineCamera>();
         _interactable = null;
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _isPlayerWalking = false;
@@ -200,6 +204,32 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnLeanLeft(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            _cameraManager.SwitchCamera(_cameraManager.leftLeanCamera);
+        }
+
+        if (context.canceled)
+        {
+            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+        }
+    }
+    
+    public void OnLeanRight(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            _cameraManager.SwitchCamera(_cameraManager.rightLeanCamera);
+        }
+
+        if (context.canceled)
+        {
+            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+        }
+    }
+
     public void OnPause(InputAction.CallbackContext context)
     {
         if (context.started)
@@ -234,8 +264,6 @@ public class PlayerController : MonoBehaviour
         // External classes such as UI should be listening for the event called by
         // this method call so do not implement such things on the player
         _healthManager.TakeDamage(1);
-        
-        _playerHUDUI.SetImageFromHP(_healthManager.GetHealth());
 
         if (_healthManager.GetHealth() <= 0)
         {
@@ -247,8 +275,8 @@ public class PlayerController : MonoBehaviour
     {
         DisableInputActions();
         _playerAudio.PlayDeathSound();
-        _cinemachineCamera.Lens.Dutch = 90.0f;
-        _cinemachineCamera.Target.TrackingTarget = crouch.transform;
+        _fpsCamera.Lens.Dutch = 90.0f;
+        _fpsCamera.Target.TrackingTarget = crouch.transform;
         OnPlayerDeath?.Invoke();
     }
 
@@ -260,7 +288,7 @@ public class PlayerController : MonoBehaviour
         {
             if (_floorCollider.IsOnGround())
             {
-                _cinemachineCamera.Target.TrackingTarget = crouch.transform;
+                _fpsCamera.Target.TrackingTarget = crouch.transform;
                 movementVelocity = crouchVelocity;
                 maxMovementVelocity = maxCrouchVelocity;
                 _isCrouching = true;
@@ -271,7 +299,7 @@ public class PlayerController : MonoBehaviour
                  && _stamina.GetCurrentStamina() > 0.0f 
                  && !_stamina.GetRegeneratingFromZero())
         {
-            _cinemachineCamera.Target.TrackingTarget = head.transform;
+            _fpsCamera.Target.TrackingTarget = head.transform;
             maxMovementVelocity = maxSprintVelocity;
             _currentFootstepRate = sprintingRate;
             _isCrouching = false;
@@ -279,7 +307,7 @@ public class PlayerController : MonoBehaviour
         // We are walking
         else
         {
-            _cinemachineCamera.Target.TrackingTarget = head.transform;
+            _fpsCamera.Target.TrackingTarget = head.transform;
             movementVelocity = walkVelocity;
             maxMovementVelocity = maxWalkVelocity;
             _currentFootstepRate = walkingRate;
@@ -319,7 +347,7 @@ public class PlayerController : MonoBehaviour
 
     public CinemachineCamera GetCinemachineCamera()
     {
-        return _cinemachineCamera;
+        return _fpsCamera;
     }
 
     public GameObject GetCrouchTransform()

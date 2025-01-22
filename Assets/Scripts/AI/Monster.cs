@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -72,15 +73,24 @@ public class Monster : MonoBehaviour
         _monsterAnimation = GetComponent<MonsterAnimation>();
         _monsterAnimation.SetStateToWalk();
     }
+
+    IEnumerator AttackAnimation(float animationTime)
+    {
+        yield return new WaitForSeconds(animationTime);
+        SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+    }
     
     private void Update()
     {
-        // Regardless of state, if the player walks up to the monster, they die
+        // Regardless of state, if the player walks up to the monster, they take damage
         if (!_levelManager.IsPlayerDead())
         {
             if (Vector3.Distance(transform.position, _player.transform.position) < _killRange)
             {
                 OnPlayerWithinDamageDistance?.Invoke();
+                _agent.isStopped = true;
+                // Play monster animation
+                StartCoroutine(AttackAnimation(2.0f));
             }
         }
 
