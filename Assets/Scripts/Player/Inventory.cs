@@ -3,16 +3,28 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    private List<InventoryItem> items = new List<InventoryItem>();
+    private List<InventoryItem> _items;
+    private string _currentGoalText;
+    private Dictionary<string, string> _files;
+
+    private void Start()
+    {
+        _items = new List<InventoryItem>();
+        _files = new Dictionary<string, string>();
+        
+        // testing
+        _files.Add("File 1", "This is a test file to demonstrate functionality of the file menu within the inventory system.");
+        _currentGoalText = "Test goal.";
+    }
 
     public void AddItem(InventoryItem item)
     {
-        items.Add(item);
+        _items.Add(item);
     }
 
     public void RemoveItem(InventoryItem item)
     {
-        items.Remove(item);
+        _items.Remove(item);
     }
 
     public void UseItem(InventoryItem item)
@@ -22,6 +34,11 @@ public class Inventory : MonoBehaviour
 
     public List<InventoryItem> GetItems()
     {
-        return items;
+        return _items;
+    }
+
+    public string GetCurrentGoalText()
+    {
+        return _currentGoalText;
     }
 }
