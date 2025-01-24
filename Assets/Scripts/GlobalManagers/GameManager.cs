@@ -53,6 +53,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ShowInventory(Inventory inventory)
+    {
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    public void HideInventory()
+    {
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     public void Pause()
     {
         Time.timeScale = 0f;

@@ -107,6 +107,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""1458b061-c818-4d46-9c15-d8460be2dcdc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -373,6 +382,28 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""LeanRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""34d04a47-30e1-44b0-8211-3dc2882805fc"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b3a83ae0-a40e-4569-b6e0-8d826328c021"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Inventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -390,6 +421,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_UseItem = m_Player.FindAction("UseItem", throwIfNotFound: true);
         m_Player_LeanLeft = m_Player.FindAction("LeanLeft", throwIfNotFound: true);
         m_Player_LeanRight = m_Player.FindAction("LeanRight", throwIfNotFound: true);
+        m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
@@ -465,6 +497,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_UseItem;
     private readonly InputAction m_Player_LeanLeft;
     private readonly InputAction m_Player_LeanRight;
+    private readonly InputAction m_Player_Inventory;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -478,6 +511,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @UseItem => m_Wrapper.m_Player_UseItem;
         public InputAction @LeanLeft => m_Wrapper.m_Player_LeanLeft;
         public InputAction @LeanRight => m_Wrapper.m_Player_LeanRight;
+        public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -514,6 +548,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @LeanRight.started += instance.OnLeanRight;
             @LeanRight.performed += instance.OnLeanRight;
             @LeanRight.canceled += instance.OnLeanRight;
+            @Inventory.started += instance.OnInventory;
+            @Inventory.performed += instance.OnInventory;
+            @Inventory.canceled += instance.OnInventory;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -545,6 +582,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @LeanRight.started -= instance.OnLeanRight;
             @LeanRight.performed -= instance.OnLeanRight;
             @LeanRight.canceled -= instance.OnLeanRight;
+            @Inventory.started -= instance.OnInventory;
+            @Inventory.performed -= instance.OnInventory;
+            @Inventory.canceled -= instance.OnInventory;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -573,5 +613,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnUseItem(InputAction.CallbackContext context);
         void OnLeanLeft(InputAction.CallbackContext context);
         void OnLeanRight(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
     }
 }
