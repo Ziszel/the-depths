@@ -1,5 +1,5 @@
-using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -7,11 +7,16 @@ public class InventoryUI : MonoBehaviour
     private InventoryItem _selectedItem;
     private Inventory _inventory;
     
-    // UI Elements
-    private TMP_Text _goalTMP;
-    private TMP_Text _selectedTMP;
+    // UI elements
+    [Header("UI Elements")]
+    [SerializeField] private GameObject horizontalMenu;
 
-    // , then show 
+    private void Start()
+    {
+        
+    }
+
+    // Entry point from GameManager
     public void ShowOnOpen(Inventory updatedInventory)
     {
         SetupInventory(updatedInventory);
@@ -23,6 +28,17 @@ public class InventoryUI : MonoBehaviour
     private void ShowInitialUI()
     {
         // Show initial UI
+        horizontalMenu.SetActive(true);
+    }
+
+    private void ShowStatusUI()
+    {
+        
+    }
+
+    private void ShowInventoryUI()
+    {
+        
     }
 
     private void ShowFileUI()
@@ -32,10 +48,14 @@ public class InventoryUI : MonoBehaviour
 
     public void CloseInventory()
     {
-        // hide all UI elements
+        // hide all UI elements (close all because we can't know which one the player can see)
+        // Global
+        horizontalMenu.SetActive(false);
+        
+        // Screen specific
     }
 
-    // Update local variables and update UI based on those values
+    // Update local variables
     private void SetupInventory(Inventory updatedInventory)
     {
         SetInventory(updatedInventory);
