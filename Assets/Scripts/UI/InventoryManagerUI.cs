@@ -1,19 +1,50 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryUI : MonoBehaviour
+public class InventoryManagerUI : MonoBehaviour
 {
-    private static InventoryUI instance;
+    private static InventoryManagerUI _instance;
     private InventoryItem _selectedItem;
     private Inventory _inventory;
     
     // UI elements
     [Header("UI Elements")]
     [SerializeField] private GameObject horizontalMenu;
+    [SerializeField] private Image backgroundImage;
+    private Button _statusButton;
+    private Button _itemsButton;
+    private Button _fileButton;
 
     private void Start()
     {
+        AssociateButtons();
+    }
+
+    private void AssociateButtons()
+    {
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+
+        foreach (Button b in buttons)
+        {
+            if (b.name == "StatusBtn")
+            {
+                _statusButton = b;
+            }
+
+            if (b.name == "ItemsBtn")
+            {
+                _itemsButton = b;
+            }
+
+            if (b.name == "FilesBtn")
+            {
+                _fileButton = b;
+            }
+        }
         
+        _statusButton.onClick.AddListener(ShowStatusUI);
+        _itemsButton.onClick.AddListener(ShowItemsUI);
+        _fileButton.onClick.AddListener(ShowFileUI);
     }
 
     // Entry point from GameManager
@@ -33,17 +64,17 @@ public class InventoryUI : MonoBehaviour
 
     private void ShowStatusUI()
     {
-        
+        Debug.Log("Show status UI");
     }
 
-    private void ShowInventoryUI()
+    private void ShowItemsUI()
     {
-        
+        Debug.Log("Show items UI");
     }
 
     private void ShowFileUI()
     {
-        // Show file selection
+        Debug.Log("Show file UI");
     }
 
     public void CloseInventory()

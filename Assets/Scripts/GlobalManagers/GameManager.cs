@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     private float _bestTime;
     
     /* UI */
-    private InventoryUI _inventoryUI;
+    private InventoryManagerUI _inventoryUI;
 
     /* Audio */
     private MusicManager _musicManager;
@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
         if (scene.name != "MainMenu")
         {
             _musicManager = GameObject.Find("MusicAudioSource").GetComponentInChildren<MusicManager>();
-            _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryUI>();
+            _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryManagerUI>();
             monster = GameObject.Find("Monster").GetComponentInChildren<Monster>(); // Get the monster stored so we're able to play chasing/wandering music
             if (monster != null)
             {
