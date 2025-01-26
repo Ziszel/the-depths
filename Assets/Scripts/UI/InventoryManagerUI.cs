@@ -10,17 +10,29 @@ public class InventoryManagerUI : MonoBehaviour
     // UI elements
     [Header("UI Elements")]
     [SerializeField] private GameObject horizontalMenu;
+    [SerializeField] private GameObject statusUIObj;
+    [SerializeField] private GameObject itemsUIObj;
+    [SerializeField] private GameObject filesUIObj;
     [SerializeField] private Image backgroundImage;
     private Button _statusButton;
     private Button _itemsButton;
     private Button _fileButton;
+    
+    // Section managers
+    private StatusUIManager _statusUIManager;
+    private ItemsUIManager _itemsUIManager;
+    private FilesUIManager _filesUIManager;
 
     private void Start()
     {
-        AssociateButtons();
+        AssociateNavigationButtons();
+        
+        _statusUIManager = GetComponentInChildren<StatusUIManager>(true);
+        _itemsUIManager = GetComponentInChildren<ItemsUIManager>(true);
+        _filesUIManager = GetComponentInChildren<FilesUIManager>(true);
     }
 
-    private void AssociateButtons()
+    private void AssociateNavigationButtons()
     {
         Button[] buttons = GetComponentsInChildren<Button>(true);
 
@@ -60,21 +72,31 @@ public class InventoryManagerUI : MonoBehaviour
     {
         // Show initial UI
         horizontalMenu.SetActive(true);
+        backgroundImage.gameObject.SetActive(true);
+        SetActiveUIElements(true, false, false);
     }
 
     private void ShowStatusUI()
     {
-        Debug.Log("Show status UI");
+        SetActiveUIElements(true, false, false);
     }
 
     private void ShowItemsUI()
     {
-        Debug.Log("Show items UI");
+        _itemsUIManager.InitialiseInventory();
+        SetActiveUIElements(false, true, false);
     }
 
     private void ShowFileUI()
     {
-        Debug.Log("Show file UI");
+        SetActiveUIElements(false, false, true);
+    }
+
+    private void SetActiveUIElements(bool statusActivated, bool itemsActivated, bool fileActivated)
+    {
+        statusUIObj.SetActive(statusActivated);
+        itemsUIObj.SetActive(itemsActivated);
+        filesUIObj.SetActive(fileActivated);
     }
 
     public void CloseInventory()
@@ -82,20 +104,12 @@ public class InventoryManagerUI : MonoBehaviour
         // hide all UI elements (close all because we can't know which one the player can see)
         // Global
         horizontalMenu.SetActive(false);
-        
-        // Screen specific
+        SetActiveUIElements(false, false, false);
     }
 
     // Update local variables
     private void SetupInventory(Inventory updatedInventory)
     {
-        SetInventory(updatedInventory);
-        //_goalTMP.text = _inventory.GetCurrentGoalText();
-        Debug.Log(_inventory.GetCurrentGoalText());
-    }
-    
-    private void SetInventory(Inventory inventory)
-    {
-        _inventory = inventory;
+        _itemsUIManager.SetInventory(updatedInventory);
     }
 }

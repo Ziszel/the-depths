@@ -37,6 +37,11 @@ public class Inventory : MonoBehaviour
         return _items;
     }
 
+    public InventoryItem GetItemByIndex(int index)
+    {
+        return _items[index];
+    }
+
     public string GetCurrentGoalText()
     {
         return _currentGoalText;
