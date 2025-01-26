@@ -150,14 +150,15 @@ public class PlayerController : MonoBehaviour
                 HealPlayerToFull();
             }
 
-            if (Input.GetKeyDown(KeyCode.I))
+            // NOTE: With inventory added this is no longer required
+            /*if (Input.GetKeyDown(KeyCode.I))
             {
                 // Print the inventory
                 foreach (var item in _inventory.GetItems())
                 {
                     Debug.Log(item.itemName);
                 }
-            }
+            }*/
         }
     }
 

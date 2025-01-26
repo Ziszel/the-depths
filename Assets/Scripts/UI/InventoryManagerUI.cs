@@ -105,6 +105,7 @@ public class InventoryManagerUI : MonoBehaviour
         // Global
         horizontalMenu.SetActive(false);
         SetActiveUIElements(false, false, false);
+        backgroundImage.gameObject.SetActive(false);
     }
 
     // Update local variables
