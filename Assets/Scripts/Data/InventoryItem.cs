@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "InventoryItem", menuName = "Scriptable Objects/InventoryItem")]
 public class InventoryItem : ScriptableObject
@@ -10,7 +11,7 @@ public class InventoryItem : ScriptableObject
     public string itemDescription;
     
     [Tooltip("UI image represenation of the item")]
-    public Texture2D itemImage;
+    public Sprite itemImage;
     
     [Tooltip("The associated prefab of the item")]
     public GameObject itemPrefab;

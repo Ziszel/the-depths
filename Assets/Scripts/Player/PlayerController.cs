@@ -1,5 +1,4 @@
 using System;
-using TMPro.Examples;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -151,14 +150,15 @@ public class PlayerController : MonoBehaviour
                 HealPlayerToFull();
             }
 
-            if (Input.GetKeyDown(KeyCode.I))
+            // NOTE: With inventory added this is no longer required
+            /*if (Input.GetKeyDown(KeyCode.I))
             {
                 // Print the inventory
                 foreach (var item in _inventory.GetItems())
                 {
                     Debug.Log(item.itemName);
                 }
-            }
+            }*/
         }
     }
 
@@ -230,11 +230,27 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnInventory(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            if (Time.timeScale == 1.0f)
+            {
+                Debug.Log("Open inventory");
+                GameManager.instance.ShowInventory(_inventory);
+            }
+            else
+            {
+                Debug.Log("Close inventory");
+                GameManager.instance.HideInventory();
+            }
+        }
+    }
+
     public void OnPause(InputAction.CallbackContext context)
     {
         if (context.started)
         {
-            Debug.Log("pause the game");
             // Pause the game if we're not paused
             if (Time.timeScale == 1f)
             {
