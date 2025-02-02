@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -150,15 +151,14 @@ public class PlayerController : MonoBehaviour
                 HealPlayerToFull();
             }
 
-            // NOTE: With inventory added this is no longer required
-            /*if (Input.GetKeyDown(KeyCode.I))
+            if (Input.GetKeyDown(KeyCode.Y))
             {
-                // Print the inventory
-                foreach (var item in _inventory.GetItems())
-                {
-                    Debug.Log(item.itemName);
-                }
-            }*/
+                // print json data to confirm files work
+                string json = File.ReadAllText(Application.dataPath + "/FileJSON/TestFile.json");
+                FileData test = JsonUtility.FromJson<FileData>(json);
+                Debug.Log(test.name);
+                Debug.Log(test.content);
+            }
         }
     }
 
