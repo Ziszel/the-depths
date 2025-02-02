@@ -151,14 +151,14 @@ public class PlayerController : MonoBehaviour
                 HealPlayerToFull();
             }
 
-            if (Input.GetKeyDown(KeyCode.Y))
+            /*if (Input.GetKeyDown(KeyCode.Y))
             {
                 // print json data to confirm files work
                 string json = File.ReadAllText(Application.dataPath + "/FileJSON/TestFile.json");
                 FileData test = JsonUtility.FromJson<FileData>(json);
                 Debug.Log(test.name);
                 Debug.Log(test.content);
-            }
+            }*/
         }
     }
 
