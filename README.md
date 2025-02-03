@@ -13,6 +13,5 @@ This repository is focused on developing the game into a full-length indie game.
 
 - Calin Clement O'Ceallaigh (Programming, Narrative Design, Writing)
 - Sebastian Adamov (Art, Level Design)
-- Kali Hinder (Programming, Design)
 - Luke Evans (Audio (SFX))
 

@@ -5,20 +5,22 @@ public class Inventory : MonoBehaviour
 {
     private List<InventoryItem> _items;
     private string _currentGoalText;
-    private Dictionary<string, string> _files;
+    private List<FileData> _foundFileData;
+    
+    private FileDataManager _fileDataManager;
 
     private void Start()
     {
         _items = new List<InventoryItem>();
-        _files = new Dictionary<string, string>();
-        
-        // testing
-        _files.Add("File 1", "This is a test file to demonstrate functionality of the file menu within the inventory system.");
-        _currentGoalText = "Test goal.";
+        _foundFileData = new List<FileData>();
+        // Not sure this is the best way of handling this but will do for now
+        _fileDataManager = FindFirstObjectByType<FileDataManager>();
     }
 
+    // InventoryItems operations
     public void AddItem(InventoryItem item)
     {
+        Debug.Log(item.name);
         _items.Add(item);
     }
 
@@ -41,9 +43,37 @@ public class Inventory : MonoBehaviour
     {
         return _items[index];
     }
-
+    
     public string GetCurrentGoalText()
     {
         return _currentGoalText;
+    }
+
+    // Files operations
+    public void AddFile(FileItem newFile)
+    {
+        Debug.Log(newFile.fileId);
+        FileData? fd;
+        _fileDataManager.GetFileByIndex(newFile.fileId, out fd);
+        _foundFileData.Add(fd.Value);
+    }
+
+    public List<FileData> GetFileData()
+    {
+        return _foundFileData;
+    }
+
+    public bool GetFileDataByIndex(int index, out FileData? fileData)
+    {
+        foreach (var fd in _foundFileData)
+        {
+            if (fd.id == index)
+            {
+                fileData = fd;
+                return true;
+            }
+        }
+        fileData = null;
+        return false;
     }
 }

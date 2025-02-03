@@ -1,8 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "InventoryItem", menuName = "Scriptable Objects/InventoryItem")]
-public class InventoryItem : ScriptableObject
+public class InventoryItem : PickupItem
 {
     [Tooltip("Presentation name of the item")]
     public string itemName;
