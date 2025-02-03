@@ -2,20 +2,21 @@ using UnityEngine;
 
 public class Pickup : MonoBehaviour
 {
-    public InventoryItem itemData;
+    public PickupItem itemData;
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             if(other.TryGetComponent<Inventory>(out Inventory inventory))
             {
-                if (itemData.itemType == InventoryItemType.Item)
+                if (itemData.GetType() == typeof(InventoryItem))
                 {
-                    inventory.AddItem(itemData);
+                    inventory.AddItem((InventoryItem)itemData);
                 }
-                else if (itemData.itemType == InventoryItemType.File)
+                
+                if (itemData.GetType() == typeof(FileItem))
                 {
-                    inventory.AddFile(itemData);
+                    inventory.AddFile((FileItem)itemData);
                 }
                 
                 Destroy(gameObject);

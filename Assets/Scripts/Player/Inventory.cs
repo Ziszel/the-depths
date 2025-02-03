@@ -17,8 +17,10 @@ public class Inventory : MonoBehaviour
         _fileDataManager = FindFirstObjectByType<FileDataManager>();
     }
 
+    // InventoryItems operations
     public void AddItem(InventoryItem item)
     {
+        Debug.Log(item.name);
         _items.Add(item);
     }
 
@@ -41,14 +43,16 @@ public class Inventory : MonoBehaviour
     {
         return _items[index];
     }
-
+    
     public string GetCurrentGoalText()
     {
         return _currentGoalText;
     }
 
-    public void AddFile(InventoryItem newFile)
+    // Files operations
+    public void AddFile(FileItem newFile)
     {
+        Debug.Log(newFile.fileId);
         FileData? fd;
         _fileDataManager.GetFileByIndex(newFile.fileId, out fd);
         _foundFileData.Add(fd.Value);

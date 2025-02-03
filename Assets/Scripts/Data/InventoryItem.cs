@@ -1,14 +1,7 @@
 using UnityEngine;
 
-public enum InventoryItemType
-{
-    Item,
-    File,
-    Other
-}
-
 [CreateAssetMenu(fileName = "InventoryItem", menuName = "Scriptable Objects/InventoryItem")]
-public class InventoryItem : ScriptableObject
+public class InventoryItem : PickupItem
 {
     [Tooltip("Presentation name of the item")]
     public string itemName;
@@ -21,12 +14,6 @@ public class InventoryItem : ScriptableObject
     
     [Tooltip("The associated prefab of the item")]
     public GameObject itemPrefab;
-    
-    [Tooltip("Which menu displays the item")]
-    public InventoryItemType itemType;
-
-    [Tooltip("File ID (only used for files)")]
-    public int fileId;
 
     // health items / files will affect the player from the inventory
     // the flashlight can be equipped (though this might be a one time thing which can't be unequipped)
