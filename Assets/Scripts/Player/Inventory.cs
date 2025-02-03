@@ -58,6 +58,11 @@ public class Inventory : MonoBehaviour
         _foundFileData.Add(fd.Value);
     }
 
+    public List<FileData> GetFileData()
+    {
+        return _foundFileData;
+    }
+
     public bool GetFileDataByIndex(int index, out FileData? fileData)
     {
         foreach (var fd in _foundFileData)

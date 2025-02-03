@@ -89,6 +89,7 @@ public class InventoryManagerUI : MonoBehaviour
 
     private void ShowFileUI()
     {
+        _filesUIManager.InitialiseFiles();
         SetActiveUIElements(false, false, true);
     }
 
@@ -112,5 +113,6 @@ public class InventoryManagerUI : MonoBehaviour
     private void SetupInventory(Inventory updatedInventory)
     {
         _itemsUIManager.SetInventory(updatedInventory);
+        _filesUIManager.SetInventory(updatedInventory);
     }
 }
