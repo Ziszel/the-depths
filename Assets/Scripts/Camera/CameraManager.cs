@@ -6,6 +6,7 @@ public class CameraManager : MonoBehaviour
     
     public CinemachineCamera leftLeanCamera;
     public CinemachineCamera rightLeanCamera;
+    public CinemachineCamera crouchCamera;
     public CinemachineCamera fpsCamera;
 
     public CinemachineCamera startCamera;
