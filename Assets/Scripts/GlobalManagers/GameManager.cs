@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     private float _totalPlayTime;
     private int _deathCount;
     private int _saveCount;
+    // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
+    // lots of changes required, etc... Used to stop flashlight playing from PC (separate input action had no effect)
+    private bool _inventoryOpen; 
     
     /* UI */
     private InventoryManagerUI _inventoryUI;
@@ -78,6 +81,7 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         _inventoryUI.ShowOnOpen(inventory);
+        _inventoryOpen = true;
     }
 
     public void HideInventory()
@@ -86,6 +90,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        _inventoryOpen = false;
     }
 
     public void Pause()
@@ -149,6 +154,11 @@ public class GameManager : MonoBehaviour
     {
         _saveCount++;
     }
+
+    public bool IsInventoryOpen()
+    {
+        return _inventoryOpen;
+    }
     
     public void SetBestTime(float newBestTime)
     {
@@ -170,6 +180,7 @@ public class GameManager : MonoBehaviour
         _saveCount = 0;
         // TODO: Attempt to load from disk a best time, if it fails put the default value here
         _bestTime = 999999;
+        _inventoryOpen = false;
     }
     
 }

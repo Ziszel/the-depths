@@ -193,14 +193,17 @@ public class PlayerController : MonoBehaviour
 
     public void OnUseItem(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (!GameManager.instance.IsInventoryOpen())
         {
-            OnFlashlightActivated?.Invoke();
-        }
+            if (context.started)
+            {
+                OnFlashlightActivated?.Invoke();
+            }
 
-        if (context.canceled)
-        {
-            OnFlashlightDeActivated?.Invoke();
+            if (context.canceled)
+            {
+                OnFlashlightDeActivated?.Invoke();
+            }
         }
     }
 
