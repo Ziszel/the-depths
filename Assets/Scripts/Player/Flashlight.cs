@@ -13,6 +13,14 @@ public class Flashlight : MonoBehaviour
     [SerializeField] private float windupTime; // in seconds
     [SerializeField] private float rotationSpeed;
     
+    [Header("lerp properties")]
+    [SerializeField] private float lerpDuration; // in seconds
+    private Vector3 _defaultPosition;
+    private Vector3 _crouchedPosition;
+    
+    // Helper constants
+    [SerializeField] private float crouchFlashlightAnchorOffset;
+    
     // Components
     private FlashlightAudio _flashlightAudio;
     // private Vector3 _offset;
@@ -29,13 +37,16 @@ public class Flashlight : MonoBehaviour
         
         // Camera setup
         _cameraToFollow = Camera.main;
-        // Offsetting by player or camera does not work when rotating with mouse
-        // anchor point does cause some shake but is the preferred option for now
-        // _offset = transform.position - _cameraToFollow.transform.position;
+        
+        _defaultPosition = flashlightAnchorTransform.localPosition;
+        _crouchedPosition = _defaultPosition;
+        _crouchedPosition.y = _defaultPosition.y + crouchFlashlightAnchorOffset;
         
         // Hook up external events
         playerController.OnFlashlightActivated += ActivateFlashlight;
         playerController.OnFlashlightDeActivated += DeactivateFlashlight;
+        playerController.OnCrouchEnabled += MoveFlashlightToCrouchPosition;
+        playerController.OnCrouchDisabled += MoveFlashlightToStandPosition;
     }
 
     private void LateUpdate()
@@ -63,5 +74,49 @@ public class Flashlight : MonoBehaviour
         StopCoroutine("LightActivationRoutine");
         lightSource.enabled = false;
         _flashlightAudio.StopSfx();
+    }
+
+    private void MoveFlashlightToCrouchPosition()
+    {
+        StopCoroutine("LerpFlashlightToPosition");
+        StartCoroutine("LerpFlashlightToPosition", true);
+    }
+
+    private void MoveFlashlightToStandPosition()
+    {
+        StopCoroutine("LerpFlashlightToPosition");
+        StartCoroutine(LerpFlashlightToPosition(false));
+    }
+
+    IEnumerator LerpFlashlightToPosition(bool isCrouched)
+    {
+        float elapsedTime = 0.0f;
+        Vector3 endPosition;
+        if (isCrouched)
+        {
+            endPosition = _crouchedPosition;
+        }
+        else
+        {
+            endPosition = _defaultPosition;
+        }
+        
+        while (elapsedTime < lerpDuration)
+        {
+            flashlightAnchorTransform.localPosition = Vector3.Lerp(flashlightAnchorTransform.localPosition, endPosition, 
+                elapsedTime / lerpDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (isCrouched)
+        {
+            flashlightAnchorTransform.localPosition = _crouchedPosition;
+        }
+        else
+        {
+            flashlightAnchorTransform.localPosition = _defaultPosition;
+        }
+        
     }
 }

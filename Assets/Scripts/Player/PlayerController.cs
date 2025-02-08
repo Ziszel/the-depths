@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     public Action OnPlayerDeath;
     public Action OnFlashlightActivated;
     public Action OnFlashlightDeActivated;
+    public Action OnCrouchEnabled;
+    public Action OnCrouchDisabled;
     
     [Header("Movement velocity")]
     [SerializeField] private float movementVelocity = 5.0f;
@@ -230,6 +232,7 @@ public class PlayerController : MonoBehaviour
         {
             if (_floorCollider.IsOnGround())
             {
+                OnCrouchEnabled?.Invoke();
                 _cameraManager.SwitchCamera(_cameraManager.crouchCamera);
                 movementVelocity = crouchVelocity;
                 maxMovementVelocity = maxCrouchVelocity;
@@ -239,6 +242,7 @@ public class PlayerController : MonoBehaviour
 
         if (context.canceled)
         {
+            OnCrouchDisabled?.Invoke();
             _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
             movementVelocity = walkVelocity;
             maxMovementVelocity = maxWalkVelocity;
