@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +8,9 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     private float _bestTime;
+    private float _totalPlayTime;
+    private int _deathCount;
+    private int _saveCount;
     
     /* UI */
     private InventoryManagerUI _inventoryUI;
@@ -16,7 +21,7 @@ public class GameManager : MonoBehaviour
     /* Monster */
     Monster monster;
 
-    public void Awake()
+    private void Awake()
     {
         if (instance != null)
         {
@@ -28,8 +33,18 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
-        _bestTime = 999999;
+    // When the game first starts up set all values to initial state, changes can be made
+    // when loading save file from disk later
+    private void Start()
+    {
+        InitialiseGame();
+    }
+
+    private void Update()
+    {
+        _totalPlayTime += Time.deltaTime;
     }
 
     public void LoadLevel(string levelName) //music calls commented out are called befopre thjis
@@ -104,6 +119,37 @@ public class GameManager : MonoBehaviour
         _musicManager.TriggerFadeOutMusic(1.5f);
     }
 
+    public string GetCurrentPlayTimeAsString()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(_totalPlayTime);
+        return timeSpan.ToString("hh':'mm':'ss", new CultureInfo("en-GB"));
+    }
+
+    public float GetCurrentPlayTime()
+    {
+        return _totalPlayTime;
+    }
+
+    public int GetDeathCount()
+    {
+        return _deathCount;
+    }
+
+    public void IncrementDeathCount()
+    {
+        _deathCount++;
+    }
+
+    public int GetSaveCount()
+    {
+        return _saveCount;
+    }
+
+    public void IncrementSaveCount()
+    {
+        _saveCount++;
+    }
+    
     public void SetBestTime(float newBestTime)
     {
         if (newBestTime < _bestTime)
@@ -115,6 +161,15 @@ public class GameManager : MonoBehaviour
     public float GetBestTime()
     {
         return _bestTime;
+    }
+
+    private void InitialiseGame()
+    {
+        _totalPlayTime = 0;
+        _deathCount = 0;
+        _saveCount = 0;
+        // TODO: Attempt to load from disk a best time, if it fails put the default value here
+        _bestTime = 999999;
     }
     
 }

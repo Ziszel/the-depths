@@ -110,6 +110,7 @@ public class LevelManager : MonoBehaviour
 
     private void PrepareForRespawn()
     {
+        GameManager.instance.IncrementDeathCount();
         _timeUntilRespawn = respawnTime;
         _playerDead = true;
     }

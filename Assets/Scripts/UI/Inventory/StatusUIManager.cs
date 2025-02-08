@@ -1,16 +1,16 @@
+using TMPro;
 using UnityEngine;
 
 public class StatusUIManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private TMP_Text playTimeText;
+    [SerializeField] private TMP_Text deathCountText;
+    [SerializeField] private TMP_Text saveCountText;
 
-    // Update is called once per frame
-    void Update()
+    public void InitialiseStatusScreen()
     {
-        
+        playTimeText.text = GameManager.instance.GetCurrentPlayTimeAsString();
+        deathCountText.text = GameManager.instance.GetDeathCount().ToString();
+        saveCountText.text = GameManager.instance.GetSaveCount().ToString();
     }
 }
