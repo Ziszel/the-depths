@@ -73,11 +73,12 @@ public class InventoryManagerUI : MonoBehaviour
         // Show initial UI
         horizontalMenu.SetActive(true);
         backgroundImage.gameObject.SetActive(true);
-        SetActiveUIElements(true, false, false);
+        ShowStatusUI();
     }
 
     private void ShowStatusUI()
     {
+        _statusUIManager.InitialiseStatusScreen();
         SetActiveUIElements(true, false, false);
     }
 

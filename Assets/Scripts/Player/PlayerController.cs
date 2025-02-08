@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     public Action OnPlayerDeath;
     public Action OnFlashlightActivated;
     public Action OnFlashlightDeActivated;
+    public Action OnCrouchEnabled;
+    public Action OnCrouchDisabled;
     
     [Header("Movement velocity")]
     [SerializeField] private float movementVelocity = 5.0f;
@@ -150,15 +152,6 @@ public class PlayerController : MonoBehaviour
             {
                 HealPlayerToFull();
             }
-
-            /*if (Input.GetKeyDown(KeyCode.Y))
-            {
-                // print json data to confirm files work
-                string json = File.ReadAllText(Application.dataPath + "/FileJSON/TestFile.json");
-                FileData test = JsonUtility.FromJson<FileData>(json);
-                Debug.Log(test.name);
-                Debug.Log(test.content);
-            }*/
         }
     }
 
@@ -193,14 +186,17 @@ public class PlayerController : MonoBehaviour
 
     public void OnUseItem(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (!GameManager.instance.IsInventoryOpen())
         {
-            OnFlashlightActivated?.Invoke();
-        }
+            if (context.started)
+            {
+                OnFlashlightActivated?.Invoke();
+            }
 
-        if (context.canceled)
-        {
-            OnFlashlightDeActivated?.Invoke();
+            if (context.canceled)
+            {
+                OnFlashlightDeActivated?.Invoke();
+            }
         }
     }
 
@@ -227,6 +223,31 @@ public class PlayerController : MonoBehaviour
         if (context.canceled)
         {
             _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+        }
+    }
+
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            if (_floorCollider.IsOnGround())
+            {
+                OnCrouchEnabled?.Invoke();
+                _cameraManager.SwitchCamera(_cameraManager.crouchCamera);
+                movementVelocity = crouchVelocity;
+                maxMovementVelocity = maxCrouchVelocity;
+                _isCrouching = true;
+            }
+        }
+
+        if (context.canceled)
+        {
+            OnCrouchDisabled?.Invoke();
+            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            movementVelocity = walkVelocity;
+            maxMovementVelocity = maxWalkVelocity;
+            _currentFootstepRate = walkingRate;
+            _isCrouching = false;
         }
     }
 
@@ -298,35 +319,13 @@ public class PlayerController : MonoBehaviour
 
     private void SetMovementValues()
     {
-        // Set current movement velocity and maxVelocity depending on if the player is crouching, walking, or sprinting
-        // Check if crouching
-        if (Mathf.Approximately(_inputActions.Player.Crouch.ReadValue<float>(), 1.0f))
-        {
-            if (_floorCollider.IsOnGround())
-            {
-                _fpsCamera.Target.TrackingTarget = crouch.transform;
-                movementVelocity = crouchVelocity;
-                maxMovementVelocity = maxCrouchVelocity;
-                _isCrouching = true;
-            }
-        }
-        // Check if sprinting
-        else if (Mathf.Approximately(_inputActions.Player.Sprint.ReadValue<float>(), 1.0f) 
+        // Check if sprinting (TODO: Convert over to event)
+        if (Mathf.Approximately(_inputActions.Player.Sprint.ReadValue<float>(), 1.0f) 
                  && _stamina.GetCurrentStamina() > 0.0f 
                  && !_stamina.GetRegeneratingFromZero())
         {
-            _fpsCamera.Target.TrackingTarget = head.transform;
             maxMovementVelocity = maxSprintVelocity;
             _currentFootstepRate = sprintingRate;
-            _isCrouching = false;
-        }
-        // We are walking
-        else
-        {
-            _fpsCamera.Target.TrackingTarget = head.transform;
-            movementVelocity = walkVelocity;
-            maxMovementVelocity = maxWalkVelocity;
-            _currentFootstepRate = walkingRate;
             _isCrouching = false;
         }
     }

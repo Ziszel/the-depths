@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,6 +8,12 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     private float _bestTime;
+    private float _totalPlayTime;
+    private int _deathCount;
+    private int _saveCount;
+    // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
+    // lots of changes required, etc... Used to stop flashlight playing from PC (separate input action had no effect)
+    private bool _inventoryOpen; 
     
     /* UI */
     private InventoryManagerUI _inventoryUI;
@@ -16,7 +24,7 @@ public class GameManager : MonoBehaviour
     /* Monster */
     Monster monster;
 
-    public void Awake()
+    private void Awake()
     {
         if (instance != null)
         {
@@ -28,8 +36,18 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
-        _bestTime = 999999;
+    // When the game first starts up set all values to initial state, changes can be made
+    // when loading save file from disk later
+    private void Start()
+    {
+        InitialiseGame();
+    }
+
+    private void Update()
+    {
+        _totalPlayTime += Time.unscaledDeltaTime;
     }
 
     public void LoadLevel(string levelName) //music calls commented out are called befopre thjis
@@ -63,6 +81,7 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         _inventoryUI.ShowOnOpen(inventory);
+        _inventoryOpen = true;
     }
 
     public void HideInventory()
@@ -71,6 +90,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        _inventoryOpen = false;
     }
 
     public void Pause()
@@ -104,6 +124,42 @@ public class GameManager : MonoBehaviour
         _musicManager.TriggerFadeOutMusic(1.5f);
     }
 
+    public string GetCurrentPlayTimeAsString()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(_totalPlayTime);
+        return timeSpan.ToString("hh':'mm':'ss", new CultureInfo("en-GB"));
+    }
+
+    public float GetCurrentPlayTime()
+    {
+        return _totalPlayTime;
+    }
+
+    public int GetDeathCount()
+    {
+        return _deathCount;
+    }
+
+    public void IncrementDeathCount()
+    {
+        _deathCount++;
+    }
+
+    public int GetSaveCount()
+    {
+        return _saveCount;
+    }
+
+    public void IncrementSaveCount()
+    {
+        _saveCount++;
+    }
+
+    public bool IsInventoryOpen()
+    {
+        return _inventoryOpen;
+    }
+    
     public void SetBestTime(float newBestTime)
     {
         if (newBestTime < _bestTime)
@@ -115,6 +171,16 @@ public class GameManager : MonoBehaviour
     public float GetBestTime()
     {
         return _bestTime;
+    }
+
+    private void InitialiseGame()
+    {
+        _totalPlayTime = 0;
+        _deathCount = 0;
+        _saveCount = 0;
+        // TODO: Attempt to load from disk a best time, if it fails put the default value here
+        _bestTime = 999999;
+        _inventoryOpen = false;
     }
     
 }
