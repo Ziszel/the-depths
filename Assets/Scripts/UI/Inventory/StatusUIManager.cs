@@ -13,4 +13,9 @@ public class StatusUIManager : MonoBehaviour
         deathCountText.text = GameManager.instance.GetDeathCount().ToString();
         saveCountText.text = GameManager.instance.GetSaveCount().ToString();
     }
+
+    private void Update()
+    {
+        playTimeText.text = GameManager.instance.GetCurrentPlayTimeAsString();
+    }
 }

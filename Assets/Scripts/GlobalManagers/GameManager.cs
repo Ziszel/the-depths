@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        _totalPlayTime += Time.deltaTime;
+        _totalPlayTime += Time.unscaledDeltaTime;
     }
 
     public void LoadLevel(string levelName) //music calls commented out are called befopre thjis
