@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,10 +26,7 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private float fieldOfViewAngle = 60; // player's cone of vision
     [Header("Camera targets")]
-    [SerializeField] private GameObject head;
-    [SerializeField] private GameObject crouch;
-    [SerializeField] private GameObject leftLean;
-    [SerializeField] private GameObject rightLean;
+    [SerializeField] private GameObject crouch; // update OnPlayerKill and look to remove this
 
     [Header("Footstep play rates")] 
     [SerializeField] private float walkingRate = 1.0f;
@@ -255,7 +251,7 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started)
         {
-            if (Time.timeScale == 1.0f)
+            if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
                 Debug.Log("Open inventory");
                 GameManager.instance.ShowInventory(_inventory);
@@ -273,7 +269,7 @@ public class PlayerController : MonoBehaviour
         if (context.started)
         {
             // Pause the game if we're not paused
-            if (Time.timeScale == 1f)
+            if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
                 GameManager.instance.Pause();
             }
