@@ -1,3 +1,4 @@
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class FilesUIManager : MonoBehaviour
     public Button File05;
     
     private Inventory _inventory;
+    private FileReader _fileReader;
 
     private void Start()
     {
@@ -20,6 +22,9 @@ public class FilesUIManager : MonoBehaviour
         File03.onClick.AddListener(OnFile03Pressed);
         File04.onClick.AddListener(OnFile04Pressed);
         File05.onClick.AddListener(OnFile05Pressed);
+
+        // FindAny is faster than FindFirst, called 
+        _fileReader = FindAnyObjectByType<FileReader>();
     }
 
     // update the list of files so that those that are found are renamed from '???'.
@@ -63,7 +68,13 @@ public class FilesUIManager : MonoBehaviour
     // Hook up buttons
     private void OnFile01Pressed()
     {
-        Debug.Log("OnFile01Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(1);
+
+        if (fd.HasValue)
+        {
+            _fileReader.enabled = true;
+            _fileReader.SetupPageData(fd.Value.content);
+        }
     }
     
     private void OnFile02Pressed()
