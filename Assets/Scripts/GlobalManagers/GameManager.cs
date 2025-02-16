@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance;
 
     private float _bestTime;
     private float _totalPlayTime;
@@ -28,13 +28,13 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        Instance = this;
         DontDestroyOnLoad(gameObject);
 
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -59,10 +59,6 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Cursor will be ALWAYS be shown and not locked at the start
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
         // We're in a game level or testing level
         if (scene.name != "MainMenu")
         {

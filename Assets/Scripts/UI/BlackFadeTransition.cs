@@ -41,8 +41,7 @@ public class BlackFadeTransition : MonoBehaviour
             //Debug.Log("FadeToBlack called. elapsed time: " + elapsedTime);
             yield return null;
         }
-
-        UIManager.instance.DeactivateLetter();
+        
         StartCoroutine(CalinFadeFromBlack());
     }
     

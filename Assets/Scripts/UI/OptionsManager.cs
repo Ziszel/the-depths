@@ -67,7 +67,7 @@ public class OptionsManager : MonoBehaviour
     private void OnOptionsResumeClicked()
     {
         Debug.Log("OPTIONS MENU RESUME BUTTON CLICKED");
-        GameManager.instance.Unpause();
+        GameManager.Instance.Unpause();
     }
 
     private void OnMouseSensitivityChanged(float value)

@@ -5,13 +5,10 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
 
-    private int _letterCount;
-
     /* Primary UIs */
     private GameObject _mainMenuCanvas;
     private GameObject _optionsMenuCanvas;
     private GameObject _creditsCanvas;
-    private GameObject _letterCanvas;
 
     /* UI Buttons */
     private GameObject _mainMenuBtn;
@@ -60,7 +57,6 @@ public class UIManager : MonoBehaviour
             RectTransform rectTransform = _mainMenuBtn.GetComponent<RectTransform>();
             rectTransform.anchoredPosition = new Vector3(0, -61, 0);
             _resumeBtn.SetActive(false);
-            _letterCount = 0;
         }
         else if (scene.name == "EndGame")
         {
@@ -69,55 +65,12 @@ public class UIManager : MonoBehaviour
         else // We're in a game level or testing level
         {
             _musicManager = GameObject.Find("MusicAudioSource").GetComponentInChildren<MusicManager>();
-            _letterCanvas = GameObject.Find("LetterCanvas");
 
             // Adjust options menu layout for game level
             RectTransform rectTransform = _mainMenuBtn.GetComponent<RectTransform>();
             rectTransform.anchoredPosition = new Vector3(146, -323, 0);
             _resumeBtn.SetActive(true);
-
-            // First we start game level with a black screen, fading into the letter screen, with music
-            ActivateLetter();
         }
-    }
-
-    public void ActivateLetter()
-    {
-        if (_letterCount != 0)
-        {
-            if (_letterCanvas.TryGetComponent(out LetterManager lm))
-            {
-                lm.SetExitButtonFalse();
-            }
-        }
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        Time.timeScale = 0f;
-
-        _musicManager.AssignIntroMusic();
-        _musicManager.Play();
-
-        _letterCanvas.SetActive(true);
-        _letterCount++;
-    }
-
-    public void DeactivateLetter()
-    {
-        // Deactivate the cursor when resuming the game after reading a letter
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        // Ensure game is unpaused after user reads letter
-        Time.timeScale = 1f;
-
-        _musicManager.TriggerFadeOutMusic();
-
-        _letterCanvas.SetActive(false);
-    }
-
-    public bool IsLetterActive()
-    {
-        return _letterCanvas.activeSelf;
     }
 
     public void ShowOptionsCanvas(bool isFromMainMenu)
@@ -156,7 +109,7 @@ public class UIManager : MonoBehaviour
         else
         {
             // This must mean we are in-game if the main menu canvas does not exist so we want to fully return to the main menu level
-            GameManager.instance.LoadLevel("MainMenu");
+            GameManager.Instance.LoadLevel("MainMenu");
         }
         if (_optionsMenuCanvas)
         {
@@ -198,11 +151,6 @@ public class UIManager : MonoBehaviour
         {
             Debug.Log("GameManager ShowOptionsCanvas(): Could not find the main menu canvas object");
         }
-    }
-
-    public void LetterContinue()
-    {
-        DeactivateLetter();
     }
 
 }

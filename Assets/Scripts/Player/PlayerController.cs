@@ -182,7 +182,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnUseItem(InputAction.CallbackContext context)
     {
-        if (!GameManager.instance.IsInventoryOpen())
+        if (!GameManager.Instance.IsInventoryOpen())
         {
             if (context.started)
             {
@@ -254,12 +254,12 @@ public class PlayerController : MonoBehaviour
             if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
                 Debug.Log("Open inventory");
-                GameManager.instance.ShowInventory(_inventory);
+                GameManager.Instance.ShowInventory(_inventory);
             }
             else
             {
                 Debug.Log("Close inventory");
-                GameManager.instance.HideInventory();
+                GameManager.Instance.HideInventory();
             }
         }
     }
@@ -271,12 +271,12 @@ public class PlayerController : MonoBehaviour
             // Pause the game if we're not paused
             if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
-                GameManager.instance.Pause();
+                GameManager.Instance.Pause();
             }
             // Unpause the game if we are paused
             else
             {
-                GameManager.instance.Unpause();
+                GameManager.Instance.Unpause();
             }
             
         }

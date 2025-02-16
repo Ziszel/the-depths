@@ -118,7 +118,7 @@ public class FileReader : MonoBehaviour
         backgroundImageLetter.enabled = false;
         backgroundImageBlack.gameObject.SetActive(false);
         // Disable cursor and pause game should happen on GameManager not here
-        if (!GameManager.instance.IsInventoryOpen())
+        if (!GameManager.Instance.IsInventoryOpen())
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;

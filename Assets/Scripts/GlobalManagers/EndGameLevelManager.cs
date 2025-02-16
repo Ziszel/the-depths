@@ -23,12 +23,12 @@ public class EndGameLevelManager : MonoBehaviour
 
     public void SetCompletionTimeValue()
     {
-        TimeSpan timeSpan = TimeSpan.FromSeconds(GameManager.instance.GetBestTime());
+        TimeSpan timeSpan = TimeSpan.FromSeconds(GameManager.Instance.GetBestTime());
         completionTimeValue.text = timeSpan.ToString("hh':'mm':'ss", new CultureInfo("en-GB"));
     }
 
     public void OnReturnBtnClicked()
     {
-        GameManager.instance.LoadLevel("MainMenu");
+        GameManager.Instance.LoadLevel("MainMenu");
     }
 }

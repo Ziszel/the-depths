@@ -16,8 +16,8 @@ public class EndGame : MonoBehaviour
         {
             if (!_levelManager.IsPlayerDead())
             {
-                GameManager.instance.SetBestTime(LevelManager.GetTimer());
-                GameManager.instance.LoadLevel("EndGame");
+                GameManager.Instance.SetBestTime(LevelManager.GetTimer());
+                GameManager.Instance.LoadLevel("EndGame");
             }
         }
     }
