@@ -14,7 +14,6 @@ public class FileReader : MonoBehaviour
     [SerializeField] private Button nextTextBlockBtn;
     [SerializeField] private Button closeFileReaderBtn;
     [SerializeField] private Button previousTextBlockBtn;
-    [SerializeField] private int maxCharactersOnPage = 450;
 
     private int _pageCount;
     private int _currentPage;
@@ -76,28 +75,27 @@ public class FileReader : MonoBehaviour
     {
         _pageData = new List<string>(); // double check this is ok even if it works
         
-        if (message.Length <= maxCharactersOnPage)
+        // NOTE: If a string looks incorrect, then you need to fix it at the JSON level.
+        // This avoids slow processing via code + gives complete control over how the text
+        // is presented (even if it can be slightly tedious at first).
+        string[] splitString = message.Split('|');
+        foreach (string str in splitString)
         {
-            _pageCount = 1;
-            nextTextBlockBtn.gameObject.SetActive(false);
-            closeFileReaderBtn.gameObject.SetActive(true);
-            _pageData.Add(message);
+            _pageData.Add(str);
         }
-        else
+        
+        if (_pageData.Count > 1)
         {
-            Debug.Log(message);
-            Debug.Log(message.Length);
-            for (int i = 0; i <= message.Length - 1; i += maxCharactersOnPage)
-            {
-                Debug.Log(SafeSubstring(message, i, maxCharactersOnPage));
-                _pageData.Add(SafeSubstring(message, i, maxCharactersOnPage));
-                //_pageData.Add(message.Substring(i, maxCharactersOnPage));
-            }
-            Debug.Log(_pageData.Count);
             _pageCount = _pageData.Count;
             nextTextBlockBtn.gameObject.SetActive(true);
             nextTextBlockBtn.interactable = true;
             closeFileReaderBtn.gameObject.SetActive(false);
+        }
+        else
+        {
+            _pageCount = 1;
+            nextTextBlockBtn.gameObject.SetActive(false);
+            closeFileReaderBtn.gameObject.SetActive(true);
         }
         
         previousTextBlockBtn.interactable = false;
@@ -106,11 +104,6 @@ public class FileReader : MonoBehaviour
         
         UpdateTextBlock();
         UpdatePageCount();
-    }
-
-    private string SafeSubstring(string value, int startIndex, int length)
-    {
-        return new string((value ?? string.Empty).Skip(startIndex).Take(length).ToArray());
     }
 
     private void OnEnable()
