@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class FilesUIManager : MonoBehaviour
 {
+    [SerializeField] private FileReader fileReader;
+    
     // List of buttons that load UI
     public Button File01;
     public Button File02;
@@ -13,7 +15,6 @@ public class FilesUIManager : MonoBehaviour
     public Button File05;
     
     private Inventory _inventory;
-    private FileReader _fileReader;
 
     private void Start()
     {
@@ -22,9 +23,6 @@ public class FilesUIManager : MonoBehaviour
         File03.onClick.AddListener(OnFile03Pressed);
         File04.onClick.AddListener(OnFile04Pressed);
         File05.onClick.AddListener(OnFile05Pressed);
-
-        // FindAny is faster than FindFirst, called 
-        _fileReader = FindAnyObjectByType<FileReader>();
     }
 
     // update the list of files so that those that are found are renamed from '???'.
@@ -72,28 +70,52 @@ public class FilesUIManager : MonoBehaviour
 
         if (fd.HasValue)
         {
-            _fileReader.enabled = true;
-            _fileReader.SetupPageData(fd.Value.content);
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
         }
     }
     
     private void OnFile02Pressed()
     {
-        Debug.Log("OnFile02Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(2);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
     
     private void OnFile03Pressed()
     {
-        Debug.Log("OnFile03Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(3);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
     
     private void OnFile04Pressed()
     {
-        Debug.Log("OnFile04Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(4);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
     
     private void OnFile05Pressed()
     {
-        Debug.Log("OnFile05Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(5);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
 }

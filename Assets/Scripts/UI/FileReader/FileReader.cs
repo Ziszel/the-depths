@@ -1,10 +1,13 @@
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FileReader : MonoBehaviour
 {
-    [SerializeField] private Image backgroundImage;
+    [SerializeField] private Image backgroundImageLetter;
+    [SerializeField] private Image backgroundImageBlack;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text textBlockText;
     [SerializeField] private TMP_Text pageCountText;
@@ -15,8 +18,8 @@ public class FileReader : MonoBehaviour
 
     private int _pageCount;
     private int _currentPage;
-    private string[] _pageData;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private List<string> _pageData;
+    
     void Start()
     {
         nextTextBlockBtn.onClick.AddListener(OnNextTextBlockPressed);
@@ -32,9 +35,11 @@ public class FileReader : MonoBehaviour
 
         if (_currentPage == _pageCount)
         {
-            nextTextBlockBtn.enabled = false;
-            closeFileReaderBtn.enabled = true;
+            nextTextBlockBtn.gameObject.SetActive(false);
+            closeFileReaderBtn.gameObject.SetActive(true);
         }
+        
+        previousTextBlockBtn.interactable = true;
     }
 
     private void OnCloseFileReaderPressed()
@@ -50,8 +55,11 @@ public class FileReader : MonoBehaviour
         
         if (_currentPage == 1)
         {
-            previousTextBlockBtn.enabled = false;
+            previousTextBlockBtn.interactable = false;
         }
+        
+        nextTextBlockBtn.gameObject.SetActive(true);
+        closeFileReaderBtn.gameObject.SetActive(false);
     }
 
     private void UpdateTextBlock()
@@ -64,48 +72,59 @@ public class FileReader : MonoBehaviour
         pageCountText.text = $"{_currentPage}/{_pageCount}";
     }
 
-    public void SetupPageData(string message)
+    public void SetupPageData(string message, string title)
     {
-        if (message.Length <= 150)
+        _pageData = new List<string>(); // double check this is ok even if it works
+        
+        if (message.Length <= maxCharactersOnPage)
         {
             _pageCount = 1;
-            nextTextBlockBtn.enabled = false;
-            closeFileReaderBtn.enabled = true;
-            _pageData[0] = message;
+            nextTextBlockBtn.gameObject.SetActive(false);
+            closeFileReaderBtn.gameObject.SetActive(true);
+            _pageData.Add(message);
         }
         else
         {
-            int pageIndex = 0;
+            Debug.Log(message);
+            Debug.Log(message.Length);
             for (int i = 0; i <= message.Length - 1; i += maxCharactersOnPage)
             {
-                _pageData[pageIndex] = message.Substring(i, i + maxCharactersOnPage);
-                pageIndex++;
+                Debug.Log(SafeSubstring(message, i, maxCharactersOnPage));
+                _pageData.Add(SafeSubstring(message, i, maxCharactersOnPage));
+                //_pageData.Add(message.Substring(i, maxCharactersOnPage));
             }
-            Debug.Log(_pageData.Length);
-            _pageCount = _pageData.Length;
-            nextTextBlockBtn.enabled = true;
-            closeFileReaderBtn.enabled = false;
+            Debug.Log(_pageData.Count);
+            _pageCount = _pageData.Count;
+            nextTextBlockBtn.gameObject.SetActive(true);
+            nextTextBlockBtn.interactable = true;
+            closeFileReaderBtn.gameObject.SetActive(false);
         }
         
-        previousTextBlockBtn.enabled = false;
+        previousTextBlockBtn.interactable = false;
         _currentPage = 1;
+        titleText.text = title;
         
         UpdateTextBlock();
         UpdatePageCount();
     }
 
+    private string SafeSubstring(string value, int startIndex, int length)
+    {
+        return new string((value ?? string.Empty).Skip(startIndex).Take(length).ToArray());
+    }
+
     private void OnEnable()
     {
-        backgroundImage.enabled = true;
-        // Enable cursor and pause game (safe to reset these if coming from inventory)
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        Time.timeScale = 0f;
+        backgroundImageLetter.enabled = true;
+        backgroundImageBlack.gameObject.SetActive(true);
+        // Enable cursor and pause game should happen on GameManager not here
     }
 
     private void OnDisable()
     {
-        backgroundImage.enabled = false;
+        backgroundImageLetter.enabled = false;
+        backgroundImageBlack.gameObject.SetActive(false);
+        // Disable cursor and pause game should happen on GameManager not here
         if (!GameManager.instance.IsInventoryOpen())
         {
             Cursor.lockState = CursorLockMode.Locked;
