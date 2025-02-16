@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     private float _totalPlayTime;
     private int _deathCount;
     private int _saveCount;
+    
+    /* STATE */
     // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
     // lots of changes required, etc... Used to stop flashlight playing from PC (separate input action had no effect)
     private bool _inventoryOpen; 
