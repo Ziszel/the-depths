@@ -63,17 +63,16 @@ public class Inventory : MonoBehaviour
         return _foundFileData;
     }
 
-    public bool GetFileDataByIndex(int index, out FileData? fileData)
+    public FileData? GetFileDataByIndex(int index)
     {
-        foreach (var fd in _foundFileData)
+        foreach (FileData fd in _foundFileData)
         {
             if (fd.id == index)
             {
-                fileData = fd;
-                return true;
+                return fd;
             }
         }
-        fileData = null;
-        return false;
+
+        return null;
     }
 }

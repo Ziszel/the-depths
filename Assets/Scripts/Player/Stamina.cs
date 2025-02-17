@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class Stamina : MonoBehaviour
 {
+    public Action OnStaminaReachedZero;
+    
     [Header("Stamina Values")]
     [SerializeField] private float maxStamina = 100;
     [SerializeField] private float regenerationRate; // every tick
@@ -27,6 +30,7 @@ public class Stamina : MonoBehaviour
         {
             _currentStamina = 0;
             _isRegeneratingFromZero = true;
+            OnStaminaReachedZero?.Invoke();
         }
     }
 

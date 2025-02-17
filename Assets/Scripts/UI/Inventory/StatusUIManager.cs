@@ -9,13 +9,13 @@ public class StatusUIManager : MonoBehaviour
 
     public void InitialiseStatusScreen()
     {
-        playTimeText.text = GameManager.instance.GetCurrentPlayTimeAsString();
-        deathCountText.text = GameManager.instance.GetDeathCount().ToString();
-        saveCountText.text = GameManager.instance.GetSaveCount().ToString();
+        playTimeText.text = GameManager.Instance.GetCurrentPlayTimeAsString();
+        deathCountText.text = GameManager.Instance.GetDeathCount().ToString();
+        saveCountText.text = GameManager.Instance.GetSaveCount().ToString();
     }
 
     private void Update()
     {
-        playTimeText.text = GameManager.instance.GetCurrentPlayTimeAsString();
+        playTimeText.text = GameManager.Instance.GetCurrentPlayTimeAsString();
     }
 }

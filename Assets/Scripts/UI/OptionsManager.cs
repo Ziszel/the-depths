@@ -61,13 +61,11 @@ public class OptionsManager : MonoBehaviour
 
     private void OnMainMenuClicked()
     {
-        Debug.Log("OPTIONS MENU MAINMENU BUTTON CLICKED");
         UIManager.instance.ShowMainMenu();
     }
     private void OnOptionsResumeClicked()
     {
-        Debug.Log("OPTIONS MENU RESUME BUTTON CLICKED");
-        GameManager.instance.Unpause();
+        GameManager.Instance.Unpause();
     }
 
     private void OnMouseSensitivityChanged(float value)

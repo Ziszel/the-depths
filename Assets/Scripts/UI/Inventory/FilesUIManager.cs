@@ -1,9 +1,12 @@
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class FilesUIManager : MonoBehaviour
 {
+    [SerializeField] private FileReader fileReader;
+    
     // List of buttons that load UI
     public Button File01;
     public Button File02;
@@ -63,26 +66,56 @@ public class FilesUIManager : MonoBehaviour
     // Hook up buttons
     private void OnFile01Pressed()
     {
-        Debug.Log("OnFile01Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(1);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
     
     private void OnFile02Pressed()
     {
-        Debug.Log("OnFile02Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(2);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
     
     private void OnFile03Pressed()
     {
-        Debug.Log("OnFile03Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(3);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
     
     private void OnFile04Pressed()
     {
-        Debug.Log("OnFile04Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(4);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
     
     private void OnFile05Pressed()
     {
-        Debug.Log("OnFile05Pressed");
+        FileData? fd = _inventory.GetFileDataByIndex(5);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
     }
 }

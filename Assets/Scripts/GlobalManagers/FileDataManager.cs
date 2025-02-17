@@ -15,7 +15,7 @@ public class FileDataManager : MonoBehaviour
     // Does not order the files
     private void LoadFilesFromDisk()
     {
-        string filesFolder = Application.dataPath + "/FileJSON";
+        string filesFolder = Application.streamingAssetsPath + "/FileJSON";
         
         DirectoryInfo d = new DirectoryInfo(filesFolder);
         foreach (var file in d.GetFiles("*.json"))

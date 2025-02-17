@@ -5,12 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance;
+    
+    public Action OnInventoryClosed;
 
     private float _bestTime;
     private float _totalPlayTime;
     private int _deathCount;
     private int _saveCount;
+    
+    /* STATE */
     // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
     // lots of changes required, etc... Used to stop flashlight playing from PC (separate input action had no effect)
     private bool _inventoryOpen; 
@@ -26,13 +30,13 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        Instance = this;
         DontDestroyOnLoad(gameObject);
 
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -57,10 +61,6 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Cursor will be ALWAYS be shown and not locked at the start
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
         // We're in a game level or testing level
         if (scene.name != "MainMenu")
         {
@@ -91,6 +91,7 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         _inventoryOpen = false;
+        OnInventoryClosed?.Invoke();
     }
 
     public void Pause()

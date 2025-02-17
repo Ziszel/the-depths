@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     [Header("Camera targets")]
     [SerializeField] private GameObject crouch; // update OnPlayerKill and look to remove this
 
-    [Header("Footstep play rates")] 
+    [Header("Footstep play rates (Audio)")] 
     [SerializeField] private float walkingRate = 1.0f;
     [SerializeField] private float sprintingRate = 0.5f;
     
@@ -78,7 +78,9 @@ public class PlayerController : MonoBehaviour
         _fpsCamera = GameObject.Find("FPSCamera").GetComponent<CinemachineCamera>();
         _interactable = null;
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
+        _currentFootstepRate = walkingRate;
         _isPlayerWalking = false;
+        _isCrouching = false;
         
         if (isDebug)
         {
@@ -92,11 +94,13 @@ public class PlayerController : MonoBehaviour
         {
             _monster.OnPlayerWithinDamageDistance += DamagePlayer;
         }
+
+        _stamina.OnStaminaReachedZero += SetPlayerSprintToWalk;
     }
 
     private void Update()
     {
-        // Handle timers
+        // Handle timers for footsteps
         if (_isPlayerWalking && !_isCrouching)
         {
             _timeUntilFootstep -= Time.deltaTime;
@@ -112,6 +116,7 @@ public class PlayerController : MonoBehaviour
             _timeUntilFootstep = _currentFootstepRate;
         }
 
+        // Handles if the player pressed a walk button multiple times per frame
         if (_inputActions.Player.Move.WasPerformedThisFrame())
         {
             if (_floorCollider.IsOnGround() && !_isCrouching)
@@ -137,7 +142,6 @@ public class PlayerController : MonoBehaviour
             }
         }
         
-        SetMovementValues();
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
         
@@ -182,7 +186,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnUseItem(InputAction.CallbackContext context)
     {
-        if (!GameManager.instance.IsInventoryOpen())
+        if (!GameManager.Instance.IsInventoryOpen())
         {
             if (context.started)
             {
@@ -222,6 +226,31 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            if (_floorCollider.IsOnGround() && !_isCrouching && 
+                _stamina.GetCurrentStamina() > 0.0f
+                && !_stamina.GetRegeneratingFromZero())
+            {
+                _currentFootstepRate = sprintingRate;
+                maxMovementVelocity = maxSprintVelocity;
+            }
+        } ;
+
+        if (context.canceled)
+        {
+            SetPlayerSprintToWalk();
+        }
+    }
+
+    private void SetPlayerSprintToWalk()
+    {
+        _currentFootstepRate = walkingRate;
+        maxMovementVelocity = maxWalkVelocity;
+    }
+
     public void OnCrouch(InputAction.CallbackContext context)
     {
         if (context.started)
@@ -254,12 +283,12 @@ public class PlayerController : MonoBehaviour
             if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
                 Debug.Log("Open inventory");
-                GameManager.instance.ShowInventory(_inventory);
+                GameManager.Instance.ShowInventory(_inventory);
             }
             else
             {
                 Debug.Log("Close inventory");
-                GameManager.instance.HideInventory();
+                GameManager.Instance.HideInventory();
             }
         }
     }
@@ -271,12 +300,12 @@ public class PlayerController : MonoBehaviour
             // Pause the game if we're not paused
             if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
-                GameManager.instance.Pause();
+                GameManager.Instance.Pause();
             }
             // Unpause the game if we are paused
             else
             {
-                GameManager.instance.Unpause();
+                GameManager.Instance.Unpause();
             }
             
         }
@@ -311,19 +340,6 @@ public class PlayerController : MonoBehaviour
         _fpsCamera.Lens.Dutch = 90.0f;
         _fpsCamera.Target.TrackingTarget = crouch.transform;
         OnPlayerDeath?.Invoke();
-    }
-
-    private void SetMovementValues()
-    {
-        // Check if sprinting (TODO: Convert over to event)
-        if (Mathf.Approximately(_inputActions.Player.Sprint.ReadValue<float>(), 1.0f) 
-                 && _stamina.GetCurrentStamina() > 0.0f 
-                 && !_stamina.GetRegeneratingFromZero())
-        {
-            maxMovementVelocity = maxSprintVelocity;
-            _currentFootstepRate = sprintingRate;
-            _isCrouching = false;
-        }
     }
 
     private void Move()

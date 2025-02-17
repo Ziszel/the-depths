@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -15,7 +16,14 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private float respawnTime = 3.0f;
     private float _timeUntilRespawn;
     private bool _playerDead;
-    
+
+    private void Awake()
+    {
+        // When LevelManager loads in a scene, de-activate the mouse
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
@@ -110,7 +118,7 @@ public class LevelManager : MonoBehaviour
 
     private void PrepareForRespawn()
     {
-        GameManager.instance.IncrementDeathCount();
+        GameManager.Instance.IncrementDeathCount();
         _timeUntilRespawn = respawnTime;
         _playerDead = true;
     }
