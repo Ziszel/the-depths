@@ -47,6 +47,8 @@ public class Flashlight : MonoBehaviour
         playerController.OnFlashlightDeActivated += DeactivateFlashlight;
         playerController.OnCrouchEnabled += MoveFlashlightToCrouchPosition;
         playerController.OnCrouchDisabled += MoveFlashlightToStandPosition;
+
+        GameManager.Instance.OnInventoryClosed += DeactivateFlashlight;
     }
 
     private void LateUpdate()

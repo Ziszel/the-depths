@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    
+    public Action OnInventoryClosed;
 
     private float _bestTime;
     private float _totalPlayTime;
@@ -89,6 +91,7 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         _inventoryOpen = false;
+        OnInventoryClosed?.Invoke();
     }
 
     public void Pause()
