@@ -30,7 +30,7 @@ public class ItemsUIManager : MonoBehaviour
         UpdateItemUIElements();
         previousButton.interactable = true;
 
-        if (_inventoryIndex == _inventoryLength)
+        if (_inventoryIndex == _inventoryLength - 1)
         {
             nextButton.interactable = false;
         }
@@ -60,7 +60,7 @@ public class ItemsUIManager : MonoBehaviour
 
     private void SetNextItemImage()
     {
-        if (_inventoryIndex == _inventoryLength || _inventoryLength < 1)
+        if (_inventoryIndex == _inventoryLength - 1 || _inventoryLength < 2)
         {
             nextItemImg.sprite = null;
             return;
@@ -91,17 +91,17 @@ public class ItemsUIManager : MonoBehaviour
         previousItemImg.sprite = null;
         nextItemImg.sprite = null;
         nextButton.interactable = false;
-        _inventoryLength = _inventory.GetItems().Count - 1;
+        _inventoryLength = _inventory.GetItems().Count;
         _inventoryIndex = 0;
-        if (_inventoryLength > 0) // then set up the first item
+        
+        if (_inventoryLength > 0) // If at least one item exists populate fields
         {
             UpdateItemUIElements();
         }
 
-        if (_inventoryLength > 1)
+        if (_inventoryLength > 1) // We have more than one item (so we need to be able to access other items)
         {
             nextButton.interactable = true;
-            SetNextItemImage();
         }
     }
 }
