@@ -62,17 +62,24 @@ public class Flashlight : MonoBehaviour
         yield return new WaitForSeconds(windupTime);
         lightSource.enabled = true;
     }
+    
+    private IEnumerator LightDeActivationRoutine()
+    {
+        yield return new WaitForSeconds(windupTime);
+        lightSource.enabled = false;
+    }
 
     private void ActivateFlashlight()
     {
         _flashlightAudio.PlaySfx();
+        StopCoroutine("LightDeActivationRoutine");
         StartCoroutine("LightActivationRoutine");
     }
 
     private void DeactivateFlashlight()
     {
         StopCoroutine("LightActivationRoutine");
-        lightSource.enabled = false;
+        StartCoroutine("LightDeActivationRoutine");
         _flashlightAudio.StopSfx();
     }
 
