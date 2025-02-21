@@ -64,9 +64,9 @@ public class GameManager : MonoBehaviour
         // We're in a game level or testing level
         if (scene.name != "MainMenu")
         {
-            _musicManager = GameObject.Find("MusicAudioSource").GetComponentInChildren<MusicManager>();
+            //_musicManager = GameObject.Find("MusicAudioSource").GetComponentInChildren<MusicManager>();
             _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryManagerUI>();
-            monster = GameObject.Find("Monster").GetComponentInChildren<Monster>(); // Get the monster stored so we're able to play chasing/wandering music
+            //monster = GameObject.Find("Monster").GetComponentInChildren<Monster>(); // Get the monster stored so we're able to play chasing/wandering music
             if (monster != null)
             {
                 monster.OnChaseStateEntered += HandleMonsterEnterChaseState;

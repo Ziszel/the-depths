@@ -12,12 +12,6 @@ public class FloorCollider : MonoBehaviour
     {
         _onGround = false;
     }
-
-    /*private IEnumerator HitGroundReset()
-    {
-        yield return new WaitForSeconds(0.2f);
-        _didNotLeaveGround = false;
-    }*/
     
     private IEnumerator DelayGroundCheck()
     {
