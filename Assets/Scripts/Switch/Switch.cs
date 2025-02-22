@@ -6,6 +6,8 @@ using UnityEngine;
 public class Switch : MonoBehaviour, IInteractable
 {
     [SerializeField] private float switchMovementTime = 2.0f;
+    [SerializeField] private Sprite interactableSprite;
+    
     private Vector3 rotationVectorUp = new ( 0.0f, 0.0f, 60.0f );
     private Vector3 rotationVectorDown = new (0.0f, 0.0f, 125.0f);
     
@@ -32,65 +34,41 @@ public class Switch : MonoBehaviour, IInteractable
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Player"))
+        /*if(other.CompareTag("Player"))
         {
             _levelManager.ActivateInteractUI();
             _player.SetCurrentInteractable(this.gameObject);
+        }*/
+        
+        if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
+        {
+            playerInteractable.enabled = true;
+            playerInteractable.SetActivePickup(this.gameObject);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        /*if (other.CompareTag("Player"))
         {
             _levelManager.DeActivateInteractUI();
             _player.SetCurrentInteractable(null);
+        }*/
+        
+        if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
+        {
+            playerInteractable.enabled = false;
+            playerInteractable.NoActivePickup();
         }
     }
 
-    // CANDIDATE FOR REMOVAL
-    /*private IEnumerator MoveSwitch()
-    {
-        Vector3 moveToRotation;
-        if (!_isSwitchDown)
-        {
-            moveToRotation = rotationVectorDown;
-        }
-        else
-        {
-            moveToRotation = rotationVectorUp;
-        }
-        
-        float timeElapsed = 0.0f;
-
-        /*while (timeElapsed < switchMovementTime)
-        {
-            if (Vector3.Distance(_lever.eulerAngles, moveToRotation) > 0.01f)
-            {
-                _lever.eulerAngles = Vector3.Lerp(_lever.rotation.eulerAngles, moveToRotation, timeElapsed / switchMovementTime);
-            }
-            yield return null;
-        }#1#
-
-        _lever.localEulerAngles = moveToRotation;
-
-        int i = _isSwitchDown ? 0 : 1;
-
-        if (i == 0) { _isSwitchDown = false; }
-        else { _isSwitchDown = true; }
-
-        _lever.eulerAngles = moveToRotation;
-        
-        yield return null;
-    }*/
-
+    // IInteractable
     public void AttemptToInteract()
     {
         foreach (var Switchable in Switchables)
         {
             if (Switchable.TryGetComponent(out ISwitchable switchable))
             {
-                Debug.Log(_animator.name);
                 _animator.SetBool("Pressed", true);
                 //StartCoroutine(MoveSwitch());
                 SwitchAnimation?.Invoke(this.gameObject);
@@ -104,5 +82,10 @@ public class Switch : MonoBehaviour, IInteractable
                 soundTrigger.TriggerSound();
             }
         }
+    }
+
+    public Sprite GetInteractableSprite()
+    {
+        return interactableSprite;
     }
 }
