@@ -2,10 +2,18 @@ using UnityEngine;
 
 public class Pickup : MonoBehaviour
 {
+    [SerializeField] private Sprite interactableSprite;
     public PickupItem itemData;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+
+        if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
+        {
+            playerInteractable.enabled = true;
+            playerInteractable.SetActivePickup(this);
+        }
+        Debug.Log("Item inside of Player item detector!");
+        /*if (other.CompareTag("Player"))
         {
             if(other.TryGetComponent<Inventory>(out Inventory inventory))
             {
@@ -21,6 +29,20 @@ public class Pickup : MonoBehaviour
                 
                 Destroy(gameObject);
             }
+        }*/
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
+        {
+            playerInteractable.enabled = false;
+            playerInteractable.NoActivePickup();
         }
+    }
+
+    public Sprite GetInteractableSprite()
+    {
+        return interactableSprite;
     }
 }

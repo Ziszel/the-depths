@@ -5,13 +5,14 @@ public class PlayerHUDUI : MonoBehaviour
 {
     [SerializeField] private Sprite lightWounds;
     [SerializeField] private Sprite heavyWounds;
+    [SerializeField] private Image activeInteractable;
     
-    private Image _image;
+    private Image _damageImage;
     private HealthManager _healthManager;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _image = GetComponent<Image>();
+        _damageImage = GetComponent<Image>();
     }
 
     public void SetImageFromHP(float health)
@@ -35,21 +36,34 @@ public class PlayerHUDUI : MonoBehaviour
         }
     }
 
+    // Health UI
     private void DisableImage()
     {
-        _image.enabled = false;
+        _damageImage.enabled = false;
     }
 
     private void SetLightWounds()
     {
-        _image.enabled = true;
-        _image.sprite = lightWounds;
+        _damageImage.enabled = true;
+        _damageImage.sprite = lightWounds;
     }
 
     private void SetHeavyWounds()
     {
-        _image.enabled = true;
-        _image.sprite = heavyWounds;
+        _damageImage.enabled = true;
+        _damageImage.sprite = heavyWounds;
+    }
+    
+    // Interactable UI
+    public void SetActiveInteractable(Sprite sprite)
+    {
+        activeInteractable.enabled = true;
+        activeInteractable.sprite = sprite;
+    }
+    
+    public void DisableActiveInteractable()
+    {
+        activeInteractable.enabled = false;
     }
 
     private void OnEnable()
