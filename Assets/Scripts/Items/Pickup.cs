@@ -1,8 +1,10 @@
+using System;
 using TMPro;
 using UnityEngine;
 
 public class Pickup : MonoBehaviour, IInteractable
 {
+    public static event Action<PickupItem> OnPickupOccurred;
     public PickupItem itemData;
     
     [SerializeField] private Sprite interactableSprite;
@@ -68,12 +70,14 @@ public class Pickup : MonoBehaviour, IInteractable
     {
         if (itemData.GetType() == typeof(InventoryItem))
         {
+            OnPickupOccurred?.Invoke(itemData);
             _playerInventory.AddItem((InventoryItem)itemData);
             _globalSfxPlayer.PlaySfx(interactClip);
         }
                 
         if (itemData.GetType() == typeof(FileItem))
         {
+            OnPickupOccurred?.Invoke(itemData);
             _playerInventory.AddFile((FileItem)itemData);
             _globalSfxPlayer.PlaySfx(interactClip);
         }

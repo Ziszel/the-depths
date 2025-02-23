@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,6 +8,9 @@ public class PlayerHUDUI : MonoBehaviour
     [SerializeField] private Sprite lightWounds;
     [SerializeField] private Sprite heavyWounds;
     [SerializeField] private Image activeInteractable;
+    [SerializeField] private TMP_Text pickupText;
+    [SerializeField] private string pickupTextInventory;
+    [SerializeField] private string pickupTextFile;
     
     private Image _damageImage;
     private HealthManager _healthManager;
@@ -66,14 +71,42 @@ public class PlayerHUDUI : MonoBehaviour
     {
         activeInteractable.enabled = false;
     }
+    
+    // Pickup text
+    private void ShowPickupText(PickupItem pickupItem)
+    {
+        if (pickupItem.GetType() == typeof(InventoryItem))
+        {
+            InventoryItem inventoryItem = (InventoryItem)pickupItem;
+            pickupText.text = inventoryItem.itemName + pickupTextInventory;
+        }
+
+        if (pickupItem.GetType() == typeof(FileItem))
+        {
+            FileItem fileItem = (FileItem)pickupItem;
+            pickupText.text = fileItem.displayName + pickupTextFile;
+        }
+        
+        pickupText.enabled = true;
+        StopCoroutine("HidePickupText");
+        StartCoroutine("HidePickupText");
+    }
+
+    private IEnumerator HidePickupText()
+    {
+        yield return new WaitForSeconds(4.0f);
+        pickupText.enabled = false;
+    }
 
     private void OnEnable()
     {
         HealthManager.HealthChanged += SetImageFromHP;
+        Pickup.OnPickupOccurred += ShowPickupText;
     }
 
     private void OnDisable()
     {
         HealthManager.HealthChanged -= SetImageFromHP;
+        Pickup.OnPickupOccurred -= ShowPickupText;
     }
 }
