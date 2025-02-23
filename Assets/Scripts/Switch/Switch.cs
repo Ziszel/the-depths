@@ -4,21 +4,24 @@ using UnityEngine;
 
 public class Switch : MonoBehaviour, IInteractable
 {
-    [SerializeField] private float switchMovementTime = 2.0f;
-    [SerializeField] private Sprite interactableSprite;
-    
     public Action<GameObject> SwitchAnimation;
     public List<GameObject> Switchables;
     public SoundTrigger soundTrigger;
     
+    [SerializeField] private float switchMovementTime = 2.0f;
+    [SerializeField] private Sprite interactableSprite;
+    [SerializeField] private AudioClip interactClip;
+    
     private Animator _animator;
     private bool _isSwitchDown;
-    private InteractAudio _switchAudio;
+    
+    // AUDIO
+    private GlobalSFXPlayer _globalSfxPlayer;
     
     private void Start()
     {
-        //_isSwitchDown = false;
-        _switchAudio = GetComponent<InteractAudio>();
+        _isSwitchDown = false;
+        _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
         _animator = GetComponentInChildren<Animator>();
     }
 
@@ -54,7 +57,7 @@ public class Switch : MonoBehaviour, IInteractable
                     _animator.SetBool("Pressed", true);
                     SwitchAnimation?.Invoke(this.gameObject);
                     switchable.Toggle();
-                    _switchAudio.PlaySfx();
+                    _globalSfxPlayer.PlaySfx(interactClip);
                     this.soundTrigger.TriggerSound();
                 }
 

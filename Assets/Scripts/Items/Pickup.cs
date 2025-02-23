@@ -2,14 +2,18 @@ using UnityEngine;
 
 public class Pickup : MonoBehaviour, IInteractable
 {
-    [SerializeField] private Sprite interactableSprite;
     public PickupItem itemData;
+    
+    [SerializeField] private Sprite interactableSprite;
+    [SerializeField] private AudioClip interactClip;
 
     private Inventory _playerInventory;
+    private GlobalSFXPlayer _globalSfxPlayer;
 
     private void Start()
     {
         _playerInventory = GameObject.FindWithTag("Player").GetComponent<Inventory>();
+        _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -41,11 +45,13 @@ public class Pickup : MonoBehaviour, IInteractable
         if (itemData.GetType() == typeof(InventoryItem))
         {
             _playerInventory.AddItem((InventoryItem)itemData);
+            _globalSfxPlayer.PlaySfx(interactClip);
         }
                 
         if (itemData.GetType() == typeof(FileItem))
         {
             _playerInventory.AddFile((FileItem)itemData);
+            _globalSfxPlayer.PlaySfx(interactClip);
         }
             
         // Clean-up

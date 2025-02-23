@@ -52,7 +52,6 @@ public class Inventory : MonoBehaviour
     // Files operations
     public void AddFile(FileItem newFile)
     {
-        Debug.Log(newFile.fileId);
         FileData? fd;
         _fileDataManager.GetFileByIndex(newFile.fileId, out fd);
         _foundFileData.Add(fd.Value);
