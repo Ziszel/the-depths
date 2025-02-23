@@ -6,4 +6,7 @@ public class FileItem : PickupItem
     // Used to add the corresponding JSON FileData to the inventory
     [Tooltip("File ID (only used for files)")]
     public int fileId;
+
+    [Tooltip("Used for displaying the name in world space.")]
+    public string displayName;
 }

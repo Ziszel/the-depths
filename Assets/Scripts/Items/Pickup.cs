@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class Pickup : MonoBehaviour, IInteractable
@@ -9,26 +10,49 @@ public class Pickup : MonoBehaviour, IInteractable
 
     private Inventory _playerInventory;
     private GlobalSFXPlayer _globalSfxPlayer;
+    private Camera _camera;
+    private TMP_Text _itemName;
 
     private void Start()
     {
+        _camera = Camera.main;
         _playerInventory = GameObject.FindWithTag("Player").GetComponent<Inventory>();
         _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
+        _itemName = GetComponentInChildren<TMP_Text>(true);
+
+        if (itemData.GetType() == typeof(InventoryItem))
+        {
+            InventoryItem inventoryItem = (InventoryItem)itemData;
+            _itemName.text = inventoryItem.itemName;
+        }
+        else if (itemData.GetType() == typeof(FileItem))
+        {
+            FileItem fileItem = (FileItem)itemData;
+            _itemName.text = fileItem.displayName;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
         {
+            _itemName.enabled = true;
             playerInteractable.enabled = true;
             playerInteractable.SetActivePickup(this.gameObject);
         }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        Quaternion rotation = Quaternion.LookRotation(-(_camera.transform.position - transform.position).normalized, Vector3.up);
+        _itemName.rectTransform.rotation = rotation;
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
         {
+            _itemName.enabled = false;
             playerInteractable.enabled = false;
             playerInteractable.NoActivePickup();
         }

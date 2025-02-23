@@ -37,7 +37,6 @@ public class PlayerInteractable : MonoBehaviour
     private bool DetectItem()
     {
         Vector3 fwd = _camera.transform.TransformDirection(Vector3.forward);
-        Debug.DrawRay(_camera.transform.position, fwd, Color.red);
         if (Physics.Raycast(_camera.transform.position, fwd, pickupDistance, _layerMask))
         {
             return true;
