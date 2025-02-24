@@ -20,7 +20,6 @@ public class PlayerInteractable : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Debug.Log("interactable active");
         if (DetectItem())
         {
             if (_interactableInRange.TryGetComponent(out IInteractable interactable))
