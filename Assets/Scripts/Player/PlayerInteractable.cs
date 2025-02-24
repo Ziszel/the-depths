@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerInteractable : MonoBehaviour
@@ -19,6 +20,7 @@ public class PlayerInteractable : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Debug.Log("interactable active");
         if (DetectItem())
         {
             if (_interactableInRange.TryGetComponent(out IInteractable interactable))
@@ -53,6 +55,14 @@ public class PlayerInteractable : MonoBehaviour
     {
         _interactableInRange = null;
         pcHud.DisableActiveInteractable();
+        enabled = false;
+    }
+
+    private void NoActivePickup(PickupItem pickupItem)
+    {
+        _interactableInRange = null;
+        pcHud.DisableActiveInteractable();
+        enabled = false;
     }
 
     public void UseInteractable()
@@ -61,9 +71,13 @@ public class PlayerInteractable : MonoBehaviour
         {
             if (_interactableInRange.TryGetComponent(out IInteractable interactable))
             {
-                Debug.Log("attempting to interact");
                 interactable.AttemptToInteract();
             }
         }
+    }
+
+    private void OnEnable()
+    {
+        Pickup.OnPickupOccurred += NoActivePickup;
     }
 }

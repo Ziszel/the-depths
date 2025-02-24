@@ -55,7 +55,6 @@ public class Pickup : MonoBehaviour, IInteractable
         if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
         {
             _itemName.enabled = false;
-            playerInteractable.enabled = false;
             playerInteractable.NoActivePickup();
         }
     }
