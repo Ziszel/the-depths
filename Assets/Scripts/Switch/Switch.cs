@@ -1,108 +1,85 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class Switch : MonoBehaviour, IInteractable
 {
-    [SerializeField] private float switchMovementTime = 2.0f;
-    private Vector3 rotationVectorUp = new ( 0.0f, 0.0f, 60.0f );
-    private Vector3 rotationVectorDown = new (0.0f, 0.0f, 125.0f);
-    
     public Action<GameObject> SwitchAnimation;
     public List<GameObject> Switchables;
     public SoundTrigger soundTrigger;
     
+    [SerializeField] private float switchMovementTime = 2.0f;
+    [SerializeField] private Sprite interactableSprite;
+    [SerializeField] private AudioClip interactClip;
+    
     private Animator _animator;
-    private PlayerController _player;
     private bool _isSwitchDown;
-    private Transform _lever;
-    private SwitchAudio _switchAudio;
-    private LevelManager _levelManager;
+    
+    // AUDIO
+    private GlobalSFXPlayer _globalSfxPlayer;
     
     private void Start()
     {
         _isSwitchDown = false;
-        _player = FindAnyObjectByType<PlayerController>();
-        _lever = GetComponentsInChildren<Transform>().First(k => k.gameObject.name == "Lever");
-        _switchAudio = GetComponent<SwitchAudio>();
-        _levelManager = FindAnyObjectByType<LevelManager>();
+        _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
         _animator = GetComponentInChildren<Animator>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Player"))
+        if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
         {
-            _levelManager.ActivateInteractUI();
-            _player.SetCurrentInteractable(this.gameObject);
+            playerInteractable.enabled = true;
+            playerInteractable.SetActivePickup(this.gameObject);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
         {
-            _levelManager.DeActivateInteractUI();
-            _player.SetCurrentInteractable(null);
+            playerInteractable.enabled = false;
+            playerInteractable.NoActivePickup();
         }
     }
 
-    // CANDIDATE FOR REMOVAL
-    /*private IEnumerator MoveSwitch()
-    {
-        Vector3 moveToRotation;
-        if (!_isSwitchDown)
-        {
-            moveToRotation = rotationVectorDown;
-        }
-        else
-        {
-            moveToRotation = rotationVectorUp;
-        }
-        
-        float timeElapsed = 0.0f;
-
-        /*while (timeElapsed < switchMovementTime)
-        {
-            if (Vector3.Distance(_lever.eulerAngles, moveToRotation) > 0.01f)
-            {
-                _lever.eulerAngles = Vector3.Lerp(_lever.rotation.eulerAngles, moveToRotation, timeElapsed / switchMovementTime);
-            }
-            yield return null;
-        }#1#
-
-        _lever.localEulerAngles = moveToRotation;
-
-        int i = _isSwitchDown ? 0 : 1;
-
-        if (i == 0) { _isSwitchDown = false; }
-        else { _isSwitchDown = true; }
-
-        _lever.eulerAngles = moveToRotation;
-        
-        yield return null;
-    }*/
-
+    // IInteractable
     public void AttemptToInteract()
     {
-        foreach (var Switchable in Switchables)
+        // if the switch hasn't been pressed, we can press it.
+        // TODO: If we need to interact more than once we need to update the code here
+        if (!_isSwitchDown)
         {
-            if (Switchable.TryGetComponent(out ISwitchable switchable))
+            foreach (var Switchable in Switchables)
             {
-                Debug.Log(_animator.name);
-                _animator.SetBool("Pressed", true);
-                //StartCoroutine(MoveSwitch());
-                SwitchAnimation?.Invoke(this.gameObject);
-                switchable.Toggle();
-                _switchAudio.PlaySfx();
-                this.soundTrigger.TriggerSound();
+                if (Switchable.TryGetComponent(out ISwitchable switchable))
+                {
+                    _animator.SetBool("Pressed", true);
+                    SwitchAnimation?.Invoke(this.gameObject);
+                    switchable.Toggle();
+                    _globalSfxPlayer.PlaySfx(interactClip);
+                    this.soundTrigger.TriggerSound();
+                }
+
+                if (Switchable.TryGetComponent(out SoundTrigger soundTrigger))
+                {
+                    soundTrigger.TriggerSound();
+                }
             }
 
-            if (Switchable.TryGetComponent(out SoundTrigger soundTrigger))
+            if (!_isSwitchDown)
             {
-                soundTrigger.TriggerSound();
+                _isSwitchDown = true;
+            }
+            else
+            {
+                _isSwitchDown = false;
             }
         }
+    }
+
+    public Sprite GetInteractableSprite()
+    {
+        return interactableSprite;
     }
 }

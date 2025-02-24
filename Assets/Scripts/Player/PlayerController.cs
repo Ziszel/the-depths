@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
     private Stamina _stamina;
     private HealthManager _healthManager;
     private PlayerHUDUI _playerHUDUI;
+    private PlayerInteractable _playerInteractable;
     private CameraManager _cameraManager;
     
     // DEBUG
@@ -74,6 +75,7 @@ public class PlayerController : MonoBehaviour
         _mainCamera = Camera.main;
         _monster = FindAnyObjectByType<Monster>();
         _floorCollider = GetComponentInChildren<FloorCollider>();
+        _playerInteractable = GetComponentInChildren<PlayerInteractable>();
         _playerAudio = GetComponentInChildren<PlayerAudio>();
         _fpsCamera = GameObject.Find("FPSCamera").GetComponent<CinemachineCamera>();
         _interactable = null;
@@ -170,8 +172,9 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started)
         {
+            _playerInteractable.UseInteractable();
             // Safety check against null
-            if (_interactable == null)
+            /*if (_interactable == null)
             {
                 Debug.Log("No object currently interactable");
                 return;
@@ -180,7 +183,7 @@ public class PlayerController : MonoBehaviour
             if(_interactable.TryGetComponent(out IInteractable interactable))
             {
                 interactable.AttemptToInteract();
-            }
+            }*/
         }
     }
 
