@@ -32,7 +32,7 @@ public class FloorCollider : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.CompareTag("Floor"))
+        if (other.CompareTag("Floor"))
         {
             StartCoroutine(DelayGroundCheck());
             if (!_didNotLeaveGround)
