@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour
     
     // This does NOT dictate player height. It is used for ray calculation
     [SerializeField] private float playerHeightRay = 1.0f;
-    private LayerMask _playerCrouchMask;
     
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
@@ -87,7 +86,6 @@ public class PlayerController : MonoBehaviour
         _currentFootstepRate = walkingRate;
         _isPlayerWalking = false;
         _isCrouching = false;
-        _playerCrouchMask = LayerMask.GetMask("CrouchableMesh");
         
         if (isDebug)
         {
@@ -376,7 +374,7 @@ public class PlayerController : MonoBehaviour
         Vector3 dir = walkCollider.transform.TransformDirection(Vector3.up);
         // Debug.DrawRay(walkCollider.transform.position, dir.normalized * playerHeightRay, Color.red);
         if (Physics.Raycast(walkCollider.transform.position, dir,
-                out RaycastHit hit, playerHeightRay, _playerCrouchMask))
+                out RaycastHit hit, playerHeightRay))
         {
             
             Debug.Log("You will hit your head");
