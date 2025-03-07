@@ -152,19 +152,6 @@ public class PlayerController : MonoBehaviour
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
         
-        // Can probably do this once when the player is releasing crouch instead of every frame
-        Vector3 dir = walkCollider.transform.TransformDirection(Vector3.up);
-        Debug.DrawRay(walkCollider.transform.position, dir.normalized * playerHeightRay, Color.red);
-        if (Physics.Raycast(walkCollider.transform.position, dir,
-                out RaycastHit hit, playerHeightRay, _playerCrouchMask))
-        {
-            Debug.Log("You will hit your head");
-        }
-        else
-        {
-            Debug.Log("You will not hit your head");
-        }
-        
         // DEBUG CONTROLS
         if (isDebug)
         {
@@ -191,17 +178,6 @@ public class PlayerController : MonoBehaviour
         if (context.started)
         {
             _playerInteractable.UseInteractable();
-            // Safety check against null
-            /*if (_interactable == null)
-            {
-                Debug.Log("No object currently interactable");
-                return;
-            }
-            
-            if(_interactable.TryGetComponent(out IInteractable interactable))
-            {
-                interactable.AttemptToInteract();
-            }*/
         }
     }
 
@@ -290,14 +266,17 @@ public class PlayerController : MonoBehaviour
 
         if (context.canceled)
         {
-            walkCollider.enabled = true;
-            crouchCollider.enabled = false;
-            OnCrouchDisabled?.Invoke();
-            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
-            movementVelocity = walkVelocity;
-            maxMovementVelocity = maxWalkVelocity;
-            _currentFootstepRate = walkingRate;
-            _isCrouching = false;
+            if (!DetectObstacleDirectlyAbove())
+            {
+                walkCollider.enabled = true;
+                crouchCollider.enabled = false;
+                OnCrouchDisabled?.Invoke();
+                _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+                movementVelocity = walkVelocity;
+                maxMovementVelocity = maxWalkVelocity;
+                _currentFootstepRate = walkingRate;
+                _isCrouching = false;
+            }
         }
     }
 
@@ -389,6 +368,24 @@ public class PlayerController : MonoBehaviour
         else
         {
             _isPlayerWalking = false;
+        }
+    }
+
+    private bool DetectObstacleDirectlyAbove()
+    {
+        Vector3 dir = walkCollider.transform.TransformDirection(Vector3.up);
+        // Debug.DrawRay(walkCollider.transform.position, dir.normalized * playerHeightRay, Color.red);
+        if (Physics.Raycast(walkCollider.transform.position, dir,
+                out RaycastHit hit, playerHeightRay, _playerCrouchMask))
+        {
+            
+            Debug.Log("You will hit your head");
+            return true;
+        }
+        else
+        {
+            Debug.Log("You will not hit your head");
+            return false;
         }
     }
 
