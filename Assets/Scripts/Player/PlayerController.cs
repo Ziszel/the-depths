@@ -3,6 +3,14 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+enum playerCrouchState
+{
+    None = 0,
+    Crouching = 1,
+    Uncrouching = 2,
+    Standing = 3,
+}
+
 public class PlayerController : MonoBehaviour
 {
     // Event delegates
@@ -34,11 +42,12 @@ public class PlayerController : MonoBehaviour
     
     // This does NOT dictate player height. It is used for ray calculation
     [SerializeField] private float playerHeightRay = 1.0f;
+    private playerCrouchState _playerCrouchState = playerCrouchState.Standing;
     
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
     private bool _isPlayerWalking;
-    private bool _isCrouching;
+    private bool _isCrouching; // this is old and should be replaced via state at somepoint
     
     // Components
     public CapsuleCollider walkCollider;
@@ -149,6 +158,14 @@ public class PlayerController : MonoBehaviour
         
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
+
+        if (_playerCrouchState == playerCrouchState.Uncrouching)
+        {
+            if (!DetectObstacleDirectlyAbove())
+            {
+                SetPlayerCrouching(false);
+            }
+        }
         
         // DEBUG CONTROLS
         if (isDebug)
@@ -252,29 +269,13 @@ public class PlayerController : MonoBehaviour
         {
             if (_floorCollider.IsOnGround())
             {
-                walkCollider.enabled = false;
-                crouchCollider.enabled = true;
-                OnCrouchEnabled?.Invoke();
-                _cameraManager.SwitchCamera(_cameraManager.crouchCamera);
-                movementVelocity = crouchVelocity;
-                maxMovementVelocity = maxCrouchVelocity;
-                _isCrouching = true;
+                SetPlayerCrouching(true);
             }
         }
 
         if (context.canceled)
         {
-            if (!DetectObstacleDirectlyAbove())
-            {
-                walkCollider.enabled = true;
-                crouchCollider.enabled = false;
-                OnCrouchDisabled?.Invoke();
-                _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
-                movementVelocity = walkVelocity;
-                maxMovementVelocity = maxWalkVelocity;
-                _currentFootstepRate = walkingRate;
-                _isCrouching = false;
-            }
+            _playerCrouchState = playerCrouchState.Uncrouching;
         }
     }
 
@@ -310,6 +311,33 @@ public class PlayerController : MonoBehaviour
                 GameManager.Instance.Unpause();
             }
             
+        }
+    }
+    
+    private void SetPlayerCrouching(bool crouching)
+    {
+        if (crouching)
+        {
+            _playerCrouchState = playerCrouchState.Crouching;
+            walkCollider.enabled = false;
+            crouchCollider.enabled = true;
+            OnCrouchEnabled?.Invoke();
+            _cameraManager.SwitchCamera(_cameraManager.crouchCamera);
+            movementVelocity = crouchVelocity;
+            maxMovementVelocity = maxCrouchVelocity;
+            _isCrouching = true;
+        }
+        else
+        {
+            _playerCrouchState = playerCrouchState.Standing;
+            walkCollider.enabled = true;
+            crouchCollider.enabled = false;
+            OnCrouchDisabled?.Invoke();
+            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            movementVelocity = walkVelocity;
+            maxMovementVelocity = maxWalkVelocity;
+            _currentFootstepRate = walkingRate;
+            _isCrouching = false;
         }
     }
 
@@ -376,15 +404,10 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(walkCollider.transform.position, dir,
                 out RaycastHit hit, playerHeightRay))
         {
-            
-            Debug.Log("You will hit your head");
             return true;
         }
-        else
-        {
-            Debug.Log("You will not hit your head");
-            return false;
-        }
+
+        return false;
     }
 
     public Rigidbody GetRigidBody()
