@@ -38,13 +38,14 @@ public class PlayerController : MonoBehaviour
     private bool _isCrouching;
     
     // Components
+    public CapsuleCollider walkCollider;
+    public CapsuleCollider crouchCollider;
     private PlayerInput _inputActions;
     private Vector2 _moveInput;
     private Rigidbody _rb;
     private Camera _mainCamera;
     private CinemachineCamera _fpsCamera;
     private Monster _monster;
-    private GameObject _interactable;
     private FloorCollider _floorCollider;
     private PlayerAudio _playerAudio;
     private Inventory _inventory;
@@ -78,7 +79,6 @@ public class PlayerController : MonoBehaviour
         _playerInteractable = GetComponentInChildren<PlayerInteractable>();
         _playerAudio = GetComponentInChildren<PlayerAudio>();
         _fpsCamera = GameObject.Find("FPSCamera").GetComponent<CinemachineCamera>();
-        _interactable = null;
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _currentFootstepRate = walkingRate;
         _isPlayerWalking = false;
@@ -260,6 +260,8 @@ public class PlayerController : MonoBehaviour
         {
             if (_floorCollider.IsOnGround())
             {
+                walkCollider.enabled = false;
+                crouchCollider.enabled = true;
                 OnCrouchEnabled?.Invoke();
                 _cameraManager.SwitchCamera(_cameraManager.crouchCamera);
                 movementVelocity = crouchVelocity;
@@ -270,6 +272,8 @@ public class PlayerController : MonoBehaviour
 
         if (context.canceled)
         {
+            walkCollider.enabled = true;
+            crouchCollider.enabled = false;
             OnCrouchDisabled?.Invoke();
             _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
             movementVelocity = walkVelocity;
@@ -383,11 +387,6 @@ public class PlayerController : MonoBehaviour
     public GameObject GetCrouchTransform()
     {
         return crouch;
-    }
-
-    public void SetCurrentInteractable(GameObject interactable)
-    {
-        _interactable = interactable;
     }
 
     public void EnableInputActions()
