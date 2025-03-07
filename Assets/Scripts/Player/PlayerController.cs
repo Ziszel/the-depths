@@ -32,6 +32,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float walkingRate = 1.0f;
     [SerializeField] private float sprintingRate = 0.5f;
     
+    // This does NOT dictate player height. It is used for ray calculation
+    [SerializeField] private float playerHeightRay = 1.0f;
+    private LayerMask _playerCrouchMask;
+    
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
     private bool _isPlayerWalking;
@@ -83,6 +87,7 @@ public class PlayerController : MonoBehaviour
         _currentFootstepRate = walkingRate;
         _isPlayerWalking = false;
         _isCrouching = false;
+        _playerCrouchMask = LayerMask.GetMask("CrouchableMesh");
         
         if (isDebug)
         {
@@ -146,6 +151,19 @@ public class PlayerController : MonoBehaviour
         
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
+        
+        // Can probably do this once when the player is releasing crouch instead of every frame
+        Vector3 dir = walkCollider.transform.TransformDirection(Vector3.up);
+        Debug.DrawRay(walkCollider.transform.position, dir.normalized * playerHeightRay, Color.red);
+        if (Physics.Raycast(walkCollider.transform.position, dir,
+                out RaycastHit hit, playerHeightRay, _playerCrouchMask))
+        {
+            Debug.Log("You will hit your head");
+        }
+        else
+        {
+            Debug.Log("You will not hit your head");
+        }
         
         // DEBUG CONTROLS
         if (isDebug)
