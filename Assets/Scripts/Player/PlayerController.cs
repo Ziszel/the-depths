@@ -52,7 +52,11 @@ public class PlayerController : MonoBehaviour
     // Components
     public CapsuleCollider walkCollider;
     public CapsuleCollider crouchCollider;
-    private PlayerInput _inputActions;
+    
+    // new input action stuff
+    private InputAction _movement;
+    
+    // private PlayerInput _inputActions;
     private Vector2 _moveInput;
     private Rigidbody _rb;
     private Camera _mainCamera;
@@ -70,12 +74,6 @@ public class PlayerController : MonoBehaviour
     // DEBUG
     [Header("DEBUG")]
     [SerializeField] private bool isDebug;
-    
-    private void Awake()
-    {
-        _inputActions = new PlayerInput();
-        _inputActions.Enable();
-    }
 
     private void Start()
     {
@@ -95,6 +93,7 @@ public class PlayerController : MonoBehaviour
         _currentFootstepRate = walkingRate;
         _isPlayerWalking = false;
         _isCrouching = false;
+        _movement = InputManager.PlayerInputActions.Player.Move;
         
         if (isDebug)
         {
@@ -131,7 +130,8 @@ public class PlayerController : MonoBehaviour
         }
 
         // Handles if the player pressed a walk button multiple times per frame
-        if (_inputActions.Player.Move.WasPerformedThisFrame())
+        //if (_inputActions.Player.Move.WasPerformedThisFrame())
+        if (_movement.WasPerformedThisFrame())
         {
             if (_floorCollider.IsOnGround() && !_isCrouching)
             {
@@ -173,6 +173,11 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.H))
             {
                 HealPlayerToFull();
+            }
+
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
             }
         }
     }
@@ -313,6 +318,14 @@ public class PlayerController : MonoBehaviour
             
         }
     }
+
+    public void OnLeave(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
+        }
+    }
     
     private void SetPlayerCrouching(bool crouching)
     {
@@ -377,8 +390,8 @@ public class PlayerController : MonoBehaviour
         if (_floorCollider.IsOnGround())
         {
             // Move the player relative to the camera's rotation and clamp the movement velocity
+            _moveInput = _movement.ReadValue<Vector2>();
             Vector3 move = cameraTransform.forward * _moveInput.y + cameraTransform.right * _moveInput.x;
-            _moveInput = _inputActions.Player.Move.ReadValue<Vector2>();
             move.y = 0.0f;
             _rb.AddForce(move.normalized * movementVelocity, ForceMode.VelocityChange);
 
@@ -427,16 +440,16 @@ public class PlayerController : MonoBehaviour
 
     public void EnableInputActions()
     {
-        _inputActions.Enable();
+        // _inputActions.Enable();
     }
     public void DisableInputActions()
     {
-        _inputActions.Disable();
+        // _inputActions.Disable();
     }
 
     private void OnDisable()
     {
-        _inputActions.Player.Disable();
+        // _inputActions.Player.Disable();
         _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
     }
 }

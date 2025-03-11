@@ -406,6 +406,65 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Hiding"",
+            ""id"": ""ed45a9f0-59dc-4c3a-80e8-d925ea3002b1"",
+            ""actions"": [
+                {
+                    ""name"": ""Leave"",
+                    ""type"": ""Button"",
+                    ""id"": ""02e9fac0-66b5-465f-8cba-5b23088ecd33"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MoveCamera"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""bf03bd15-e526-47c4-9881-1f4215394cee"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""6ad22f60-d72b-46bf-bdc2-aeda3462e40e"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Leave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8d7036c9-ec62-46b2-b1a6-4331bc92d22a"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Leave"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33fe93ab-bac7-4ef1-a2ad-95329218bb29"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -422,11 +481,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_LeanLeft = m_Player.FindAction("LeanLeft", throwIfNotFound: true);
         m_Player_LeanRight = m_Player.FindAction("LeanRight", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
+        // Hiding
+        m_Hiding = asset.FindActionMap("Hiding", throwIfNotFound: true);
+        m_Hiding_Leave = m_Hiding.FindAction("Leave", throwIfNotFound: true);
+        m_Hiding_MoveCamera = m_Hiding.FindAction("MoveCamera", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInput.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Hiding.enabled, "This will cause a leak and performance issues, PlayerInput.Hiding.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -602,6 +666,60 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Hiding
+    private readonly InputActionMap m_Hiding;
+    private List<IHidingActions> m_HidingActionsCallbackInterfaces = new List<IHidingActions>();
+    private readonly InputAction m_Hiding_Leave;
+    private readonly InputAction m_Hiding_MoveCamera;
+    public struct HidingActions
+    {
+        private @PlayerInput m_Wrapper;
+        public HidingActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Leave => m_Wrapper.m_Hiding_Leave;
+        public InputAction @MoveCamera => m_Wrapper.m_Hiding_MoveCamera;
+        public InputActionMap Get() { return m_Wrapper.m_Hiding; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(HidingActions set) { return set.Get(); }
+        public void AddCallbacks(IHidingActions instance)
+        {
+            if (instance == null || m_Wrapper.m_HidingActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_HidingActionsCallbackInterfaces.Add(instance);
+            @Leave.started += instance.OnLeave;
+            @Leave.performed += instance.OnLeave;
+            @Leave.canceled += instance.OnLeave;
+            @MoveCamera.started += instance.OnMoveCamera;
+            @MoveCamera.performed += instance.OnMoveCamera;
+            @MoveCamera.canceled += instance.OnMoveCamera;
+        }
+
+        private void UnregisterCallbacks(IHidingActions instance)
+        {
+            @Leave.started -= instance.OnLeave;
+            @Leave.performed -= instance.OnLeave;
+            @Leave.canceled -= instance.OnLeave;
+            @MoveCamera.started -= instance.OnMoveCamera;
+            @MoveCamera.performed -= instance.OnMoveCamera;
+            @MoveCamera.canceled -= instance.OnMoveCamera;
+        }
+
+        public void RemoveCallbacks(IHidingActions instance)
+        {
+            if (m_Wrapper.m_HidingActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IHidingActions instance)
+        {
+            foreach (var item in m_Wrapper.m_HidingActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_HidingActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public HidingActions @Hiding => new HidingActions(this);
     public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
@@ -614,5 +732,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnLeanLeft(InputAction.CallbackContext context);
         void OnLeanRight(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
+    }
+    public interface IHidingActions
+    {
+        void OnLeave(InputAction.CallbackContext context);
+        void OnMoveCamera(InputAction.CallbackContext context);
     }
 }

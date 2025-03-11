@@ -384,6 +384,65 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Hiding",
+            "id": "ed45a9f0-59dc-4c3a-80e8-d925ea3002b1",
+            "actions": [
+                {
+                    "name": "Leave",
+                    "type": "Button",
+                    "id": "02e9fac0-66b5-465f-8cba-5b23088ecd33",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MoveCamera",
+                    "type": "PassThrough",
+                    "id": "bf03bd15-e526-47c4-9881-1f4215394cee",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6ad22f60-d72b-46bf-bdc2-aeda3462e40e",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Leave",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8d7036c9-ec62-46b2-b1a6-4331bc92d22a",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Leave",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "33fe93ab-bac7-4ef1-a2ad-95329218bb29",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveCamera",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []
