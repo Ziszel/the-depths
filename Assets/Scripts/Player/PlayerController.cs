@@ -3,12 +3,13 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-enum playerCrouchState
+enum playerActionState
 {
     None = 0,
     Crouching = 1,
     Uncrouching = 2,
     Standing = 3,
+    InInventory = 4
 }
 
 public class PlayerController : MonoBehaviour
@@ -32,7 +33,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxSprintVelocity = 10.0f;
     [SerializeField] private Transform cameraTransform;
     
-    [SerializeField] private float fieldOfViewAngle = 60; // player's cone of vision
     [Header("Camera targets")]
     [SerializeField] private GameObject crouch; // update OnPlayerKill and look to remove this
 
@@ -42,7 +42,8 @@ public class PlayerController : MonoBehaviour
     
     // This does NOT dictate player height. It is used for ray calculation
     [SerializeField] private float playerHeightRay = 1.0f;
-    private playerCrouchState _playerCrouchState = playerCrouchState.Standing;
+    private playerActionState _currentplayerActionState = playerActionState.Standing;
+    private playerActionState _oldPlayerActionState = playerActionState.None;
     
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
@@ -93,6 +94,7 @@ public class PlayerController : MonoBehaviour
         _currentFootstepRate = walkingRate;
         _isPlayerWalking = false;
         _isCrouching = false;
+        
         _movement = InputManager.PlayerInputActions.Player.Move;
         
         if (isDebug)
@@ -159,7 +161,7 @@ public class PlayerController : MonoBehaviour
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
 
-        if (_playerCrouchState == playerCrouchState.Uncrouching)
+        if (_currentplayerActionState == playerActionState.Uncrouching)
         {
             if (!DetectObstacleDirectlyAbove())
             {
@@ -280,24 +282,30 @@ public class PlayerController : MonoBehaviour
 
         if (context.canceled)
         {
-            _playerCrouchState = playerCrouchState.Uncrouching;
+            _currentplayerActionState = playerActionState.Uncrouching;
         }
     }
 
-    public void OnInventory(InputAction.CallbackContext context)
+    public void OnInventoryOpen(InputAction.CallbackContext context)
     {
         if (context.started)
         {
-            if (Mathf.Approximately(Time.timeScale, 1.0f))
-            {
-                Debug.Log("Open inventory");
-                GameManager.Instance.ShowInventory(_inventory);
-            }
-            else
-            {
-                Debug.Log("Close inventory");
-                GameManager.Instance.HideInventory();
-            }
+            Debug.Log("OnInventoryOpen");
+            GameManager.Instance.ShowInventory(_inventory);
+            _oldPlayerActionState = _currentplayerActionState;
+            _currentplayerActionState = playerActionState.InInventory;
+            InputManager.ToggleActionMap(InputManager.PlayerInputActions.UI);
+        }
+    }
+
+    public void OnInventoryClosed(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            Debug.Log("OnInventoryClosed");
+            GameManager.Instance.HideInventory();
+            _currentplayerActionState = _oldPlayerActionState;
+            InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }
     }
 
@@ -331,7 +339,7 @@ public class PlayerController : MonoBehaviour
     {
         if (crouching)
         {
-            _playerCrouchState = playerCrouchState.Crouching;
+            _currentplayerActionState = playerActionState.Crouching;
             walkCollider.enabled = false;
             crouchCollider.enabled = true;
             OnCrouchEnabled?.Invoke();
@@ -342,7 +350,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _playerCrouchState = playerCrouchState.Standing;
+            _currentplayerActionState = playerActionState.Standing;
             walkCollider.enabled = true;
             crouchCollider.enabled = false;
             OnCrouchDisabled?.Invoke();

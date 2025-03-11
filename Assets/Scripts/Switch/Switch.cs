@@ -8,7 +8,6 @@ public class Switch : MonoBehaviour, IInteractable
     public List<GameObject> Switchables;
     public SoundTrigger soundTrigger;
     
-    [SerializeField] private float switchMovementTime = 2.0f;
     [SerializeField] private Sprite interactableSprite;
     [SerializeField] private AudioClip interactClip;
     
