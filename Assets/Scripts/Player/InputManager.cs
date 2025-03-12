@@ -24,9 +24,10 @@ public class InputManager : MonoBehaviour
         OnInputActionMapChanged?.Invoke(actionMap);
         actionMap.Enable();
         
-        Debug.Log("Player: " + PlayerInputActions.Player.enabled);
-        Debug.Log("UI: " + PlayerInputActions.UI.enabled);
-        Debug.Log("Hiding: " + PlayerInputActions.Hiding.enabled);
-        Debug.Log("Death: " + PlayerInputActions.Death.enabled);
+        // Testing if action maps are enabling or disabling correctly (They are)
+        // Debug.Log("Player: " + PlayerInputActions.Player.enabled);
+        // Debug.Log("UI: " + PlayerInputActions.UI.enabled);
+        // Debug.Log("Hiding: " + PlayerInputActions.Hiding.enabled);
+        // Debug.Log("Death: " + PlayerInputActions.Death.enabled);
     }
 }

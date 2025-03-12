@@ -3,13 +3,14 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-enum playerActionState
+public enum playerActionState
 {
     None = 0,
     Crouching = 1,
     Uncrouching = 2,
     Standing = 3,
-    InInventory = 4
+    InInventory = 4,
+    Hiding = 5
 }
 
 public class PlayerController : MonoBehaviour
@@ -49,16 +50,16 @@ public class PlayerController : MonoBehaviour
     private float _currentFootstepRate;
     private bool _isPlayerWalking;
     private bool _isCrouching; // this is old and should be replaced via state at somepoint
+    private Vector3 _exitHidingPlaceLocation;
     
-    // Components
+    // -- Components --
     public CapsuleCollider walkCollider;
     public CapsuleCollider crouchCollider;
     
     // new input action stuff
     private InputAction _movement;
-    
-    // private PlayerInput _inputActions;
     private Vector2 _moveInput;
+    
     private Rigidbody _rb;
     private Camera _mainCamera;
     private CinemachineCamera _fpsCamera;
@@ -175,11 +176,6 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.H))
             {
                 HealPlayerToFull();
-            }
-
-            if (Input.GetKeyDown(KeyCode.J))
-            {
-                InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
             }
         }
     }
@@ -329,8 +325,9 @@ public class PlayerController : MonoBehaviour
 
     public void OnLeave(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.started && _currentplayerActionState == playerActionState.Hiding)
         {
+            transform.position = _exitHidingPlaceLocation;
             InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }
     }
@@ -444,6 +441,16 @@ public class PlayerController : MonoBehaviour
     public GameObject GetCrouchTransform()
     {
         return crouch;
+    }
+
+    public void SetExitHidingLocation(Vector3 exitLocation)
+    {
+        _exitHidingPlaceLocation = exitLocation;
+    }
+
+    public void SetPlayerState(playerActionState ps)
+    {
+        _currentplayerActionState = ps;
     }
 
     public void EnableInputActions()
