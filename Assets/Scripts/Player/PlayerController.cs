@@ -329,6 +329,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnLeave(InputAction.CallbackContext context)
     {
+        Debug.Log("OnLeave");
         if (context.started)
         {
             InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);

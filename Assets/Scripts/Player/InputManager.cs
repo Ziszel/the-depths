@@ -7,13 +7,9 @@ public class InputManager : MonoBehaviour
     public static PlayerInput PlayerInputActions;
     public static event Action<InputActionMap> OnInputActionMapChanged;
 
-    private void Awake()
+    private void Start()
     {
         PlayerInputActions = new PlayerInput();
-    }
-    
-    void Start()
-    {
         ToggleActionMap(PlayerInputActions.Player);
     }
 
