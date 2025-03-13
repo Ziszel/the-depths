@@ -47,8 +47,14 @@ public class Cupboard : MonoBehaviour, IInteractable
         // Teleport the player into the hiding location area
         _playerTransform.position = playerHideLocation;
         _playerTransform.rotation = Quaternion.LookRotation(_parentTransform.forward, Vector3.up);
-        // Toggle input action map Hiding
-        InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
+        // Toggle input action map Hiding (no longer using ActionMaps for now so commented out)
+        //InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
+        // Set player state to hiding
+        if (_playerTransform.gameObject.TryGetComponent(out PlayerController pc))
+        {
+            pc.SetPlayerState(playerActionState.Hiding);
+            pc.SetExitHidingLocation(playerExitLocation);
+        }
         // Ensure the exit location is set correctly
         _globalSfxPlayer.PlaySfx(interactClip);
     }
