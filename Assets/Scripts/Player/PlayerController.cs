@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public Action OnFlashlightDeActivated;
     public Action OnCrouchEnabled;
     public Action OnCrouchDisabled;
+    public static Action OnLeavingCupboard;
     
     [Header("Movement velocity")]
     [SerializeField] private float movementVelocity = 5.0f;
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     
     [Header("Camera targets")]
     [SerializeField] private GameObject crouch; // update OnPlayerKill and look to remove this
+    [SerializeField] private Transform head;
 
     [Header("Footstep play rates (Audio)")] 
     [SerializeField] private float walkingRate = 1.0f;
@@ -50,6 +52,7 @@ public class PlayerController : MonoBehaviour
     
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
+    Transform _playerHidingExitTransform; // Used for exiting hiding place. Not the best solution but easiest.
     
     // -- Components --
     public CapsuleCollider walkCollider;
@@ -243,6 +246,8 @@ public class PlayerController : MonoBehaviour
     {
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
+        // Debug.Log("Rotating player to face camera.");
+        // transform.Rotate(0, 50 * Time.deltaTime, 0, Space.Self);
     }
     
     // Input events
@@ -251,8 +256,10 @@ public class PlayerController : MonoBehaviour
         if (context.started && _currentplayerActionState == playerActionState.Hiding)
         {
             // TODO: Hard-coded value for moving the player out of the hiding box
-            transform.position += new Vector3(0.0f, 0.0f, 3.0f);
+            CameraManager.ForceCurrentCameraRotation(Quaternion.LookRotation(_playerHidingExitTransform.forward, Vector3.up));
+            transform.position = _playerHidingExitTransform.position;
             _currentplayerActionState = playerActionState.Standing;
+            OnLeavingCupboard?.Invoke();
             return;
         }
         
@@ -545,6 +552,11 @@ public class PlayerController : MonoBehaviour
     public void SetPlayerState(playerActionState ps)
     {
         _currentplayerActionState = ps;
+    }
+
+    public void SetPlayerExitPosition(Transform playerExit)
+    {
+        _playerHidingExitTransform = playerExit;
     }
 
     public void EnableInputActions()

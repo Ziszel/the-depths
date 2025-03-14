@@ -10,7 +10,7 @@ public class CameraManager : MonoBehaviour
     public CinemachineCamera fpsCamera;
 
     public CinemachineCamera startCamera;
-    private CinemachineCamera _currentCamera;
+    private static CinemachineCamera _currentCamera;
 
     private void Start()
     {
@@ -34,5 +34,12 @@ public class CameraManager : MonoBehaviour
         _currentCamera.Priority = 10;
         _currentCamera = newCamera;
         _currentCamera.Priority = 20;
+    }
+
+    public static void ForceCurrentCameraRotation(Quaternion rotation)
+    {
+        // Rotation control stops camera rotating freely (pan tilt).
+        // this overrides it but if smooth transitions are needed later, look to temp disable rotation control
+        _currentCamera.ForceCameraPosition(_currentCamera.transform.position, rotation);
     }
 }
