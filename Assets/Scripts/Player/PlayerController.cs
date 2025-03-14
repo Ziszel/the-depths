@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
             _monster.OnPlayerWithinDamageDistance += DamagePlayer;
         }
 
-        _stamina.OnStaminaReachedZero += SetPlayerSprintToWalk;
+        _stamina.OnStaminaReachedZero += SetPlayerValuesToWalk;
     }
 
     private void Update()
@@ -246,8 +246,6 @@ public class PlayerController : MonoBehaviour
     {
         // Rotate the player to face the direction the camera is looking at
         transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
-        // Debug.Log("Rotating player to face camera.");
-        // transform.Rotate(0, 50 * Time.deltaTime, 0, Space.Self);
     }
     
     // Input events
@@ -321,28 +319,34 @@ public class PlayerController : MonoBehaviour
 
     public void OnSprint(InputAction.CallbackContext context)
     {
-        if (context.started && !_currentplayerActionState.Equals(playerActionState.InInventory) ||
+        if (context.started && !_currentplayerActionState.Equals(playerActionState.InInventory) &&
             !_currentplayerActionState.Equals(playerActionState.Hiding))
         {
             if (_floorCollider.IsOnGround() && 
                 _stamina.GetCurrentStamina() > 0.0f
-                && !_stamina.GetRegeneratingFromZero())
+                && !_stamina.GetRegeneratingFromZero() && !DetectObstacleDirectlyAbove())
             {
-                _currentFootstepRate = sprintingRate;
-                maxMovementVelocity = maxSprintVelocity;
+                SetPlayerCrouching(false);
+                SetPlayerValuesToSprinting();
                 _currentplayerActionState = playerActionState.Sprinting;
             }
         } 
 
-        if (context.canceled && !_currentplayerActionState.Equals(playerActionState.InInventory) ||
+        if (context.canceled && !_currentplayerActionState.Equals(playerActionState.InInventory) &&
             !_currentplayerActionState.Equals(playerActionState.Hiding))
         {
-            SetPlayerSprintToWalk();
+            SetPlayerValuesToWalk();
             _currentplayerActionState = playerActionState.Walking;
         }
     }
 
-    private void SetPlayerSprintToWalk()
+    private void SetPlayerValuesToSprinting()
+    {
+        _currentFootstepRate = sprintingRate;
+        maxMovementVelocity = maxSprintVelocity;
+    }
+
+    private void SetPlayerValuesToWalk()
     {
         _currentFootstepRate = walkingRate;
         maxMovementVelocity = maxWalkVelocity;
@@ -350,7 +354,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnCrouch(InputAction.CallbackContext context)
     {
-        if (context.started && !_currentplayerActionState.Equals(playerActionState.InInventory) ||
+        if (context.started && !_currentplayerActionState.Equals(playerActionState.InInventory) &&
             !_currentplayerActionState.Equals(playerActionState.Hiding))
         {
             if (_floorCollider.IsOnGround() && _currentplayerActionState.Equals(playerActionState.Standing)
@@ -363,7 +367,8 @@ public class PlayerController : MonoBehaviour
         }
 
         if (context.canceled && !_currentplayerActionState.Equals(playerActionState.InInventory)
-            && !_currentplayerActionState.Equals(playerActionState.Hiding))
+            && !_currentplayerActionState.Equals(playerActionState.Hiding) 
+            && !_currentplayerActionState.Equals(playerActionState.Sprinting))
         {
             {
                 _currentplayerActionState = playerActionState.Uncrouching;
@@ -375,7 +380,6 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
-            Debug.Log("OnInventoryOpen");
             GameManager.Instance.ShowInventory(_inventory);
             _oldPlayerActionState = _currentplayerActionState;
             _currentplayerActionState = playerActionState.InInventory;
@@ -383,7 +387,6 @@ public class PlayerController : MonoBehaviour
         }
         else if (context.started && _currentplayerActionState == playerActionState.InInventory)
         {
-            Debug.Log("OnInventoryClosed");
             GameManager.Instance.HideInventory();
             _currentplayerActionState = _oldPlayerActionState;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
