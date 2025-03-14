@@ -3,12 +3,16 @@ using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-enum playerCrouchState
+public enum playerActionState
 {
     None = 0,
     Crouching = 1,
     Uncrouching = 2,
     Standing = 3,
+    Walking = 4,
+    Sprinting = 5,
+    InInventory = 6,
+    Hiding = 7
 }
 
 public class PlayerController : MonoBehaviour
@@ -19,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public Action OnFlashlightDeActivated;
     public Action OnCrouchEnabled;
     public Action OnCrouchDisabled;
+    public static Action OnLeavingCupboard;
     
     [Header("Movement velocity")]
     [SerializeField] private float movementVelocity = 5.0f;
@@ -32,9 +37,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxSprintVelocity = 10.0f;
     [SerializeField] private Transform cameraTransform;
     
-    [SerializeField] private float fieldOfViewAngle = 60; // player's cone of vision
     [Header("Camera targets")]
     [SerializeField] private GameObject crouch; // update OnPlayerKill and look to remove this
+    [SerializeField] private Transform head;
 
     [Header("Footstep play rates (Audio)")] 
     [SerializeField] private float walkingRate = 1.0f;
@@ -42,18 +47,21 @@ public class PlayerController : MonoBehaviour
     
     // This does NOT dictate player height. It is used for ray calculation
     [SerializeField] private float playerHeightRay = 1.0f;
-    private playerCrouchState _playerCrouchState = playerCrouchState.Standing;
+    private playerActionState _currentplayerActionState = playerActionState.Standing;
+    private playerActionState _oldPlayerActionState = playerActionState.None;
     
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
-    private bool _isPlayerWalking;
-    private bool _isCrouching; // this is old and should be replaced via state at somepoint
+    Transform _playerHidingExitTransform; // Used for exiting hiding place. Not the best solution but easiest.
     
-    // Components
+    // -- Components --
     public CapsuleCollider walkCollider;
     public CapsuleCollider crouchCollider;
-    private PlayerInput _inputActions;
+    
+    // new input action stuff
+    private InputAction _movement;
     private Vector2 _moveInput;
+    
     private Rigidbody _rb;
     private Camera _mainCamera;
     private CinemachineCamera _fpsCamera;
@@ -70,12 +78,6 @@ public class PlayerController : MonoBehaviour
     // DEBUG
     [Header("DEBUG")]
     [SerializeField] private bool isDebug;
-    
-    private void Awake()
-    {
-        _inputActions = new PlayerInput();
-        _inputActions.Enable();
-    }
 
     private void Start()
     {
@@ -93,8 +95,8 @@ public class PlayerController : MonoBehaviour
         _fpsCamera = GameObject.Find("FPSCamera").GetComponent<CinemachineCamera>();
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _currentFootstepRate = walkingRate;
-        _isPlayerWalking = false;
-        _isCrouching = false;
+        
+        _movement = InputManager.PlayerInputActions.Player.Move;
         
         if (isDebug)
         {
@@ -109,62 +111,54 @@ public class PlayerController : MonoBehaviour
             _monster.OnPlayerWithinDamageDistance += DamagePlayer;
         }
 
-        _stamina.OnStaminaReachedZero += SetPlayerSprintToWalk;
+        _stamina.OnStaminaReachedZero += SetPlayerValuesToWalk;
     }
 
     private void Update()
     {
-        // Handle timers for footsteps
-        if (_isPlayerWalking && !_isCrouching)
+        //Debug.Log(_currentplayerActionState);
+        
+        switch (_currentplayerActionState)
         {
-            _timeUntilFootstep -= Time.deltaTime;
-            if (_timeUntilFootstep < 0.0f)
-            {
-                _playerAudio.PlaySfx();
-                _playerAudio.SwapFeet();
+            case playerActionState.Crouching:
                 _timeUntilFootstep = _currentFootstepRate;
-            }
-        }
-        else
-        {
-            _timeUntilFootstep = _currentFootstepRate;
-        }
-
-        // Handles if the player pressed a walk button multiple times per frame
-        if (_inputActions.Player.Move.WasPerformedThisFrame())
-        {
-            if (_floorCollider.IsOnGround() && !_isCrouching)
-            {
-                _playerAudio.PlaySfx();
-            }
-        }
-        
-        // stamina
-        if (Mathf.Approximately(maxMovementVelocity, maxSprintVelocity))
-        {
-            _stamina.DepleteStamina();
-        }
-        else
-        {
-            if (!_stamina.GetRegeneratingFromZero())
-            {
-                _stamina.RegenerateStamina(_stamina.GetRegenerationRate());
-            }
-            else
-            {
-                _stamina.RegenerateStamina(_stamina.GetBottomOutRegenerationRate());
-            }
-        }
-        
-        // Rotate the player to face the direction the camera is looking at
-        transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
-
-        if (_playerCrouchState == playerCrouchState.Uncrouching)
-        {
-            if (!DetectObstacleDirectlyAbove())
-            {
-                SetPlayerCrouching(false);
-            }
+                RegenStamBasedOnRate();
+                RotatePlayertoFaceCamera();
+                break;
+            case playerActionState.Uncrouching:
+                _timeUntilFootstep = _currentFootstepRate;
+                RegenStamBasedOnRate();
+                
+                if (!DetectObstacleDirectlyAbove())
+                {
+                    SetPlayerCrouching(false);
+                }
+                RotatePlayertoFaceCamera();
+                break;
+            case playerActionState.Standing:
+                _timeUntilFootstep = _currentFootstepRate;
+                RegenStamBasedOnRate();
+                RotatePlayertoFaceCamera();
+                break;
+            case playerActionState.Walking:
+                CheckIfShouldImmediatelyPlayFootstep();
+                ReduceTimeUntilFootstep();
+                RegenStamBasedOnRate();
+                RotatePlayertoFaceCamera();
+                break;
+            case playerActionState.Sprinting:
+                CheckIfShouldImmediatelyPlayFootstep();
+                ReduceTimeUntilFootstep();
+                _stamina.DepleteStamina();
+                RotatePlayertoFaceCamera();
+                break;
+            case playerActionState.Hiding:
+                _timeUntilFootstep = _currentFootstepRate;
+                RegenStamBasedOnRate();
+                RotatePlayertoFaceCamera();
+                break;
+            case playerActionState.InInventory:
+                break;
         }
         
         // DEBUG CONTROLS
@@ -179,18 +173,95 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Move();
+        switch (_currentplayerActionState)
+        {
+            case playerActionState.Crouching:
+                Move();
+                break;
+            case playerActionState.Uncrouching:
+                Move();
+                break;
+            case playerActionState.Standing:
+                Move();
+                break;
+            case playerActionState.Walking:
+                Move();
+                break;
+            case playerActionState.Sprinting:
+                Move();
+                break;
+            case playerActionState.Hiding:
+                break;
+            case playerActionState.InInventory:
+                break;
+        }
 
+        SetVelocityWhenOnGround();
+    }
+
+    private void SetVelocityWhenOnGround()
+    {
         if (_floorCollider.IsOnGround())
         {
             _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, maxMovementVelocity);
         }
     }
     
+    private void ReduceTimeUntilFootstep()
+    {
+        _timeUntilFootstep -= Time.deltaTime;
+        if (_timeUntilFootstep < 0.0f)
+        {
+            _playerAudio.PlaySfx();
+            _playerAudio.SwapFeet();
+            _timeUntilFootstep = _currentFootstepRate;
+        }
+    }
+
+    private void CheckIfShouldImmediatelyPlayFootstep()
+    {
+        // Handles if the player pressed a walk button multiple times per frame
+        if (_movement.WasPerformedThisFrame())
+        {
+            if (_floorCollider.IsOnGround())
+            {
+                _playerAudio.PlaySfx();
+            }
+        }
+    }
+
+    private void RegenStamBasedOnRate()
+    {
+        if (!_stamina.GetRegeneratingFromZero())
+        {
+            _stamina.RegenerateStamina(_stamina.GetRegenerationRate());
+        }
+        else
+        {
+            _stamina.RegenerateStamina(_stamina.GetBottomOutRegenerationRate());
+        }
+    }
+
+    private void RotatePlayertoFaceCamera()
+    {
+        // Rotate the player to face the direction the camera is looking at
+        transform.rotation = Quaternion.AngleAxis(_mainCamera.transform.eulerAngles.y, Vector3.up);
+    }
+    
     // Input events
     public void OnInteract(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.started && _currentplayerActionState == playerActionState.Hiding)
+        {
+            // TODO: Hard-coded value for moving the player out of the hiding box
+            CameraManager.ForceCurrentCameraRotation(Quaternion.LookRotation(_playerHidingExitTransform.forward, Vector3.up));
+            transform.position = _playerHidingExitTransform.position;
+            _currentplayerActionState = playerActionState.Standing;
+            OnLeavingCupboard?.Invoke();
+            return;
+        }
+        
+        if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
             _playerInteractable.UseInteractable();
         }
@@ -198,7 +269,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnUseItem(InputAction.CallbackContext context)
     {
-        if (!GameManager.Instance.IsInventoryOpen())
+        if (!_currentplayerActionState.Equals(playerActionState.InInventory))
         {
             if (context.started)
             {
@@ -214,9 +285,13 @@ public class PlayerController : MonoBehaviour
 
     public void OnLeanLeft(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (_currentplayerActionState.Equals(playerActionState.Standing) ||
+            _currentplayerActionState.Equals(playerActionState.Walking))
         {
-            _cameraManager.SwitchCamera(_cameraManager.leftLeanCamera);
+            if (context.started)
+            {
+                _cameraManager.SwitchCamera(_cameraManager.leftLeanCamera);
+            }
         }
 
         if (context.canceled)
@@ -227,9 +302,13 @@ public class PlayerController : MonoBehaviour
     
     public void OnLeanRight(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (_currentplayerActionState.Equals(playerActionState.Standing) ||
+            _currentplayerActionState.Equals(playerActionState.Walking))
         {
-            _cameraManager.SwitchCamera(_cameraManager.rightLeanCamera);
+            if (context.started)
+            {
+                _cameraManager.SwitchCamera(_cameraManager.rightLeanCamera);
+            }
         }
 
         if (context.canceled)
@@ -240,24 +319,34 @@ public class PlayerController : MonoBehaviour
 
     public void OnSprint(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.started && !_currentplayerActionState.Equals(playerActionState.InInventory) &&
+            !_currentplayerActionState.Equals(playerActionState.Hiding))
         {
-            if (_floorCollider.IsOnGround() && !_isCrouching && 
+            if (_floorCollider.IsOnGround() && 
                 _stamina.GetCurrentStamina() > 0.0f
-                && !_stamina.GetRegeneratingFromZero())
+                && !_stamina.GetRegeneratingFromZero() && !DetectObstacleDirectlyAbove())
             {
-                _currentFootstepRate = sprintingRate;
-                maxMovementVelocity = maxSprintVelocity;
+                SetPlayerCrouching(false);
+                SetPlayerValuesToSprinting();
+                _currentplayerActionState = playerActionState.Sprinting;
             }
-        } ;
+        } 
 
-        if (context.canceled)
+        if (context.canceled && !_currentplayerActionState.Equals(playerActionState.InInventory) &&
+            !_currentplayerActionState.Equals(playerActionState.Hiding))
         {
-            SetPlayerSprintToWalk();
+            SetPlayerValuesToWalk();
+            _currentplayerActionState = playerActionState.Walking;
         }
     }
 
-    private void SetPlayerSprintToWalk()
+    private void SetPlayerValuesToSprinting()
+    {
+        _currentFootstepRate = sprintingRate;
+        maxMovementVelocity = maxSprintVelocity;
+    }
+
+    private void SetPlayerValuesToWalk()
     {
         _currentFootstepRate = walkingRate;
         maxMovementVelocity = maxWalkVelocity;
@@ -265,36 +354,55 @@ public class PlayerController : MonoBehaviour
 
     public void OnCrouch(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.started && !_currentplayerActionState.Equals(playerActionState.InInventory) &&
+            !_currentplayerActionState.Equals(playerActionState.Hiding))
         {
-            if (_floorCollider.IsOnGround())
+            if (_floorCollider.IsOnGround() && _currentplayerActionState.Equals(playerActionState.Standing)
+                || _currentplayerActionState.Equals(playerActionState.Walking) ||
+                _currentplayerActionState.Equals(playerActionState.Uncrouching) ||
+                _currentplayerActionState.Equals(playerActionState.Sprinting))
             {
                 SetPlayerCrouching(true);
             }
         }
 
-        if (context.canceled)
+        if (context.canceled && !_currentplayerActionState.Equals(playerActionState.InInventory)
+            && !_currentplayerActionState.Equals(playerActionState.Hiding) 
+            && !_currentplayerActionState.Equals(playerActionState.Sprinting))
         {
-            _playerCrouchState = playerCrouchState.Uncrouching;
+            {
+                _currentplayerActionState = playerActionState.Uncrouching;
+            }
         }
     }
 
-    public void OnInventory(InputAction.CallbackContext context)
+    public void OnInventoryOpen(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
-            if (Mathf.Approximately(Time.timeScale, 1.0f))
-            {
-                Debug.Log("Open inventory");
-                GameManager.Instance.ShowInventory(_inventory);
-            }
-            else
-            {
-                Debug.Log("Close inventory");
-                GameManager.Instance.HideInventory();
-            }
+            GameManager.Instance.ShowInventory(_inventory);
+            _oldPlayerActionState = _currentplayerActionState;
+            _currentplayerActionState = playerActionState.InInventory;
+            // InputManager.ToggleActionMap(InputManager.PlayerInputActions.UI);
+        }
+        else if (context.started && _currentplayerActionState == playerActionState.InInventory)
+        {
+            GameManager.Instance.HideInventory();
+            _currentplayerActionState = _oldPlayerActionState;
+            // InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }
     }
+
+    // public void OnInventoryClosed(InputAction.CallbackContext context)
+    // {
+    //     if (context.started)
+    //     {
+    //         Debug.Log("OnInventoryClosed");
+    //         GameManager.Instance.HideInventory();
+    //         _currentplayerActionState = _oldPlayerActionState;
+    //         InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
+    //     }
+    // }
 
     public void OnPause(InputAction.CallbackContext context)
     {
@@ -313,23 +421,32 @@ public class PlayerController : MonoBehaviour
             
         }
     }
+
+    // Was used for AcitonMap (Hiding) but due to ActionMap bugs this has been removed.
+    // Look to re-implement later
+    // public void OnLeave(InputAction.CallbackContext context)
+    // {
+    //     if (context.started && _currentplayerActionState == playerActionState.Hiding)
+    //     {
+    //         transform.position = _exitHidingPlaceLocation;
+    //         InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
+    //     }
+    // }
     
     private void SetPlayerCrouching(bool crouching)
     {
         if (crouching)
         {
-            _playerCrouchState = playerCrouchState.Crouching;
             walkCollider.enabled = false;
             crouchCollider.enabled = true;
             OnCrouchEnabled?.Invoke();
             _cameraManager.SwitchCamera(_cameraManager.crouchCamera);
             movementVelocity = crouchVelocity;
             maxMovementVelocity = maxCrouchVelocity;
-            _isCrouching = true;
+            _currentplayerActionState = playerActionState.Crouching;
         }
         else
         {
-            _playerCrouchState = playerCrouchState.Standing;
             walkCollider.enabled = true;
             crouchCollider.enabled = false;
             OnCrouchDisabled?.Invoke();
@@ -337,7 +454,7 @@ public class PlayerController : MonoBehaviour
             movementVelocity = walkVelocity;
             maxMovementVelocity = maxWalkVelocity;
             _currentFootstepRate = walkingRate;
-            _isCrouching = false;
+            _currentplayerActionState = playerActionState.Standing;
         }
     }
 
@@ -377,23 +494,33 @@ public class PlayerController : MonoBehaviour
         if (_floorCollider.IsOnGround())
         {
             // Move the player relative to the camera's rotation and clamp the movement velocity
+            _moveInput = _movement.ReadValue<Vector2>();
             Vector3 move = cameraTransform.forward * _moveInput.y + cameraTransform.right * _moveInput.x;
-            _moveInput = _inputActions.Player.Move.ReadValue<Vector2>();
             move.y = 0.0f;
             _rb.AddForce(move.normalized * movementVelocity, ForceMode.VelocityChange);
 
             if (move.x == 0.0f && move.y == 0.0f)
             {
-                _isPlayerWalking = false;
+                if (_currentplayerActionState != playerActionState.Crouching &&
+                    _currentplayerActionState != playerActionState.Uncrouching)
+                {
+                    _currentplayerActionState = playerActionState.Standing;
+                }
             }
             else
             {
-                _isPlayerWalking = true;
+                if (!_currentplayerActionState.Equals(playerActionState.Sprinting) && 
+                    !_currentplayerActionState.Equals(playerActionState.Crouching)
+                    && !_currentplayerActionState.Equals(playerActionState.Uncrouching))
+                {
+                    _currentplayerActionState = playerActionState.Walking;
+                }
+                
             }
         }
         else
         {
-            _isPlayerWalking = false;
+            _currentplayerActionState = playerActionState.Standing;
         }
     }
 
@@ -425,18 +552,28 @@ public class PlayerController : MonoBehaviour
         return crouch;
     }
 
+    public void SetPlayerState(playerActionState ps)
+    {
+        _currentplayerActionState = ps;
+    }
+
+    public void SetPlayerExitPosition(Transform playerExit)
+    {
+        _playerHidingExitTransform = playerExit;
+    }
+
     public void EnableInputActions()
     {
-        _inputActions.Enable();
+        // _inputActions.Enable();
     }
     public void DisableInputActions()
     {
-        _inputActions.Disable();
+        // _inputActions.Disable();
     }
 
     private void OnDisable()
     {
-        _inputActions.Player.Disable();
+        // _inputActions.Player.Disable();
         _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
     }
 }

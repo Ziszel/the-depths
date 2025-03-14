@@ -53,6 +53,7 @@ public class PlayerInteractable : MonoBehaviour
     {
         _interactableInRange = null;
         pcHud.DisableActiveInteractable();
+        _canBeInteracted = false;
         enabled = false;
     }
 
@@ -60,6 +61,7 @@ public class PlayerInteractable : MonoBehaviour
     {
         _interactableInRange = null;
         pcHud.DisableActiveInteractable();
+        _canBeInteracted = false;
         enabled = false;
     }
 
