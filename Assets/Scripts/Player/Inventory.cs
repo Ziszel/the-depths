@@ -39,6 +39,11 @@ public class Inventory : MonoBehaviour
         return _items;
     }
 
+    public bool ContainsItem(InventoryItem item)
+    {
+        return _items.Contains(item);
+    }
+
     public InventoryItem GetItemByIndex(int index)
     {
         return _items[index];

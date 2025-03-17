@@ -573,7 +573,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        // _inputActions.Player.Disable();
-        _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
+        if (_monster)
+        {
+            _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
+        }
     }
 }

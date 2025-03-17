@@ -5,7 +5,7 @@ public abstract class DoorBase : MonoBehaviour
 {
     [SerializeField] protected float movementDuration;
     
-    protected DoorAudio _doorAudio;
+    protected DoorAudio DoorAudio;
     
     protected bool IsOpen;
     

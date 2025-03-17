@@ -8,7 +8,7 @@ public class HorizontalDoor : DoorBase, ISwitchable
     
     private void Start()
     {
-        _doorAudio = GetComponent<DoorAudio>();
+        DoorAudio = GetComponent<DoorAudio>();
     }
 
     protected override IEnumerator OpenDoor()
@@ -31,7 +31,7 @@ public class HorizontalDoor : DoorBase, ISwitchable
     {
         if (!IsOpen)
         {
-            _doorAudio.PlaySfx();
+            DoorAudio.PlaySfx();
             StartCoroutine(OpenDoor());
             IsOpen = true;
         }
