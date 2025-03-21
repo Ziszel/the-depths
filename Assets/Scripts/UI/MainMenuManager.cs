@@ -1,8 +1,11 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MainMenuManager : MonoBehaviour
 {
+    [SerializeField] private TMP_Text versionText;
+    
     private Button _startGameBtn;
     private Button _optionsBtn;
     private Button _creditsBtn;
@@ -16,9 +19,14 @@ public class MainMenuManager : MonoBehaviour
         _creditsBtn.onClick.AddListener(OnCreditsClicked);
     }
 
+    private void Start()
+    {
+        versionText.text = "Version: " + GameManager.Instance.GetVersionText();
+    }
+
     private void OnStartGameClicked()
     {
-        GameManager.Instance.LoadLevel("MainLevel"); //CHANGE BACK TO MainLevel ONCE TESTING COMPLETE
+        GameManager.Instance.LoadLevel("Level1"); //CHANGE BACK TO MainLevel ONCE TESTING COMPLETE
     }
 
     private void OnOptionsClicked()

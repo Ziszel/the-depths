@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private string _gameVersion;
+    
     public static GameManager Instance;
     
     public Action OnInventoryClosed;
@@ -13,7 +15,6 @@ public class GameManager : MonoBehaviour
     private float _totalPlayTime;
     private int _deathCount;
     private int _saveCount;
-    private string _gameVersion;
     
     /* STATE */
     // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
@@ -174,6 +175,11 @@ public class GameManager : MonoBehaviour
     public float GetBestTime()
     {
         return _bestTime;
+    }
+
+    public string GetVersionText()
+    {
+        return _gameVersion;
     }
 
     private void InitialiseGame()
