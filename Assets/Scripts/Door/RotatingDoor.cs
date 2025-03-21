@@ -3,24 +3,32 @@ using UnityEngine;
 
 public class RotatingDoor : DoorBase, ISwitchable, IInteractable
 {
-    // Rotate by this amount of degrees over movementDuration
     [SerializeField] private Sprite interactableSprite;
-    [SerializeField] private bool isKeyPowered;
-    [SerializeField] private InventoryItem keyItem;
     [SerializeField] private float rotationAmount = 90.0f;
-    [SerializeField] private GameObject childDoorMeshObject;
 
     private Vector3 _initialRotation;
     private Inventory _playerInventory;
     private Vector3 _playerForwardVector;
     private Vector3 _forward;
+    private bool _isPlayerOnLockedSide; // manages which collider is active
     
     private void Start()
     {
+        // locked from other side
+        if (lockedFromOtherSideDoor)
+        {
+            DoorCollisionHelper.OnColliderEntered += PlayerEnteredChildCollider;
+            DoorCollisionHelper.OnColliderExited += PlayerExitedChildCollider;
+        }
+        else // Disable locked from other side related code
+        {
+            doorCollisionHelperLocked.SetActive(false);
+            doorCollisionHelperOpen.SetActive(false);
+        }
+        
         _initialRotation = transform.rotation.eulerAngles;
         DoorAudio = GetComponent<DoorAudio>();
         _playerInventory = FindFirstObjectByType<Inventory>();
-        IsOpen = false;
         DoorAudio.SetDoorAudio(false);
         _forward = transform.forward;
         _playerForwardVector = FindAnyObjectByType<PlayerController>().GetComponent<Transform>().forward;
@@ -29,19 +37,27 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
     
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out PlayerInteractable playerInteractable))
+        // Use separate colliders if it's a locked from other side door!
+        if (!lockedFromOtherSideDoor)
         {
-            playerInteractable.enabled = true;
-            playerInteractable.SetActivePickup(gameObject);
+            if (other.TryGetComponent(out PlayerInteractable playerInteractable))
+            {
+                playerInteractable.enabled = true;
+                playerInteractable.SetActivePickup(gameObject);
+            }
         }
     }
     
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out PlayerInteractable playerInteractable))
+        // Use separate colliders if it's a locked from other side door!
+        if (!lockedFromOtherSideDoor)
         {
-            playerInteractable.enabled = false;
-            playerInteractable.NoActivePickup();
+            if (other.TryGetComponent(out PlayerInteractable playerInteractable))
+            {
+                playerInteractable.enabled = false;
+                playerInteractable.NoActivePickup();
+            }
         }
     }
 
@@ -59,8 +75,7 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
             targetRotation = Quaternion.Euler( new Vector3(0.0f, _initialRotation.y - rotationAmount, 0.0f));
         }
         
-        
-        IsOpen = true;
+        isOpen = true;
 
         float time = 0.0f;
         while (time < 1.0f)
@@ -74,7 +89,7 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
     // IInteractable
     public void AttemptToInteract()
     {
-        if (!IsOpen)
+        if (!isOpen)
         {
             if (isKeyPowered)
             {
@@ -88,9 +103,28 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                     StartCoroutine(OpenDoor(dot));
                     DoorMesh.layer = LayerMask.NameToLayer("Default");
                 }
+                DoorAudio.SetDoorAudio(false);
+                DoorAudio.PlaySfx(); // Door is not meant to open
             }
-            DoorAudio.SetDoorAudio(false);
-            DoorAudio.PlaySfx(); // Door is not meant to open
+
+            if (lockedFromOtherSideDoor)
+            {
+                if (_isPlayerOnLockedSide)
+                {
+                    DoorAudio.SetDoorAudio(false);
+                    DoorAudio.PlaySfx();
+                }
+                else
+                {
+                    DoorMesh.layer = LayerMask.NameToLayer("Default");
+                    doorCollisionHelperLocked.SetActive(false);
+                    doorCollisionHelperOpen.SetActive(false);
+                    DoorAudio.SetDoorAudio(true);
+                    DoorAudio.PlaySfx();
+                    float dot = Vector3.Dot(_forward, (_playerForwardVector - transform.position).normalized);
+                    StartCoroutine(OpenDoor(dot));
+                }
+            }
         }
     }
     
@@ -102,13 +136,29 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
     // ISwitchable
     public void Toggle()
     {
-        if (!IsOpen)
+        if (!isOpen)
         {
             DoorAudio.SetDoorAudio(true);
             DoorAudio.PlaySfx();
             float dot = Vector3.Dot(_forward, (_playerForwardVector - transform.position).normalized);
             StartCoroutine(OpenDoor(dot));
-            IsOpen = true;
+            isOpen = true;
         }
+    }
+    
+    private void PlayerEnteredChildCollider(bool isPlayerOnLockedSide, PlayerInteractable interactable)
+    {
+        Debug.Log("Player entered child collider " + isPlayerOnLockedSide);
+        interactable.enabled = true;
+        interactable.SetActivePickup(gameObject);
+        _isPlayerOnLockedSide = isPlayerOnLockedSide;
+    }
+
+    private void PlayerExitedChildCollider(PlayerInteractable interactable)
+    {
+        Debug.Log("Player exited child collider");
+        interactable.enabled = false;
+        interactable.NoActivePickup();
+        _isPlayerOnLockedSide = false;
     }
 }

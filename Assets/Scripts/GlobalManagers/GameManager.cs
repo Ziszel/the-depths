@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     private float _totalPlayTime;
     private int _deathCount;
     private int _saveCount;
+    private string _gameVersion;
     
     /* STATE */
     // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
@@ -38,6 +39,7 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        _gameVersion = "0.1.5"; // Major, Minor, Patch
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }

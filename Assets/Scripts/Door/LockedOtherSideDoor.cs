@@ -6,9 +6,6 @@ public class LockedOtherSideDoor : DoorBase, IInteractable
     [SerializeField] private Sprite interactableSprite;
     [SerializeField] private Vector3 rotateByDegrees = new Vector3(0.0f, 0.0f, 0.0f);
     [SerializeField] private float rotationSpeed;
-    [SerializeField] private GameObject doorCollisionHelperLocked;
-    [SerializeField] private GameObject doorCollisionHelperOpen;
-    [SerializeField] private GameObject childDoorMeshObject;
     
     private Quaternion _initialRotation;
     private Quaternion _endRotation;

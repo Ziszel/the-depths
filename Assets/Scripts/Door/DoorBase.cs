@@ -4,10 +4,16 @@ using UnityEngine;
 public abstract class DoorBase : MonoBehaviour
 {
     [SerializeField] protected float movementDuration;
+    [SerializeField] protected bool isOpen;
+    [SerializeField] protected bool isKeyPowered;
+    [SerializeField] protected InventoryItem keyItem;
+    [SerializeField] protected bool lockedFromOtherSideDoor;
+    [SerializeField] protected GameObject doorCollisionHelperOpen;
+    [SerializeField] protected GameObject doorCollisionHelperLocked;
+    [SerializeField] protected GameObject childDoorMeshObject;
     
     protected DoorAudio DoorAudio;
     protected GameObject DoorMesh; // Used to stop interactivity after interaction
-    protected bool IsOpen;
     
     protected abstract IEnumerator OpenDoor(float dot);
 }

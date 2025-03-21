@@ -10,8 +10,10 @@ public class DoorCollisionHelper : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Player entered DoorCollisionHelper");
         if (other.TryGetComponent(out PlayerInteractable playerInteractable))
         {
+            Debug.Log("Player is a player interactable");
             OnColliderEntered?.Invoke(isLockedSide, playerInteractable);
             otherSide.SetActive(false);
         }

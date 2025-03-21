@@ -29,11 +29,11 @@ public class HorizontalDoor : DoorBase, ISwitchable
 
     public void Toggle()
     {
-        if (!IsOpen)
+        if (!isOpen)
         {
             DoorAudio.PlaySfx();
             StartCoroutine(OpenDoor(0.0f));
-            IsOpen = true;
+            isOpen = true;
         }
     }
 }
