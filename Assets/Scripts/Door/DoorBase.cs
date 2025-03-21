@@ -9,5 +9,5 @@ public abstract class DoorBase : MonoBehaviour
     protected GameObject DoorMesh; // Used to stop interactivity after interaction
     protected bool IsOpen;
     
-    protected abstract IEnumerator OpenDoor();
+    protected abstract IEnumerator OpenDoor(float dot);
 }

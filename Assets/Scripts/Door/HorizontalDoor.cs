@@ -11,7 +11,7 @@ public class HorizontalDoor : DoorBase, ISwitchable
         DoorAudio = GetComponent<DoorAudio>();
     }
 
-    protected override IEnumerator OpenDoor()
+    protected override IEnumerator OpenDoor(float dot)
     {
         float timeElapsed = 0.0f;
         Vector3 startPosition = transform.position;
@@ -32,7 +32,7 @@ public class HorizontalDoor : DoorBase, ISwitchable
         if (!IsOpen)
         {
             DoorAudio.PlaySfx();
-            StartCoroutine(OpenDoor());
+            StartCoroutine(OpenDoor(0.0f));
             IsOpen = true;
         }
     }

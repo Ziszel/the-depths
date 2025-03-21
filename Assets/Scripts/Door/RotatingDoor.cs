@@ -7,21 +7,24 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
     [SerializeField] private Sprite interactableSprite;
     [SerializeField] private bool isKeyPowered;
     [SerializeField] private InventoryItem keyItem;
-    [SerializeField] private Vector3 rotateByDegrees = new Vector3(0.0f, 0.0f, 0.0f);
-    [SerializeField] private float rotationSpeed;
+    [SerializeField] private float rotationAmount = 90.0f;
+    [SerializeField] private GameObject childDoorMeshObject;
 
-    private Quaternion _initialRotation;
-    private Quaternion _endRotation;
+    private Vector3 _initialRotation;
     private Inventory _playerInventory;
+    private Vector3 _playerForwardVector;
+    private Vector3 _forward;
     
     private void Start()
     {
-        _initialRotation = transform.rotation;
-        _endRotation = Quaternion.Inverse(_initialRotation) * Quaternion.Euler(rotateByDegrees);
+        _initialRotation = transform.rotation.eulerAngles;
         DoorAudio = GetComponent<DoorAudio>();
         _playerInventory = FindFirstObjectByType<Inventory>();
-        
+        IsOpen = false;
         DoorAudio.SetDoorAudio(false);
+        _forward = transform.forward;
+        _playerForwardVector = FindAnyObjectByType<PlayerController>().GetComponent<Transform>().forward;
+        DoorMesh = childDoorMeshObject;
     }
     
     private void OnTriggerEnter(Collider other)
@@ -42,18 +45,30 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
         }
     }
 
-    protected override IEnumerator OpenDoor()
+    protected override IEnumerator OpenDoor(float dot)
     {
-        while (Quaternion.Angle(_initialRotation, _endRotation) > 0.01f)
-        {
-            // returns a quaternion rotated towards endRotation by the step value
-            // Updates initialRotation since the next frame will rotate from that point
-            _initialRotation = Quaternion.RotateTowards(_initialRotation, _endRotation, rotationSpeed * Time.deltaTime);
-            transform.rotation = _initialRotation;
-            yield return null;
-        }
+        Quaternion startingRotation = transform.rotation;
+        Quaternion targetRotation;
 
-        transform.rotation = _endRotation;
+        if (dot >= 0.0f)
+        {
+            targetRotation = Quaternion.Euler( new Vector3(0.0f, _initialRotation.y + rotationAmount, 0.0f));
+        }
+        else
+        {
+            targetRotation = Quaternion.Euler( new Vector3(0.0f, _initialRotation.y - rotationAmount, 0.0f));
+        }
+        
+        
+        IsOpen = true;
+
+        float time = 0.0f;
+        while (time < 1.0f)
+        {
+            transform.rotation = Quaternion.Slerp(startingRotation, targetRotation, time);
+            yield return null;
+            time += Time.deltaTime * movementDuration;
+        }
     }
     
     // IInteractable
@@ -67,11 +82,15 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                 {
                     DoorAudio.SetDoorAudio(true);
                     DoorAudio.PlaySfx();
-                    StartCoroutine(OpenDoor());
-                    IsOpen = true;
+                    
+                    // Calculate forward
+                    float dot = Vector3.Dot(_forward, (_playerForwardVector - transform.position).normalized);
+                    StartCoroutine(OpenDoor(dot));
+                    DoorMesh.layer = LayerMask.NameToLayer("Default");
                 }
             }
-            DoorAudio.PlaySfx();
+            DoorAudio.SetDoorAudio(false);
+            DoorAudio.PlaySfx(); // Door is not meant to open
         }
     }
     
@@ -87,7 +106,8 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
         {
             DoorAudio.SetDoorAudio(true);
             DoorAudio.PlaySfx();
-            StartCoroutine(OpenDoor());
+            float dot = Vector3.Dot(_forward, (_playerForwardVector - transform.position).normalized);
+            StartCoroutine(OpenDoor(dot));
             IsOpen = true;
         }
     }

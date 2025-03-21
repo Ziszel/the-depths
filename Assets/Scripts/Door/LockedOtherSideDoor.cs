@@ -39,7 +39,7 @@ public class LockedOtherSideDoor : DoorBase, IInteractable
             doorCollisionHelperOpen.SetActive(false);
             DoorAudio.SetDoorAudio(true);
             DoorAudio.PlaySfx();
-            StartCoroutine(OpenDoor());
+            StartCoroutine(OpenDoor(0.0f));
         }
     }
 
@@ -48,7 +48,7 @@ public class LockedOtherSideDoor : DoorBase, IInteractable
         return interactableSprite;
     }
     
-    protected override IEnumerator OpenDoor()
+    protected override IEnumerator OpenDoor(float dot)
     {
         while (Quaternion.Angle(_initialRotation, _endRotation) > 0.01f)
         {
