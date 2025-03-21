@@ -6,11 +6,12 @@ public class DoorAudio : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;
     
     [Header("Audio clips")]
-    [SerializeField] private AudioClip _doorOpening;
+    [SerializeField] private AudioClip doorOpening;
+    [SerializeField] private AudioClip doorLocked;
 
     private void Start()
     {
-        sfxSource.clip = _doorOpening;
+        sfxSource.clip = doorOpening;
     }
 
     public void PlaySfx()
@@ -18,6 +19,18 @@ public class DoorAudio : MonoBehaviour
         if (!sfxSource.isPlaying)
         {
             sfxSource.Play();
+        }
+    }
+
+    public void SetDoorAudio(bool isOpen)
+    {
+        if (isOpen)
+        {
+            sfxSource.clip = doorOpening;
+        }
+        else
+        {
+            sfxSource.clip = doorLocked;
         }
     }
 }

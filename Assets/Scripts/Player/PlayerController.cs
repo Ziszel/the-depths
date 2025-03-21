@@ -103,6 +103,7 @@ public class PlayerController : MonoBehaviour
             // Force the cursor to hide to make game playable in test levels without level manager.
             Cursor.lockState = CursorLockMode.Locked; 
             Cursor.visible = false;
+            walkVelocity = 50.0f;
         }
         
         // Hook up events
@@ -333,7 +334,7 @@ public class PlayerController : MonoBehaviour
         } 
 
         if (context.canceled && !_currentplayerActionState.Equals(playerActionState.InInventory) &&
-            !_currentplayerActionState.Equals(playerActionState.Hiding))
+            !_currentplayerActionState.Equals(playerActionState.Hiding) && !DetectObstacleDirectlyAbove())
         {
             SetPlayerValuesToWalk();
             _currentplayerActionState = playerActionState.Walking;
@@ -529,7 +530,7 @@ public class PlayerController : MonoBehaviour
         Vector3 dir = walkCollider.transform.TransformDirection(Vector3.up);
         // Debug.DrawRay(walkCollider.transform.position, dir.normalized * playerHeightRay, Color.red);
         if (Physics.Raycast(walkCollider.transform.position, dir,
-                out RaycastHit hit, playerHeightRay))
+                playerHeightRay))
         {
             return true;
         }
@@ -573,7 +574,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable()
     {
-        // _inputActions.Player.Disable();
-        _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
+        if (_monster)
+        {
+            _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
+        }
     }
 }

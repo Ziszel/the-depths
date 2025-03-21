@@ -8,10 +8,10 @@ public class HorizontalDoor : DoorBase, ISwitchable
     
     private void Start()
     {
-        _doorAudio = GetComponent<DoorAudio>();
+        DoorAudio = GetComponent<DoorAudio>();
     }
 
-    protected override IEnumerator OpenDoor()
+    protected override IEnumerator OpenDoor(float dot)
     {
         float timeElapsed = 0.0f;
         Vector3 startPosition = transform.position;
@@ -29,11 +29,11 @@ public class HorizontalDoor : DoorBase, ISwitchable
 
     public void Toggle()
     {
-        if (!IsOpen)
+        if (!isOpen)
         {
-            _doorAudio.PlaySfx();
-            StartCoroutine(OpenDoor());
-            IsOpen = true;
+            DoorAudio.PlaySfx();
+            StartCoroutine(OpenDoor(0.0f));
+            isOpen = true;
         }
     }
 }

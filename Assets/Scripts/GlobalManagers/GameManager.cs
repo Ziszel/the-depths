@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private string _gameVersion;
+    
     public static GameManager Instance;
     
     public Action OnInventoryClosed;
@@ -38,6 +40,7 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        _gameVersion = "0.1.5"; // Major, Minor, Patch
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -172,6 +175,11 @@ public class GameManager : MonoBehaviour
     public float GetBestTime()
     {
         return _bestTime;
+    }
+
+    public string GetVersionText()
+    {
+        return _gameVersion;
     }
 
     private void InitialiseGame()

@@ -1,10 +1,8 @@
-using System;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
     public Transform checkpointTransform;
-    public InteractHelpUI _InteractHelpUI;
     private static float _timer;
 
     private GameManager _gameManager;
@@ -121,16 +119,5 @@ public class LevelManager : MonoBehaviour
         GameManager.Instance.IncrementDeathCount();
         _timeUntilRespawn = respawnTime;
         _playerDead = true;
-    }
-    
-    // Global UI level utilities
-    public void ActivateInteractUI()
-    {
-        _InteractHelpUI.SetWhetherChildrenActive(true);
-    }
-    
-    public void DeActivateInteractUI()
-    {
-        _InteractHelpUI.SetWhetherChildrenActive(false);
     }
 }
