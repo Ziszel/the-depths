@@ -2,14 +2,19 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    [Header("UI Elements")]
+    [SerializeField] private GameObject pauseOverlay;
+
+    
     public Transform checkpointTransform;
     private static float _timer;
 
     private GameManager _gameManager;
+    private PostProcessManager _postProcessManager;
     private PlayerController _player;
     private Monster _monster;
     private SetMonsterStateTrigger[] _monsterStateTriggers;
-
+    
     // Player death handling
     [SerializeField] private float respawnTime = 3.0f;
     private float _timeUntilRespawn;
@@ -26,7 +31,7 @@ public class LevelManager : MonoBehaviour
     private void Start()
     {
         _timer = 0;
-        // _InteractHelpUI = FindAnyObjectByType<InteractHelpUI>();
+        _postProcessManager = FindAnyObjectByType<PostProcessManager>();
         _gameManager = FindAnyObjectByType<GameManager>();
         _player = FindAnyObjectByType<PlayerController>();
         _monster = FindAnyObjectByType<Monster>();
@@ -36,6 +41,7 @@ public class LevelManager : MonoBehaviour
         
         // Events
         _player.OnPlayerDeath += PrepareForRespawn;
+        _player.OnPausePressed += HandlePause;
     }
 
     // Update is called once per frame
@@ -119,5 +125,31 @@ public class LevelManager : MonoBehaviour
         GameManager.Instance.IncrementDeathCount();
         _timeUntilRespawn = respawnTime;
         _playerDead = true;
+    }
+
+    private void HandlePause(bool isOpening)
+    {
+        if (isOpening)
+        {
+            OpenPauseMenu();
+        }
+        else
+        {
+            ClosePauseMenu();
+        }
+    }
+
+    private void OpenPauseMenu()
+    {
+        Time.timeScale = 0.0f;
+        pauseOverlay.SetActive(true);
+        _postProcessManager.SwitchVolume(_postProcessManager.pauseVolume);
+    }
+
+    private void ClosePauseMenu()
+    {
+        Time.timeScale = 1.0f;
+        pauseOverlay.SetActive(false);
+        _postProcessManager.SwitchVolume(_postProcessManager.gameplayVolume);
     }
 }
