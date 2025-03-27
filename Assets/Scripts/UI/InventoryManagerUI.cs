@@ -24,6 +24,7 @@ public class InventoryManagerUI : MonoBehaviour
     private StatusUIManager _statusUIManager;
     private ItemsUIManager _itemsUIManager;
     private FilesUIManager _filesUIManager;
+    private SettingsManager _settingsManager;
 
     private void Start()
     {
@@ -32,6 +33,7 @@ public class InventoryManagerUI : MonoBehaviour
         _statusUIManager = GetComponentInChildren<StatusUIManager>(true);
         _itemsUIManager = GetComponentInChildren<ItemsUIManager>(true);
         _filesUIManager = GetComponentInChildren<FilesUIManager>(true);
+        _settingsManager = GetComponentInChildren<SettingsManager>(true);
     }
 
     private void AssociateNavigationButtons()
@@ -104,6 +106,7 @@ public class InventoryManagerUI : MonoBehaviour
 
     private void ShowOptionsUI()
     {
+        _settingsManager.InitialiseSettings();
         SetActiveUIElements(false, false, false, true);
     }
 

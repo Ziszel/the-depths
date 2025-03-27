@@ -413,13 +413,11 @@ public class PlayerController : MonoBehaviour
             // Pause the game if we're not paused
             if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
-                //GameManager.Instance.Pause();
                 OnPausePressed?.Invoke(true);
             }
             // Unpause the game if we are paused
             else
             {
-                //GameManager.Instance.Unpause();
                 OnPausePressed?.Invoke(false);
             }
             

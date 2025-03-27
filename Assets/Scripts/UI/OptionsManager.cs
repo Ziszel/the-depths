@@ -71,7 +71,7 @@ public class OptionsManager : MonoBehaviour
     private void OnMouseSensitivityChanged(float value)
     {
         PlayerPrefs.SetFloat("MouseSensitivity", value);
-        PlayerPrefs.Save();
+        
 
         if (!isMainMenu)
         {

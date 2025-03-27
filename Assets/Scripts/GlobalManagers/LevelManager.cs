@@ -4,12 +4,13 @@ public class LevelManager : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private GameObject pauseOverlay;
-
     
     public Transform checkpointTransform;
     private static float _timer;
+    private bool _isPaused;
 
     private GameManager _gameManager;
+    private FPSCamera _fpsCamera;
     private PostProcessManager _postProcessManager;
     private PlayerController _player;
     private Monster _monster;
@@ -35,6 +36,7 @@ public class LevelManager : MonoBehaviour
         _gameManager = FindAnyObjectByType<GameManager>();
         _player = FindAnyObjectByType<PlayerController>();
         _monster = FindAnyObjectByType<Monster>();
+        _fpsCamera = GameObject.Find("FPSCamera").GetComponent<FPSCamera>();
         _playerDead = false;
 
         _monsterStateTriggers = FindObjectsByType<SetMonsterStateTrigger>(FindObjectsSortMode.None);
@@ -59,9 +61,9 @@ public class LevelManager : MonoBehaviour
                 RespawnPlayer();
             }
         }
-        else
+        else if (!_isPaused)
         {
-            _timer += Time.deltaTime;
+            _timer += Time.unscaledDeltaTime;
         }
     }
 
@@ -151,5 +153,9 @@ public class LevelManager : MonoBehaviour
         Time.timeScale = 1.0f;
         pauseOverlay.SetActive(false);
         _postProcessManager.SwitchVolume(_postProcessManager.gameplayVolume);
+        PlayerPrefs.Save();
+        _fpsCamera.SetGain(PlayerPrefs.GetFloat("MouseSensitivity"));
+        _gameManager.SetMusicMixerValue();
+        _gameManager.SetSFXMixerValue();
     }
 }

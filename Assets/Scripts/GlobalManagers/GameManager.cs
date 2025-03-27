@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
@@ -10,6 +11,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     
     public Action OnInventoryClosed;
+    public AudioMixer musicMixer;
+    public AudioMixer SFXMixer;
 
     private float _bestTime;
     private float _totalPlayTime;
@@ -180,6 +183,17 @@ public class GameManager : MonoBehaviour
     public string GetVersionText()
     {
         return _gameVersion;
+    }
+    
+    // Settings and backend values (Level manager is responsible for some, game manager for others)
+    public void SetMusicMixerValue()
+    {
+        musicMixer.SetFloat("MusicVolume", PlayerPrefs.GetFloat("MusicVolume"));
+    }
+
+    public void SetSFXMixerValue()
+    {
+        SFXMixer.SetFloat("SFXVolume", PlayerPrefs.GetFloat("SFXVolume"));
     }
 
     private void InitialiseGame()
