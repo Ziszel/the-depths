@@ -5,10 +5,22 @@ using UnityEngine.UI;
 public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text versionText;
+    [SerializeField] private string levelToLoad; // For debug purposes (Level1 on production builds!)
     
+    [SerializeField] private GameObject mainMenuUIObj;
+    [SerializeField] private GameObject optionsUIObj;
+    [SerializeField] private GameObject creditsUIObj;
+    
+    // MainMenu
     private Button _startGameBtn;
     private Button _optionsBtn;
     private Button _creditsBtn;
+    
+    // Child scripts
+    private SettingsManager _settingsManager;
+    
+    // Credits (May require separate script for this eventually)
+    private Button _returnToMainMenuBtn;
 
     // edit
     private void Awake()
@@ -17,30 +29,43 @@ public class MainMenuManager : MonoBehaviour
         _startGameBtn.onClick.AddListener(OnStartGameClicked);
         _optionsBtn.onClick.AddListener(OnOptionsClicked);
         _creditsBtn.onClick.AddListener(OnCreditsClicked);
+        _returnToMainMenuBtn.onClick.AddListener(OnCreditsToMainMenuClicked);
     }
 
     private void Start()
     {
         versionText.text = "Version: " + GameManager.Instance.GetVersionText();
+        SetInitialView();
+        _settingsManager = GetComponentInChildren<SettingsManager>(true);
     }
 
     private void OnStartGameClicked()
     {
-        GameManager.Instance.LoadLevel("Level1"); //CHANGE BACK TO MainLevel ONCE TESTING COMPLETE
+        GameManager.Instance.LoadLevel(levelToLoad);
     }
 
     private void OnOptionsClicked()
     {
-        UIManager.instance.ShowOptionsCanvas(true);
+        _settingsManager.InitialiseSettings();
+        optionsUIObj.SetActive(true);
+        mainMenuUIObj.SetActive(false);
     }
     private void OnCreditsClicked()
     {
-        UIManager.instance.ShowCreditsCanvas();
+        creditsUIObj.SetActive(true);
+        mainMenuUIObj.SetActive(false);
     }
     private void OnCreditsToMainMenuClicked()
     {
-        Debug.Log("OPTIONS MENU MAINMENU BUTTON CLICKED");
-        UIManager.instance.ShowMainMenu();
+        creditsUIObj.SetActive(false);
+        mainMenuUIObj.SetActive(true);
+    }
+
+    private void SetInitialView()
+    {
+        mainMenuUIObj.SetActive(true);
+        optionsUIObj.SetActive(false);
+        creditsUIObj.SetActive(false);
     }
 
     private void SetButtonReferences()
@@ -57,11 +82,18 @@ public class MainMenuManager : MonoBehaviour
             if (b.gameObject.name == "OptionsBtn")
             {
                 _optionsBtn = b;
+                continue;
             }
 
             if (b.gameObject.name == "CreditsBtn")
             {
                 _creditsBtn = b;
+                continue;
+            }
+
+            if (b.gameObject.name == "CreditsToMainMenuBtn")
+            {
+                _returnToMainMenuBtn = b;
             }
         }
     }
