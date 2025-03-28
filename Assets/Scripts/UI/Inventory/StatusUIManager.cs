@@ -16,6 +16,6 @@ public class StatusUIManager : MonoBehaviour
 
     private void Update()
     {
-        playTimeText.text = GameManager.Instance.GetCurrentPlayTimeAsString();
+        playTimeText.text = LevelManager.GetTimerAsString();
     }
 }

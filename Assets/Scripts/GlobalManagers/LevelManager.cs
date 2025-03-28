@@ -37,6 +37,7 @@ public class LevelManager : MonoBehaviour
     private void Start()
     {
         _timer = 0;
+        _isPaused = false;
         _postProcessManager = FindAnyObjectByType<PostProcessManager>();
         _gameManager = FindAnyObjectByType<GameManager>();
         _player = FindAnyObjectByType<PlayerController>();
@@ -74,6 +75,7 @@ public class LevelManager : MonoBehaviour
         else if (!_isPaused)
         {
             _timer += Time.unscaledDeltaTime;
+            Debug.Log(_timer);
         }
     }
     
@@ -196,10 +198,7 @@ public class LevelManager : MonoBehaviour
     private void ApplySettingsToGame()
     {
         _fpsCamera.SetGain(PlayerPrefs.GetFloat("MouseSensitivity"));
-        Debug.Log(PlayerPrefs.GetFloat("MouseSensitivity"));
         _gameManager.SetMusicMixerValue();
-        Debug.Log(PlayerPrefs.GetFloat("MusicVolume"));
         _gameManager.SetSFXMixerValue();
-        Debug.Log(PlayerPrefs.GetFloat("SFXVolume"));
     }
 }
