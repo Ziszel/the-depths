@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     
     public static GameManager Instance;
     
-    public Action OnInventoryClosed;
     public AudioMixer musicMixer;
     public AudioMixer SFXMixer;
 
@@ -23,14 +22,11 @@ public class GameManager : MonoBehaviour
     // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
     // lots of changes required, etc... Used to stop flashlight playing from PC (separate input action had no effect)
     private bool _inventoryOpen; 
-    
-    /* UI */
-    private InventoryManagerUI _inventoryUI;
 
     /* Audio */
     private MusicManager _musicManager;
 
-    /* Monster */
+    /* Monster */ // (this DEFINITELY should not be here. Look to clean-up when implementing Level2)
     Monster monster;
 
     private void Awake()
@@ -57,7 +53,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        _totalPlayTime += Time.unscaledDeltaTime;
+        //_totalPlayTime += Time.unscaledDeltaTime;
     }
 
     public void LoadLevel(string levelName) //music calls commented out are called befopre thjis
@@ -71,7 +67,6 @@ public class GameManager : MonoBehaviour
         if (scene.name != "MainMenu")
         {
             //_musicManager = GameObject.Find("MusicAudioSource").GetComponentInChildren<MusicManager>();
-            _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryManagerUI>();
             //monster = GameObject.Find("Monster").GetComponentInChildren<Monster>(); // Get the monster stored so we're able to play chasing/wandering music
             if (monster != null)
             {
@@ -79,41 +74,6 @@ public class GameManager : MonoBehaviour
                 monster.OnChaseStateExited += HandleMonsterExitChaseState;
             }
         }
-    }
-
-    public void ShowInventory(Inventory inventory)
-    {
-        Time.timeScale = 0;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        _inventoryUI.ShowOnOpen(inventory);
-        _inventoryOpen = true;
-    }
-
-    public void HideInventory()
-    {
-        _inventoryUI.CloseInventory();
-        Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        _inventoryOpen = false;
-        OnInventoryClosed?.Invoke();
-    }
-
-    public void Pause()
-    {
-        Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-        UIManager.instance.ShowOptionsCanvas(true);
-    }
-
-    public void Unpause()
-    {
-        Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        UIManager.instance.UnshowOptionsCanvas();
     }
 
     private void HandleMonsterEnterChaseState()
@@ -188,12 +148,12 @@ public class GameManager : MonoBehaviour
     // Settings and backend values (Level manager is responsible for some, game manager for others)
     public void SetMusicMixerValue()
     {
-        musicMixer.SetFloat("MusicVolume", PlayerPrefs.GetFloat("MusicVolume"));
+        musicMixer.SetFloat("MusicVolume", PlayerPrefs.GetFloat("MusicVolume", 0.5f));
     }
 
     public void SetSFXMixerValue()
     {
-        SFXMixer.SetFloat("SFXVolume", PlayerPrefs.GetFloat("SFXVolume"));
+        SFXMixer.SetFloat("SFXVolume", PlayerPrefs.GetFloat("SFXVolume", 0.5f));
     }
 
     private void InitialiseGame()

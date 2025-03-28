@@ -382,14 +382,16 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
-            GameManager.Instance.ShowInventory(_inventory);
+            LevelManager.ShowInventory(_inventory);
+            // GameManager.Instance.ShowInventory(_inventory);
             _oldPlayerActionState = _currentplayerActionState;
             _currentplayerActionState = playerActionState.InInventory;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.UI);
         }
         else if (context.started && _currentplayerActionState == playerActionState.InInventory)
         {
-            GameManager.Instance.HideInventory();
+            LevelManager.HideInventory();
+            // GameManager.Instance.HideInventory();
             _currentplayerActionState = _oldPlayerActionState;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }

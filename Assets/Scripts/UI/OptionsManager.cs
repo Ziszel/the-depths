@@ -29,9 +29,6 @@ public class OptionsManager : MonoBehaviour
         _musicVolumeSlider.onValueChanged.AddListener(OnMusicVolumeChanged);
         _sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
 
-        _optionsMainMenuBtn = transform.Find("OptionsMainMenuBtn").GetComponent<Button>();
-        _optionsMainMenuBtn.onClick.AddListener(OnMainMenuClicked);
-
         _optionsResumeBtn = transform.Find("ResumeBtn").GetComponent<Button>();
         _optionsResumeBtn.onClick.AddListener(OnOptionsResumeClicked);
 
@@ -59,13 +56,10 @@ public class OptionsManager : MonoBehaviour
         _SFXMixer.SetFloat("SFXVolume", PlayerPrefs.GetFloat("SFXVolume", 1.0f));
     }
 
-    private void OnMainMenuClicked()
-    {
-        UIManager.instance.ShowMainMenu();
-    }
+
     private void OnOptionsResumeClicked()
     {
-        GameManager.Instance.Unpause();
+        // GameManager.Instance.Unpause();
     }
 
     private void OnMouseSensitivityChanged(float value)

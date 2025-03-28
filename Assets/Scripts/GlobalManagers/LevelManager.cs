@@ -1,7 +1,11 @@
+using System;
+using System.Globalization;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    public static Action OnInventoryClosed;
+    
     [Header("UI Elements")]
     [SerializeField] private GameObject pauseOverlay;
     
@@ -15,6 +19,8 @@ public class LevelManager : MonoBehaviour
     private PlayerController _player;
     private Monster _monster;
     private SetMonsterStateTrigger[] _monsterStateTriggers;
+    /* UI */
+    private static InventoryManagerUI _inventoryUI;
     
     // Player death handling
     [SerializeField] private float respawnTime = 3.0f;
@@ -27,8 +33,7 @@ public class LevelManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     private void Start()
     {
         _timer = 0;
@@ -40,10 +45,15 @@ public class LevelManager : MonoBehaviour
         _playerDead = false;
 
         _monsterStateTriggers = FindObjectsByType<SetMonsterStateTrigger>(FindObjectsSortMode.None);
+        _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryManagerUI>();
         
         // Events
         _player.OnPlayerDeath += PrepareForRespawn;
         _player.OnPausePressed += HandlePause;
+        OnInventoryClosed += ApplySettingsToGame; // Gets around making ApplySettingsToGame static
+        
+        // Apply settings values to objects in game
+        ApplySettingsToGame();
     }
 
     // Update is called once per frame
@@ -66,10 +76,33 @@ public class LevelManager : MonoBehaviour
             _timer += Time.unscaledDeltaTime;
         }
     }
+    
+    public static void ShowInventory(Inventory inventory)
+    {
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        _inventoryUI.ShowOnOpen(inventory);
+    }
+
+    public static void HideInventory()
+    {
+        _inventoryUI.CloseInventory();
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        OnInventoryClosed?.Invoke();
+    }
 
     public static float GetTimer()
     {
         return _timer;
+    }
+
+    public static string GetTimerAsString()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(_timer);
+        return timeSpan.ToString("hh':'mm':'ss", new CultureInfo("en-GB"));
     }
 
     public bool IsPlayerDead()
@@ -133,16 +166,19 @@ public class LevelManager : MonoBehaviour
     {
         if (isOpening)
         {
+            _isPaused = true;
             OpenPauseMenu();
         }
         else
         {
+            _isPaused = false;
             ClosePauseMenu();
         }
     }
 
     private void OpenPauseMenu()
     {
+        Debug.Log("Game is paused");
         Time.timeScale = 0.0f;
         pauseOverlay.SetActive(true);
         _postProcessManager.SwitchVolume(_postProcessManager.pauseVolume);
@@ -154,8 +190,16 @@ public class LevelManager : MonoBehaviour
         pauseOverlay.SetActive(false);
         _postProcessManager.SwitchVolume(_postProcessManager.gameplayVolume);
         PlayerPrefs.Save();
+        ApplySettingsToGame();
+    }
+
+    private void ApplySettingsToGame()
+    {
         _fpsCamera.SetGain(PlayerPrefs.GetFloat("MouseSensitivity"));
+        Debug.Log(PlayerPrefs.GetFloat("MouseSensitivity"));
         _gameManager.SetMusicMixerValue();
+        Debug.Log(PlayerPrefs.GetFloat("MusicVolume"));
         _gameManager.SetSFXMixerValue();
+        Debug.Log(PlayerPrefs.GetFloat("SFXVolume"));
     }
 }
