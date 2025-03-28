@@ -1,15 +1,27 @@
+using System;
+using System.Globalization;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    public static Action OnInventoryClosed;
+    
+    [Header("UI Elements")]
+    [SerializeField] private GameObject pauseOverlay;
+    
     public Transform checkpointTransform;
     private static float _timer;
+    private bool _isPaused;
 
     private GameManager _gameManager;
+    private FPSCamera _fpsCamera;
+    private PostProcessManager _postProcessManager;
     private PlayerController _player;
     private Monster _monster;
     private SetMonsterStateTrigger[] _monsterStateTriggers;
-
+    /* UI */
+    private static InventoryManagerUI _inventoryUI;
+    
     // Player death handling
     [SerializeField] private float respawnTime = 3.0f;
     private float _timeUntilRespawn;
@@ -21,21 +33,28 @@ public class LevelManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     private void Start()
     {
         _timer = 0;
-        // _InteractHelpUI = FindAnyObjectByType<InteractHelpUI>();
+        _isPaused = false;
+        _postProcessManager = FindAnyObjectByType<PostProcessManager>();
         _gameManager = FindAnyObjectByType<GameManager>();
         _player = FindAnyObjectByType<PlayerController>();
         _monster = FindAnyObjectByType<Monster>();
+        _fpsCamera = GameObject.Find("FPSCamera").GetComponent<FPSCamera>();
         _playerDead = false;
 
         _monsterStateTriggers = FindObjectsByType<SetMonsterStateTrigger>(FindObjectsSortMode.None);
+        _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryManagerUI>();
         
         // Events
         _player.OnPlayerDeath += PrepareForRespawn;
+        _player.OnPausePressed += HandlePause;
+        OnInventoryClosed += ApplySettingsToGame; // Gets around making ApplySettingsToGame static
+        
+        // Apply settings values to objects in game
+        ApplySettingsToGame();
     }
 
     // Update is called once per frame
@@ -53,15 +72,39 @@ public class LevelManager : MonoBehaviour
                 RespawnPlayer();
             }
         }
-        else
+        else if (!_isPaused)
         {
-            _timer += Time.deltaTime;
+            _timer += Time.unscaledDeltaTime;
+            Debug.Log(_timer);
         }
+    }
+    
+    public static void ShowInventory(Inventory inventory)
+    {
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        _inventoryUI.ShowOnOpen(inventory);
+    }
+
+    public static void HideInventory()
+    {
+        _inventoryUI.CloseInventory();
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        OnInventoryClosed?.Invoke();
     }
 
     public static float GetTimer()
     {
         return _timer;
+    }
+
+    public static string GetTimerAsString()
+    {
+        TimeSpan timeSpan = TimeSpan.FromSeconds(_timer);
+        return timeSpan.ToString("hh':'mm':'ss", new CultureInfo("en-GB"));
     }
 
     public bool IsPlayerDead()
@@ -119,5 +162,43 @@ public class LevelManager : MonoBehaviour
         GameManager.Instance.IncrementDeathCount();
         _timeUntilRespawn = respawnTime;
         _playerDead = true;
+    }
+
+    private void HandlePause(bool isOpening)
+    {
+        if (isOpening)
+        {
+            _isPaused = true;
+            OpenPauseMenu();
+        }
+        else
+        {
+            _isPaused = false;
+            ClosePauseMenu();
+        }
+    }
+
+    private void OpenPauseMenu()
+    {
+        Debug.Log("Game is paused");
+        Time.timeScale = 0.0f;
+        pauseOverlay.SetActive(true);
+        _postProcessManager.SwitchVolume(_postProcessManager.pauseVolume);
+    }
+
+    private void ClosePauseMenu()
+    {
+        Time.timeScale = 1.0f;
+        pauseOverlay.SetActive(false);
+        _postProcessManager.SwitchVolume(_postProcessManager.gameplayVolume);
+        PlayerPrefs.Save();
+        ApplySettingsToGame();
+    }
+
+    private void ApplySettingsToGame()
+    {
+        _fpsCamera.SetGain(PlayerPrefs.GetFloat("MouseSensitivity"));
+        _gameManager.SetMusicMixerValue();
+        _gameManager.SetSFXMixerValue();
     }
 }

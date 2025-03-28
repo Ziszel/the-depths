@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public Action OnCrouchEnabled;
     public Action OnCrouchDisabled;
     public static Action OnLeavingCupboard;
+    public Action<bool> OnPausePressed;
     
     [Header("Movement velocity")]
     [SerializeField] private float movementVelocity = 5.0f;
@@ -98,13 +99,13 @@ public class PlayerController : MonoBehaviour
         
         _movement = InputManager.PlayerInputActions.Player.Move;
         
-        if (isDebug)
-        {
-            // Force the cursor to hide to make game playable in test levels without level manager.
-            Cursor.lockState = CursorLockMode.Locked; 
-            Cursor.visible = false;
-            walkVelocity = 50.0f;
-        }
+        // if (isDebug)
+        // {
+        //     // Force the cursor to hide to make game playable in test levels without level manager.
+        //     Cursor.lockState = CursorLockMode.Locked; 
+        //     Cursor.visible = false;
+        //     walkVelocity = 50.0f;
+        // }
         
         // Hook up events
         if (_monster)
@@ -381,14 +382,16 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
-            GameManager.Instance.ShowInventory(_inventory);
+            LevelManager.ShowInventory(_inventory);
+            // GameManager.Instance.ShowInventory(_inventory);
             _oldPlayerActionState = _currentplayerActionState;
             _currentplayerActionState = playerActionState.InInventory;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.UI);
         }
         else if (context.started && _currentplayerActionState == playerActionState.InInventory)
         {
-            GameManager.Instance.HideInventory();
+            LevelManager.HideInventory();
+            // GameManager.Instance.HideInventory();
             _currentplayerActionState = _oldPlayerActionState;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }
@@ -412,12 +415,12 @@ public class PlayerController : MonoBehaviour
             // Pause the game if we're not paused
             if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
-                GameManager.Instance.Pause();
+                OnPausePressed?.Invoke(true);
             }
             // Unpause the game if we are paused
             else
             {
-                GameManager.Instance.Unpause();
+                OnPausePressed?.Invoke(false);
             }
             
         }

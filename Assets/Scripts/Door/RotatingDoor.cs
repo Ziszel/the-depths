@@ -103,8 +103,11 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                     StartCoroutine(OpenDoor(dot));
                     DoorMesh.layer = LayerMask.NameToLayer("Default");
                 }
-                DoorAudio.SetDoorAudio(false);
-                DoorAudio.PlaySfx(); // Door is not meant to open
+                else
+                {
+                    DoorAudio.SetDoorAudio(false);
+                    DoorAudio.PlaySfx(); // Door is not meant to open
+                }
             }
 
             if (lockedFromOtherSideDoor)
