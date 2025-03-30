@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
@@ -14,6 +15,10 @@ public class GameManager : MonoBehaviour
     private float _bestTime;
     private int _deathCount;
     private int _saveCount;
+    
+    // Used to persist data between scenes. This may need to be cleaned-up later.
+    private List<InventoryItem> _persistedPlayerItems;
+    private List<FileData> _persistedFileData;
     
     /* STATE */
     // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
@@ -50,6 +55,13 @@ public class GameManager : MonoBehaviour
 
     public void LoadLevel(string levelName)
     {
+        // We have a valid Inventory that we need to save
+        if (levelName.Contains("Level"))
+        {
+            Inventory playerInv = FindAnyObjectByType<PlayerController>().GetComponent<Inventory>();
+            _persistedPlayerItems = playerInv.GetItems();
+            _persistedFileData = playerInv.GetFileData();
+        }
         SceneManager.LoadScene(levelName);
     }
 
@@ -105,6 +117,24 @@ public class GameManager : MonoBehaviour
     public bool IsInventoryOpen()
     {
         return _inventoryOpen;
+    }
+
+    public List<InventoryItem> GetSavedPlayerItems()
+    {
+        if (_persistedPlayerItems == null)
+        {
+            _persistedPlayerItems = new List<InventoryItem>();
+        }
+        return _persistedPlayerItems;
+    }
+
+    public List<FileData> GetSavedFileData()
+    {
+        if (_persistedFileData == null)
+        {
+            _persistedFileData = new List<FileData>();
+        }
+        return _persistedFileData;
     }
     
     public void SetBestTime(float newBestTime)

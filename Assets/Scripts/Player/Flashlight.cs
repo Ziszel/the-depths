@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -126,6 +127,15 @@ public class Flashlight : MonoBehaviour
         {
             flashlightAnchorTransform.localPosition = _defaultPosition;
         }
+    }
+
+    private void OnDisable()
+    {
+        LevelManager.OnInventoryClosed -= DeactivateFlashlight;
         
+        playerController.OnFlashlightActivated -= ActivateFlashlight;
+        playerController.OnFlashlightDeActivated -= DeactivateFlashlight;
+        playerController.OnCrouchEnabled -= MoveFlashlightToCrouchPosition;
+        playerController.OnCrouchDisabled -= MoveFlashlightToStandPosition;
     }
 }

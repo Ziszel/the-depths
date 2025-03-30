@@ -15,6 +15,18 @@ public class Inventory : MonoBehaviour
         _foundFileData = new List<FileData>();
         // Not sure this is the best way of handling this but will do for now
         _fileDataManager = FindFirstObjectByType<FileDataManager>();
+        
+        // If moving between scenes, make sure to update the new Inventory object
+        // with the stored values of items and files
+        if (GameManager.Instance.GetSavedPlayerItems().Count > 0)
+        {
+            _items = GameManager.Instance.GetSavedPlayerItems();
+        }
+        
+        if (GameManager.Instance.GetSavedFileData().Count > 0)
+        {
+            _foundFileData = GameManager.Instance.GetSavedFileData();
+        }
     }
 
     // InventoryItems operations

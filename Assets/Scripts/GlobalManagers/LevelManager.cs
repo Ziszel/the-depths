@@ -75,7 +75,6 @@ public class LevelManager : MonoBehaviour
         else if (!_isPaused)
         {
             _timer += Time.unscaledDeltaTime;
-            Debug.Log(_timer);
         }
     }
     
