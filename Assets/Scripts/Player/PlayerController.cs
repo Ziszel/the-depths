@@ -178,6 +178,11 @@ public class PlayerController : MonoBehaviour
             {
                 HealPlayerToFull();
             }
+
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                GameManager.Instance.LoadLevel("Level1");
+            }
         }
     }
 
