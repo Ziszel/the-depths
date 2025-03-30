@@ -46,6 +46,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float walkingRate = 1.0f;
     [SerializeField] private float sprintingRate = 0.5f;
     
+    [Header("Controls the shake of the player when they walk or sprint")]
+    [SerializeField] private float fpsCamWalkAmplitude = 0.5f;
+    [SerializeField] private float fpsCamWalkFrequency = 0.5f;
+    [SerializeField] private float fpsCamSprintAmplitude = 1.0f;
+    [SerializeField] private float fpsCamSprintFrequency = 1.0f;
+    
     // This does NOT dictate player height. It is used for ray calculation
     [SerializeField] private float playerHeightRay = 1.0f;
     private playerActionState _currentplayerActionState = playerActionState.Standing;
@@ -66,6 +72,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _rb;
     private Camera _mainCamera;
     private CinemachineCamera _fpsCamera;
+    private CinemachineBasicMultiChannelPerlin _fpsCameraNoise;
     private Monster _monster;
     private FloorCollider _floorCollider;
     private PlayerAudio _playerAudio;
@@ -94,6 +101,7 @@ public class PlayerController : MonoBehaviour
         _playerInteractable = GetComponentInChildren<PlayerInteractable>();
         _playerAudio = GetComponentInChildren<PlayerAudio>();
         _fpsCamera = GameObject.Find("FPSCamera").GetComponent<CinemachineCamera>();
+        _fpsCameraNoise = _fpsCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _currentFootstepRate = walkingRate;
         
@@ -344,12 +352,16 @@ public class PlayerController : MonoBehaviour
 
     private void SetPlayerValuesToSprinting()
     {
+        _fpsCameraNoise.AmplitudeGain = fpsCamSprintAmplitude;
+        _fpsCameraNoise.FrequencyGain = fpsCamSprintFrequency;
         _currentFootstepRate = sprintingRate;
         maxMovementVelocity = maxSprintVelocity;
     }
 
     private void SetPlayerValuesToWalk()
     {
+        _fpsCameraNoise.AmplitudeGain = fpsCamWalkAmplitude;
+        _fpsCameraNoise.FrequencyGain = fpsCamWalkFrequency;
         _currentFootstepRate = walkingRate;
         maxMovementVelocity = maxWalkVelocity;
     }
