@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private string gameVersion;
+    [SerializeField] private string gameVersion; // Major, Minor, Patch
     
     public static GameManager Instance;
     
@@ -41,7 +41,6 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        gameVersion = "0.1.5"; // Major, Minor, Patch
 
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
@@ -56,7 +55,7 @@ public class GameManager : MonoBehaviour
     public void LoadLevel(string levelName)
     {
         // We have a valid Inventory that we need to save
-        if (levelName.Contains("Level"))
+        if (SceneManager.GetActiveScene().name.Contains("Level"))
         {
             Inventory playerInv = FindAnyObjectByType<PlayerController>().GetComponent<Inventory>();
             _persistedPlayerItems = playerInv.GetItems();
@@ -121,20 +120,12 @@ public class GameManager : MonoBehaviour
 
     public List<InventoryItem> GetSavedPlayerItems()
     {
-        if (_persistedPlayerItems == null)
-        {
-            _persistedPlayerItems = new List<InventoryItem>();
-        }
-        return _persistedPlayerItems;
+        return _persistedPlayerItems ?? new List<InventoryItem>();
     }
 
     public List<FileData> GetSavedFileData()
     {
-        if (_persistedFileData == null)
-        {
-            _persistedFileData = new List<FileData>();
-        }
-        return _persistedFileData;
+        return _persistedFileData ?? new List<FileData>();
     }
     
     public void SetBestTime(float newBestTime)
