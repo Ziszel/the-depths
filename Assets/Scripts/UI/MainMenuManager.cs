@@ -37,6 +37,9 @@ public class MainMenuManager : MonoBehaviour
         versionText.text = "Version: " + GameManager.Instance.GetVersionText();
         SetInitialView();
         _settingsManager = GetComponentInChildren<SettingsManager>(true);
+        
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     private void OnStartGameClicked()

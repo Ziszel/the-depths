@@ -13,6 +13,7 @@ public class FilesUIManager : MonoBehaviour
     public Button File03;
     public Button File04;
     public Button File05;
+    public Button File99;
     
     private Inventory _inventory;
 
@@ -23,6 +24,7 @@ public class FilesUIManager : MonoBehaviour
         File03.onClick.AddListener(OnFile03Pressed);
         File04.onClick.AddListener(OnFile04Pressed);
         File05.onClick.AddListener(OnFile05Pressed);
+        File99.onClick.AddListener(OnFile99Pressed);
     }
 
     // update the list of files so that those that are found are renamed from '???'.
@@ -51,6 +53,10 @@ public class FilesUIManager : MonoBehaviour
                 case 5:
                     File05.GetComponentInChildren<TMP_Text>().text = file.name;
                     File05.interactable = true;
+                    break;
+                case 99:
+                    File99.GetComponentInChildren<TMP_Text>().text = file.name;
+                    File99.interactable = true;
                     break;
                 default:
                     break;
@@ -111,6 +117,17 @@ public class FilesUIManager : MonoBehaviour
     private void OnFile05Pressed()
     {
         FileData? fd = _inventory.GetFileDataByIndex(5);
+
+        if (fd.HasValue)
+        {
+            fileReader.gameObject.SetActive(true);
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
+    }
+    
+    private void OnFile99Pressed()
+    {
+        FileData? fd = _inventory.GetFileDataByIndex(99);
 
         if (fd.HasValue)
         {
