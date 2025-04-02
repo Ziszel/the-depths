@@ -20,11 +20,6 @@ public class GameManager : MonoBehaviour
     // Used to persist data between scenes. This may need to be cleaned-up later.
     private List<InventoryItem> _persistedPlayerItems;
     private List<FileData> _persistedFileData;
-    
-    /* STATE */
-    // HACK: not a fan of this approach to stopping other elements activating during inventory, easy to miss something
-    // lots of changes required, etc... Used to stop flashlight playing from PC (separate input action had no effect)
-    private bool _inventoryOpen; 
 
     /* Audio */
     private MusicManager _musicManager;
@@ -121,11 +116,6 @@ public class GameManager : MonoBehaviour
         _saveCount++;
     }
 
-    public bool IsInventoryOpen()
-    {
-        return _inventoryOpen;
-    }
-
     public List<InventoryItem> GetSavedPlayerItems()
     {
         return _persistedPlayerItems ?? new List<InventoryItem>();
@@ -171,7 +161,6 @@ public class GameManager : MonoBehaviour
         _saveCount = 0;
         // TODO: Attempt to load from disk a best time, if it fails put the default value here
         _bestTime = 999999;
-        _inventoryOpen = false;
     }
     
 }

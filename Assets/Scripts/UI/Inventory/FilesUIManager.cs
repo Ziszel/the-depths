@@ -131,7 +131,7 @@ public class FilesUIManager : MonoBehaviour
 
         if (fd.HasValue)
         {
-            fileReader.gameObject.SetActive(true);
+            fileReader.EnableFileReaderUI();
             fileReader.SetupPageData(fd.Value.content, fd.Value.name);
         }
     }
