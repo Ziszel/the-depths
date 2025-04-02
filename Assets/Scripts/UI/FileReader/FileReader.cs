@@ -43,7 +43,7 @@ public class FileReader : MonoBehaviour
 
     private void OnCloseFileReaderPressed()
     {
-        gameObject.SetActive(false);
+        DisableFileReaderUI();
     }
     
     private void OnPreviousTextBlockPressed()
@@ -106,23 +106,25 @@ public class FileReader : MonoBehaviour
         UpdatePageCount();
     }
 
-    private void OnEnable()
+    public void EnableFileReaderUI()
     {
-        backgroundImageLetter.enabled = true;
         backgroundImageBlack.gameObject.SetActive(true);
-        // Enable cursor and pause game should happen on GameManager not here
+        backgroundImageLetter.gameObject.SetActive(true);
+        titleText.gameObject.SetActive(true);
+        textBlockText.gameObject.SetActive(true);
+        pageCountText.gameObject.SetActive(true);
+        previousTextBlockBtn.gameObject.SetActive(true);
     }
 
-    private void OnDisable()
+    public void DisableFileReaderUI()
     {
-        backgroundImageLetter.enabled = false;
         backgroundImageBlack.gameObject.SetActive(false);
-        // Disable cursor and pause game should happen on GameManager not here
-        if (!GameManager.Instance.IsInventoryOpen())
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-            Time.timeScale = 1.0f;
-        }
+        backgroundImageLetter.gameObject.SetActive(false);
+        titleText.gameObject.SetActive(false);
+        textBlockText.gameObject.SetActive(false);
+        pageCountText.gameObject.SetActive(false);
+        nextTextBlockBtn.gameObject.SetActive(false);
+        closeFileReaderBtn.gameObject.SetActive(false);
+        previousTextBlockBtn.gameObject.SetActive(false);
     }
 }

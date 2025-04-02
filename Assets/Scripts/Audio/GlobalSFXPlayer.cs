@@ -8,7 +8,7 @@ public class GlobalSFXPlayer : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _audioSource = GetComponentInChildren<AudioSource>();
+        _audioSource = GetComponent<AudioSource>();
     }
     
     public void PlaySfx(AudioClip audioClip)

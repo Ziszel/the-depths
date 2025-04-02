@@ -21,6 +21,7 @@ public class LevelManager : MonoBehaviour
     private SetMonsterStateTrigger[] _monsterStateTriggers;
     /* UI */
     private static InventoryManagerUI _inventoryUI;
+    private static FileReader _fileReader;
     
     // Player death handling
     [SerializeField] private float respawnTime = 3.0f;
@@ -47,6 +48,7 @@ public class LevelManager : MonoBehaviour
 
         _monsterStateTriggers = FindObjectsByType<SetMonsterStateTrigger>(FindObjectsSortMode.None);
         _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryManagerUI>();
+        _fileReader = GameObject.Find("FileReaderUI").GetComponent<FileReader>();
         
         // Events
         _player.OnPlayerDeath += PrepareForRespawn;
@@ -88,6 +90,7 @@ public class LevelManager : MonoBehaviour
 
     public static void HideInventory()
     {
+        _fileReader.DisableFileReaderUI();
         _inventoryUI.CloseInventory();
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.Locked;
@@ -179,7 +182,6 @@ public class LevelManager : MonoBehaviour
 
     private void OpenPauseMenu()
     {
-        Debug.Log("Game is paused");
         Time.timeScale = 0.0f;
         pauseOverlay.SetActive(true);
         _postProcessManager.SwitchVolume(_postProcessManager.pauseVolume);

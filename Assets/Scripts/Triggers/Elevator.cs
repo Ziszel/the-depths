@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Elevator : MonoBehaviour
 {
-    public LightController elevatorLight;
+    // public LightController elevatorLight;
     public HorizontalDoor doorOne;
     public HorizontalDoor doorTwo;
     
@@ -50,8 +50,8 @@ public class Elevator : MonoBehaviour
         // TODO: Make sure to set the correct audio on the doors used for the elevator!!
         doorOne.Toggle();
         doorTwo.Toggle();
-        elevatorLight.StopFlicker();
-        elevatorLight.TurnOnLight();
+        // elevatorLight.StopFlicker();
+        //elevatorLight.TurnOnLight();
         _perlinComponent.AmplitudeGain = _previousAmplitudeGain;
         _perlinComponent.FrequencyGain = _previousFrequencyGain;
         _elevatorAudio.StopSfx();
