@@ -2,13 +2,16 @@ using UnityEngine;
 
 public class ScareTrigger : MonoBehaviour
 {
-    [SerializeField] private GameObject _scareEvent;
+    [SerializeField] private GameObject[] _scareEvents;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_scareEvent.TryGetComponent(out IScareEvent scareEvent))
+        foreach (var se in _scareEvents)
         {
-            scareEvent.TriggerScareEvent();
+            if (se.TryGetComponent(out IScareEvent scareEvent))
+            {
+                scareEvent.TriggerScareEvent();
+            }
         }
     }
 }
