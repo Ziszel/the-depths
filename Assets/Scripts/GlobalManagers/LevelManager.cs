@@ -179,7 +179,6 @@ public class LevelManager : MonoBehaviour
 
     private void OpenPauseMenu()
     {
-        Debug.Log("Game is paused");
         Time.timeScale = 0.0f;
         pauseOverlay.SetActive(true);
         _postProcessManager.SwitchVolume(_postProcessManager.pauseVolume);

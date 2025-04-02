@@ -80,4 +80,9 @@ public class PlayerInteractable : MonoBehaviour
     {
         Pickup.OnPickupOccurred += NoActivePickup;
     }
+
+    private void OnDisable()
+    {
+        Pickup.OnPickupOccurred -= NoActivePickup;
+    }
 }

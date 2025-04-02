@@ -36,7 +36,6 @@ public class Pickup : MonoBehaviour, IInteractable
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger enter");
         if (other.TryGetComponent<PlayerInteractable>(out PlayerInteractable playerInteractable))
         {
             _itemName.enabled = true;

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -52,6 +53,12 @@ public class GameManager : MonoBehaviour
         InitialiseGame();
     }
 
+    private IEnumerator DelayedLevelChange(string levelToLoad)
+    {
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene(levelToLoad);
+    }
+
     public void LoadLevel(string levelName)
     {
         // We have a valid Inventory that we need to save
@@ -61,7 +68,8 @@ public class GameManager : MonoBehaviour
             _persistedPlayerItems = playerInv.GetItems();
             _persistedFileData = playerInv.GetFileData();
         }
-        SceneManager.LoadScene(levelName);
+
+        StartCoroutine(DelayedLevelChange(levelName));
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

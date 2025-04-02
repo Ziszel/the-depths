@@ -106,6 +106,7 @@ public class PlayerController : MonoBehaviour
         _currentFootstepRate = walkingRate;
         
         _movement = InputManager.PlayerInputActions.Player.Move;
+        InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         
         // if (isDebug)
         // {
