@@ -69,14 +69,14 @@ public class FilesUIManager : MonoBehaviour
         _inventory = inventory;
     }
     
-    // Hook up buttons
+    // Hook up buttons 
     private void OnFile01Pressed()
     {
         FileData? fd = _inventory.GetFileDataByIndex(1);
 
         if (fd.HasValue)
         {
-            fileReader.gameObject.SetActive(true);
+            fileReader.EnableFileReaderUI();
             fileReader.SetupPageData(fd.Value.content, fd.Value.name);
         }
     }
@@ -87,7 +87,7 @@ public class FilesUIManager : MonoBehaviour
 
         if (fd.HasValue)
         {
-            fileReader.gameObject.SetActive(true);
+            fileReader.EnableFileReaderUI();
             fileReader.SetupPageData(fd.Value.content, fd.Value.name);
         }
     }
@@ -98,7 +98,7 @@ public class FilesUIManager : MonoBehaviour
 
         if (fd.HasValue)
         {
-            fileReader.gameObject.SetActive(true);
+            fileReader.EnableFileReaderUI();
             fileReader.SetupPageData(fd.Value.content, fd.Value.name);
         }
     }
@@ -109,7 +109,7 @@ public class FilesUIManager : MonoBehaviour
 
         if (fd.HasValue)
         {
-            fileReader.gameObject.SetActive(true);
+            fileReader.EnableFileReaderUI();
             fileReader.SetupPageData(fd.Value.content, fd.Value.name);
         }
     }
@@ -120,7 +120,7 @@ public class FilesUIManager : MonoBehaviour
 
         if (fd.HasValue)
         {
-            fileReader.gameObject.SetActive(true);
+            fileReader.EnableFileReaderUI();
             fileReader.SetupPageData(fd.Value.content, fd.Value.name);
         }
     }
