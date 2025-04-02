@@ -1,23 +1,19 @@
+using System;
 using UnityEngine;
 using System.Collections;
 
 public class MusicManager : MonoBehaviour
 {
-    [Header("Audio Source")]
-    [SerializeField] private AudioSource _musicSource;
-
     [Header("Audio clips")]
     [SerializeField] private AudioClip _introMusic;
     [SerializeField] private AudioClip _wanderingMusic;
     [SerializeField] private AudioClip _chaseMusic;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
+    private AudioSource _musicSource;
+
+    private void Start()
     {
-        if (_musicSource)
-        {
-            AssignIntroMusic();
-        }
+        _musicSource = GetComponent<AudioSource>();
     }
 
     public void AssignIntroMusic()
