@@ -11,11 +11,11 @@ public class EndGame : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out PlayerController player))
+        if (other.CompareTag("PlayerTrigger"))
         {
-            Debug.Log("Player entered");
             if (!_levelManager.IsPlayerDead())
             {
+                InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
                 GameManager.Instance.SetBestTime(LevelManager.GetTimer());
                 GameManager.Instance.LoadLevel("EndGame");
             }

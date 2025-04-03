@@ -14,6 +14,9 @@ public class EndGameLevelManager : MonoBehaviour
     {
         SetCompletionTimeValue();
         returnToMenuBtn.onClick.AddListener(OnReturnBtnClicked);
+        
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
     }
 
     public void SetCompletionTimeValue()
