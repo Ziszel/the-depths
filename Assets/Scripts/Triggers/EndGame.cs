@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class EndGame : MonoBehaviour
@@ -12,8 +11,9 @@ public class EndGame : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.TryGetComponent(out PlayerController player))
         {
+            Debug.Log("Player entered");
             if (!_levelManager.IsPlayerDead())
             {
                 GameManager.Instance.SetBestTime(LevelManager.GetTimer());
