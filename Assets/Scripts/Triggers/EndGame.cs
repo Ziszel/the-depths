@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class EndGame : MonoBehaviour
@@ -12,10 +11,11 @@ public class EndGame : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("PlayerTrigger"))
         {
             if (!_levelManager.IsPlayerDead())
             {
+                InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
                 GameManager.Instance.SetBestTime(LevelManager.GetTimer());
                 GameManager.Instance.LoadLevel("EndGame");
             }

@@ -9,6 +9,9 @@ public class LevelManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private GameObject pauseOverlay;
     
+    [Header("Spawn controls")]
+    [SerializeField] private Transform playerSpawnPoint;
+    
     public Transform checkpointTransform;
     private static float _timer;
     private bool _isPaused;
@@ -49,6 +52,10 @@ public class LevelManager : MonoBehaviour
         _monsterStateTriggers = FindObjectsByType<SetMonsterStateTrigger>(FindObjectsSortMode.None);
         _inventoryUI = GameObject.Find("InventoryUI").GetComponent<InventoryManagerUI>();
         _fileReader = GameObject.Find("FileReaderUI").GetComponent<FileReader>();
+        
+        // Set location of objects at run-time
+        _player.transform.position = playerSpawnPoint.position;
+        CameraManager.ForceCurrentCameraRotation(Quaternion.LookRotation(playerSpawnPoint.forward, Vector3.up));
         
         // Events
         _player.OnPlayerDeath += PrepareForRespawn;
@@ -116,22 +123,22 @@ public class LevelManager : MonoBehaviour
 
     public void SetCheckpoint(Transform newCheckpoint)
     {
-        // If this is being called twice, disable the eyes on the player. They are tagged player too
         checkpointTransform.position = newCheckpoint.position;
         checkpointTransform.rotation = _player.transform.rotation;
     }
 
     public void RespawnPlayer()
     {
-        if (checkpointTransform.position == new Vector3(0.0f, 0.0f, 0.0f))
-        {
-            _gameManager.LoadLevel("MainLevel");
-        }
-        else
-        {
-            _player.transform.position = checkpointTransform.position;
-            _player.transform.rotation = checkpointTransform.rotation;
-        }
+        // Old game jam code. We now ALWAYS want to attempt to load the player
+        // if (checkpointTransform.position == new Vector3(0.0f, 0.0f, 0.0f))
+        // {
+        //     _gameManager.LoadLevel("MainLevel");
+        // }
+        // else
+        // {
+        //     _player.transform.position = checkpointTransform.position;
+        //     _player.transform.rotation = checkpointTransform.rotation;
+        // }
         // Make sure of no unexpected behaviour
         _playerDead = false;
         _player.EnableInputActions();

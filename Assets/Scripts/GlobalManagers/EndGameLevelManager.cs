@@ -10,15 +10,13 @@ public class EndGameLevelManager : MonoBehaviour
     public Button returnToMenuBtn;
     public TMP_Text completionTimeValue;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // Not needed as handled in GameManager, but better practice without a proper UI manager
-        // Cursor.lockState = CursorLockMode.None;
-        // Cursor.visible = true;
-        
         SetCompletionTimeValue();
         returnToMenuBtn.onClick.AddListener(OnReturnBtnClicked);
+        
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
     }
 
     public void SetCompletionTimeValue()
