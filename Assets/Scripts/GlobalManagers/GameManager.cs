@@ -81,19 +81,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // TODO: Old game jam hackery, remove.
     private void HandleMonsterEnterChaseState()
     {
         // Need an if here otherwise this will get assigned chase and play every frame from the monster delegate
-        if (!_musicManager.IsPlaying())
-        {
-            _musicManager.AssignChaseMusic();
-            _musicManager.Play();
-        }
+        // if (!_musicManager.IsPlaying())
+        // {
+        //     _musicManager.AssignChaseMusic();
+        //     _musicManager.Play();
+        // }
     }
 
+    // TODO: Old game jam hackery, remove.
     private void HandleMonsterExitChaseState()
     {
-        _musicManager.TriggerFadeOutMusic(1.5f);
+        // _musicManager.TriggerFadeOutMusic(1.5f);
     }
 
     public int GetDeathCount()

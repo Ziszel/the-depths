@@ -6,7 +6,7 @@ This repository is focused on developing the game into a full-length indie game.
 
 ## Tech Stack
 
-- Unity 6 (6000.0.23f1 LTS), C#
+- Unity 6 (6000.0.41f1 LTS), C#
 - git-lfs
 
 ## Team Members

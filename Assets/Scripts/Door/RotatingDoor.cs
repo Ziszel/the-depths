@@ -11,6 +11,7 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
     private Vector3 _playerForwardVector;
     private Vector3 _forward;
     private bool _isPlayerOnLockedSide; // manages which collider is active
+    private DisplayDescriptiveText _displayDescriptiveText;
     
     private void Start()
     {
@@ -26,6 +27,7 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
             doorCollisionHelperOpen.SetActive(false);
         }
         
+        _displayDescriptiveText = GetComponent<DisplayDescriptiveText>();
         _initialRotation = transform.rotation.eulerAngles;
         DoorAudio = GetComponent<DoorAudio>();
         _playerInventory = FindFirstObjectByType<Inventory>();
@@ -102,11 +104,13 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                     float dot = Vector3.Dot(_forward, (_playerForwardVector - transform.position).normalized);
                     StartCoroutine(OpenDoor(dot));
                     DoorMesh.layer = LayerMask.NameToLayer("Default");
+                    _displayDescriptiveText.UpdateDescriptionText("Used " + keyItem.itemName + ".");
                 }
                 else
                 {
                     DoorAudio.SetDoorAudio(false);
                     DoorAudio.PlaySfx(); // Door is not meant to open
+                    _displayDescriptiveText.UpdateDescriptionText();
                 }
             }
 
@@ -116,6 +120,7 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                 {
                     DoorAudio.SetDoorAudio(false);
                     DoorAudio.PlaySfx();
+                    _displayDescriptiveText.UpdateDescriptionText();
                 }
                 else
                 {

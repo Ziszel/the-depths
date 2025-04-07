@@ -45,7 +45,7 @@ public class ChangeLevel : MonoBehaviour, IInteractable
         _globalSfxPlayer.PlaySfx(interactClip);
         _storedPlayerInteractable.NoActivePickup();
         enabled = false; // disable script not object
-        InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
+        InputManager.PlayerInputActions.Disable(); 
         GameManager.Instance.LoadLevel(levelToLoad);
     }
 }
