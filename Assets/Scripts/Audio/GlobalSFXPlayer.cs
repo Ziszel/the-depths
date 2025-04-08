@@ -9,6 +9,7 @@ public class GlobalSFXPlayer : MonoBehaviour
     [SerializeField] public AudioClip menuForward;
     [SerializeField] public AudioClip menuBackward;
     [SerializeField] public AudioClip horizontalMenu;
+    [SerializeField] public AudioClip inventoryOpen;
     [SerializeField] public AudioClip fileReaderPageChange;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created

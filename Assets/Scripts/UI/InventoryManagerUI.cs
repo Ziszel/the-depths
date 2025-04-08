@@ -82,10 +82,12 @@ public class InventoryManagerUI : MonoBehaviour
     // Show initial inventory UI items when the player opens the inventory
     private void ShowInitialUI()
     {
-        // Show initial UI
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.inventoryOpen);
         horizontalMenu.SetActive(true);
         backgroundImage.gameObject.SetActive(true);
-        ShowStatusUI();
+        // Note: Do not use ShowStatusUI() on initial call so that the click SFX does not play
+        _statusUIManager.InitialiseStatusScreen();
+        SetActiveUIElements(true, false, false, false);
     }
 
     private void ShowStatusUI()
