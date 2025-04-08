@@ -8,6 +8,13 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Slider mouseSensitivitySlider;
     [SerializeField] private Button returnToMainMenuButton;
     
+    private GlobalSFXPlayer _globalSfxPlayer;
+
+    private void Start()
+    {
+        _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
+    }
+    
     // Load values from PlayerPrefs and update UI elements to match
     public void InitialiseSettings()
     {
@@ -35,6 +42,7 @@ public class SettingsManager : MonoBehaviour
 
     private void OnExitBtnClicked()
     {
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.menuBackward);
         // Update this to give the player a warning first (also asking if they want to cancel changes)
         PlayerPrefs.Save(); // These will be loaded next time the game is loaded so no LevelManager required
         GameManager.Instance.LoadLevel("MainMenu");

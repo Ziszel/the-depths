@@ -4,17 +4,41 @@ using UnityEngine;
 public class FloorCollider : MonoBehaviour
 {
     public PlayerController player;
+    [SerializeField] private AudioClip landingGroundClip;
+    [SerializeField] private float longFlightTimeThreshold;
+    
     private bool _onGround;
-    private bool _didNotLeaveGround;
+    
+    private GlobalSFXPlayer _globalSfxPlayer;
+    private bool _isHighFall;
 
     private void Start()
     {
+        _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
         _onGround = false;
+        _isHighFall = false;
     }
     
-    private IEnumerator DelayGroundCheck()
+    private IEnumerator LongFlightTime()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(longFlightTimeThreshold);
+
+        if (_onGround == false)
+        {
+            _isHighFall = true;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Floor"))
+        {
+            if (_isHighFall)
+            {
+                _globalSfxPlayer.PlaySfx(landingGroundClip);
+            }
+            _isHighFall = false;
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -33,12 +57,9 @@ public class FloorCollider : MonoBehaviour
     {
         if (other.CompareTag("Floor"))
         {
-            StartCoroutine(DelayGroundCheck());
-            if (!_didNotLeaveGround)
-            {
-                player.GetRigidBody().linearDamping = 1;
-                _onGround = false;
-            }
+            StartCoroutine(LongFlightTime());
+            player.GetRigidBody().linearDamping = 1;
+            _onGround = false;
         }
     }
 

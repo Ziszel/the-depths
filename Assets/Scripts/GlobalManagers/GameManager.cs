@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator DelayedLevelChange(string levelToLoad)
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
         SceneManager.LoadScene(levelToLoad);
     }
 

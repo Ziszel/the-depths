@@ -6,6 +6,7 @@ public class InventoryManagerUI : MonoBehaviour
     private static InventoryManagerUI _instance;
     private InventoryItem _selectedItem;
     private Inventory _inventory;
+    private GlobalSFXPlayer _globalSfxPlayer;
     
     // UI elements
     [Header("UI Elements")]
@@ -34,6 +35,7 @@ public class InventoryManagerUI : MonoBehaviour
         _itemsUIManager = GetComponentInChildren<ItemsUIManager>(true);
         _filesUIManager = GetComponentInChildren<FilesUIManager>(true);
         _settingsManager = GetComponentInChildren<SettingsManager>(true);
+        _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
     }
 
     private void AssociateNavigationButtons()
@@ -80,32 +82,38 @@ public class InventoryManagerUI : MonoBehaviour
     // Show initial inventory UI items when the player opens the inventory
     private void ShowInitialUI()
     {
-        // Show initial UI
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.inventoryOpen);
         horizontalMenu.SetActive(true);
         backgroundImage.gameObject.SetActive(true);
-        ShowStatusUI();
+        // Note: Do not use ShowStatusUI() on initial call so that the click SFX does not play
+        _statusUIManager.InitialiseStatusScreen();
+        SetActiveUIElements(true, false, false, false);
     }
 
     private void ShowStatusUI()
     {
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.horizontalMenu);
         _statusUIManager.InitialiseStatusScreen();
         SetActiveUIElements(true, false, false, false);
     }
 
     private void ShowItemsUI()
     {
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.horizontalMenu);
         _itemsUIManager.InitialiseInventory();
         SetActiveUIElements(false, true, false, false);
     }
 
     private void ShowFileUI()
     {
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.horizontalMenu);
         _filesUIManager.InitialiseFiles();
         SetActiveUIElements(false, false, true, false);
     }
 
     private void ShowOptionsUI()
     {
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.horizontalMenu);
         _settingsManager.InitialiseSettings();
         SetActiveUIElements(false, false, false, true);
     }

@@ -106,11 +106,17 @@ public class PlayerHUDUI : MonoBehaviour
         pickupText.enabled = false;
     }
 
+    private void HidePickupTextImmediately()
+    {
+        pickupText.enabled = false;
+    }
+
     private void OnEnable()
     {
         HealthManager.HealthChanged += SetImageFromHP;
         Pickup.OnPickupOccurred += ShowPickupText;
         DisplayDescriptiveText.OnTextUpdate += ShowDescriptiveText;
+        LevelManager.OnInventoryOpened += HidePickupTextImmediately;
     }
 
     private void OnDisable()
@@ -118,5 +124,6 @@ public class PlayerHUDUI : MonoBehaviour
         HealthManager.HealthChanged -= SetImageFromHP;
         Pickup.OnPickupOccurred -= ShowPickupText;
         DisplayDescriptiveText.OnTextUpdate -= ShowDescriptiveText;
+        LevelManager.OnInventoryOpened -= HidePickupTextImmediately;
     }
 }
