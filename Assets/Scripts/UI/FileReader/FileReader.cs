@@ -14,13 +14,17 @@ public class FileReader : MonoBehaviour
     [SerializeField] private Button nextTextBlockBtn;
     [SerializeField] private Button closeFileReaderBtn;
     [SerializeField] private Button previousTextBlockBtn;
-
+    
     private int _pageCount;
     private int _currentPage;
     private List<string> _pageData;
     
+    // External classes
+    GlobalSFXPlayer _globalSfxPlayer;
+    
     void Start()
     {
+        _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
         nextTextBlockBtn.onClick.AddListener(OnNextTextBlockPressed);
         previousTextBlockBtn.onClick.AddListener(OnPreviousTextBlockPressed);
         closeFileReaderBtn.onClick.AddListener(OnCloseFileReaderPressed);
@@ -39,6 +43,7 @@ public class FileReader : MonoBehaviour
         }
         
         previousTextBlockBtn.interactable = true;
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.fileReaderPageChange);
     }
 
     private void OnCloseFileReaderPressed()
@@ -59,6 +64,7 @@ public class FileReader : MonoBehaviour
         
         nextTextBlockBtn.gameObject.SetActive(true);
         closeFileReaderBtn.gameObject.SetActive(false);
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.fileReaderPageChange);
     }
 
     private void UpdateTextBlock()
@@ -114,6 +120,7 @@ public class FileReader : MonoBehaviour
         textBlockText.gameObject.SetActive(true);
         pageCountText.gameObject.SetActive(true);
         previousTextBlockBtn.gameObject.SetActive(true);
+        _globalSfxPlayer.PlaySfx(_globalSfxPlayer.fileReaderPageChange);
     }
 
     public void DisableFileReaderUI()

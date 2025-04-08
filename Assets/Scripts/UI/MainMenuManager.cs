@@ -11,6 +11,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject optionsUIObj;
     [SerializeField] private GameObject creditsUIObj;
     
+    private GlobalSFXPlayer _globalSFXPlayer;
+    
     // MainMenu
     private Button _startGameBtn;
     private Button _optionsBtn;
@@ -25,6 +27,8 @@ public class MainMenuManager : MonoBehaviour
     // edit
     private void Awake()
     {
+        _globalSFXPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
+        
         SetButtonReferences();
         _startGameBtn.onClick.AddListener(OnStartGameClicked);
         _optionsBtn.onClick.AddListener(OnOptionsClicked);
@@ -44,22 +48,26 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnStartGameClicked()
     {
+        _globalSFXPlayer.PlaySfx(_globalSFXPlayer.menuForward);
         GameManager.Instance.LoadLevel(levelToLoad);
     }
 
     private void OnOptionsClicked()
     {
+        _globalSFXPlayer.PlaySfx(_globalSFXPlayer.menuForward);
         _settingsManager.InitialiseSettings();
         optionsUIObj.SetActive(true);
         mainMenuUIObj.SetActive(false);
     }
     private void OnCreditsClicked()
     {
+        _globalSFXPlayer.PlaySfx(_globalSFXPlayer.menuForward);
         creditsUIObj.SetActive(true);
         mainMenuUIObj.SetActive(false);
     }
     private void OnCreditsToMainMenuClicked()
     {
+        _globalSFXPlayer.PlaySfx(_globalSFXPlayer.menuBackward);
         creditsUIObj.SetActive(false);
         mainMenuUIObj.SetActive(true);
     }
