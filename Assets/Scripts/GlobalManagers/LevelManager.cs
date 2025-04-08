@@ -5,6 +5,7 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     public static Action OnInventoryClosed;
+    public static Action OnInventoryOpened;
     
     [Header("UI Elements")]
     [SerializeField] private GameObject pauseOverlay;
@@ -93,6 +94,7 @@ public class LevelManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         _inventoryUI.ShowOnOpen(inventory);
+        OnInventoryOpened?.Invoke();
     }
 
     public static void HideInventory()
