@@ -17,7 +17,7 @@ public class Inventory : MonoBehaviour
         _fileDataManager = FindFirstObjectByType<FileDataManager>();
         
         // If moving between scenes, make sure to update the new Inventory object
-        // with the stored values of items and files
+        // with the stored values of items, files, and goalText
         if (GameManager.Instance.GetSavedPlayerItems().Count > 0)
         {
             _items = GameManager.Instance.GetSavedPlayerItems();
@@ -26,6 +26,15 @@ public class Inventory : MonoBehaviour
         if (GameManager.Instance.GetSavedFileData().Count > 0)
         {
             _foundFileData = GameManager.Instance.GetSavedFileData();
+        }
+
+        if (string.IsNullOrEmpty(GameManager.Instance.GetCurrentGoalText()))
+        {
+            _currentGoalText = GameManager.Instance.GetInitialGoalText();
+        }
+        else
+        {
+            _currentGoalText = GameManager.Instance.GetCurrentGoalText();
         }
     }
 
@@ -64,6 +73,11 @@ public class Inventory : MonoBehaviour
     public string GetCurrentGoalText()
     {
         return _currentGoalText;
+    }
+
+    public void SetCurrentGoalText(string text)
+    {
+        _currentGoalText = text;
     }
 
     // Files operations

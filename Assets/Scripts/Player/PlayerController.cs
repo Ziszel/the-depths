@@ -401,7 +401,6 @@ public class PlayerController : MonoBehaviour
         if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
             LevelManager.ShowInventory(_inventory);
-            // GameManager.Instance.ShowInventory(_inventory);
             _oldPlayerActionState = _currentplayerActionState;
             _currentplayerActionState = playerActionState.InInventory;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.UI);
@@ -409,7 +408,6 @@ public class PlayerController : MonoBehaviour
         else if (context.started && _currentplayerActionState == playerActionState.InInventory)
         {
             LevelManager.HideInventory();
-            // GameManager.Instance.HideInventory();
             _currentplayerActionState = _oldPlayerActionState;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }
@@ -419,8 +417,6 @@ public class PlayerController : MonoBehaviour
     // {
     //     if (context.started)
     //     {
-    //         Debug.Log("OnInventoryClosed");
-    //         GameManager.Instance.HideInventory();
     //         _currentplayerActionState = _oldPlayerActionState;
     //         InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
     //     }
@@ -572,6 +568,11 @@ public class PlayerController : MonoBehaviour
     public GameObject GetCrouchTransform()
     {
         return crouch;
+    }
+
+    public Inventory GetPlayerInventory()
+    {
+        return _inventory;
     }
 
     public void SetPlayerState(playerActionState ps)

@@ -80,6 +80,11 @@ public class Pickup : MonoBehaviour, IInteractable
             _playerInventory.AddFile((FileItem)itemData);
             _globalSfxPlayer.PlaySfx(interactClip);
         }
+        
+        if (gameObject.TryGetComponent(out UpdatePlayerGoalText updatePlayerStatusText))
+        {
+            updatePlayerStatusText.UpdateStatusText();
+        }
             
         // Clean-up
         Destroy(gameObject);

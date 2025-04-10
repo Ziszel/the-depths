@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private string gameVersion; // Major, Minor, Patch
+    [SerializeField] private string initialGoalText;
     
     public static GameManager Instance;
     
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     // Used to persist data between scenes. This may need to be cleaned-up later.
     private List<InventoryItem> _persistedPlayerItems;
     private List<FileData> _persistedFileData;
+    private string _persistedGoalText;
 
     /* Audio */
     private MusicManager _musicManager;
@@ -41,13 +43,6 @@ public class GameManager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    // When the game first starts up set all values to initial state, changes can be made
-    // when loading save file from disk later
-    private void Start()
-    {
-        InitialiseGame();
-    }
-
     private IEnumerator DelayedLevelChange(string levelToLoad)
     {
         yield return new WaitForSecondsRealtime(0.5f);
@@ -62,6 +57,7 @@ public class GameManager : MonoBehaviour
             Inventory playerInv = FindAnyObjectByType<PlayerController>().GetComponent<Inventory>();
             _persistedPlayerItems = playerInv.GetItems();
             _persistedFileData = playerInv.GetFileData();
+            _persistedGoalText = playerInv.GetCurrentGoalText();
         }
 
         StartCoroutine(DelayedLevelChange(levelName));
@@ -78,6 +74,10 @@ public class GameManager : MonoBehaviour
                 monster.OnChaseStateEntered += HandleMonsterEnterChaseState;
                 monster.OnChaseStateExited += HandleMonsterExitChaseState;
             }
+        }
+        if (SceneManager.GetActiveScene().name.Contains("MainMenu"))
+        {
+            InitialiseGame();
         }
     }
 
@@ -127,6 +127,16 @@ public class GameManager : MonoBehaviour
     {
         return _persistedFileData ?? new List<FileData>();
     }
+
+    public string GetCurrentGoalText()
+    {
+        return _persistedGoalText ?? string.Empty;
+    }
+
+    public string GetInitialGoalText()
+    {
+        return initialGoalText;
+    }
     
     public void SetBestTime(float newBestTime)
     {
@@ -159,6 +169,9 @@ public class GameManager : MonoBehaviour
 
     private void InitialiseGame()
     {
+        _persistedPlayerItems = new List<InventoryItem>();
+        _persistedFileData = new List<FileData>();
+        _persistedGoalText = initialGoalText;
         _deathCount = 0;
         _saveCount = 0;
         // TODO: Attempt to load from disk a best time, if it fails put the default value here

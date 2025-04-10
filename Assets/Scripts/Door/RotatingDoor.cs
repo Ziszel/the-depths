@@ -105,12 +105,22 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                     StartCoroutine(OpenDoor(dot));
                     DoorMesh.layer = LayerMask.NameToLayer("Default");
                     _displayDescriptiveText.UpdateDescriptionText("Used " + keyItem.itemName + ".");
+                    
+                    if (gameObject.TryGetComponent(out UpdatePlayerGoalTextDoor updatePlayerStatusTextDoor))
+                    {
+                        updatePlayerStatusTextDoor.UpdateStatusText(false, updateGoalTextOnOpenOnly);
+                    }
                 }
                 else
                 {
                     DoorAudio.SetDoorAudio(false);
                     DoorAudio.PlaySfx(); // Door is not meant to open
                     _displayDescriptiveText.UpdateDescriptionText();
+
+                    if (gameObject.TryGetComponent(out UpdatePlayerGoalTextDoor updatePlayerStatusTextDoor))
+                    {
+                        updatePlayerStatusTextDoor.UpdateStatusText(true, updateGoalTextOnOpenOnly);
+                    }
                 }
             }
 
@@ -121,6 +131,11 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                     DoorAudio.SetDoorAudio(false);
                     DoorAudio.PlaySfx();
                     _displayDescriptiveText.UpdateDescriptionText();
+                    
+                    if (gameObject.TryGetComponent(out UpdatePlayerGoalTextDoor updatePlayerStatusTextDoor))
+                    {
+                        updatePlayerStatusTextDoor.UpdateStatusText(true, updateGoalTextOnOpenOnly);
+                    }
                 }
                 else
                 {
@@ -131,6 +146,11 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
                     DoorAudio.PlaySfx();
                     float dot = Vector3.Dot(_forward, (_playerForwardVector - transform.position).normalized);
                     StartCoroutine(OpenDoor(dot));
+                    
+                    if (gameObject.TryGetComponent(out UpdatePlayerGoalTextDoor updatePlayerStatusTextDoor))
+                    {
+                        updatePlayerStatusTextDoor.UpdateStatusText(false, updateGoalTextOnOpenOnly);
+                    }
                 }
             }
         }

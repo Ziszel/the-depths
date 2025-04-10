@@ -205,6 +205,11 @@ public class LevelManager : MonoBehaviour
         ApplySettingsToGame();
     }
 
+    public Inventory GetInventoryFromPlayer()
+    {
+        return _player.GetPlayerInventory();
+    }
+
     private void ApplySettingsToGame()
     {
         _fpsCamera.SetGain(PlayerPrefs.GetFloat("MouseSensitivity"));

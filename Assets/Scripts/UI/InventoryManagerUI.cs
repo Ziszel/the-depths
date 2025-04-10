@@ -141,5 +141,6 @@ public class InventoryManagerUI : MonoBehaviour
     {
         _itemsUIManager.SetInventory(updatedInventory);
         _filesUIManager.SetInventory(updatedInventory);
+        _statusUIManager.SetInventory(updatedInventory);
     }
 }
