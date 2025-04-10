@@ -67,6 +67,11 @@ public class Pickup : MonoBehaviour, IInteractable
 
     public void AttemptToInteract()
     {
+        if (gameObject.TryGetComponent(out UpdatePlayerGoalText updatePlayerStatusText))
+        {
+            updatePlayerStatusText.UpdateStatusText();
+        }
+        
         if (itemData.GetType() == typeof(InventoryItem))
         {
             OnPickupOccurred?.Invoke(itemData);
@@ -79,11 +84,10 @@ public class Pickup : MonoBehaviour, IInteractable
             OnPickupOccurred?.Invoke(itemData);
             _playerInventory.AddFile((FileItem)itemData);
             _globalSfxPlayer.PlaySfx(interactClip);
-        }
-        
-        if (gameObject.TryGetComponent(out UpdatePlayerGoalText updatePlayerStatusText))
-        {
-            updatePlayerStatusText.UpdateStatusText();
+            
+            FileItem fileItem = (FileItem)itemData;
+            FileData? fd = _playerInventory.GetFileDataByFileItem(fileItem);
+            LevelManager.ShowFileReaderUIImmediately(fd);
         }
             
         // Clean-up

@@ -400,15 +400,12 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
-            LevelManager.ShowInventory(_inventory);
-            _oldPlayerActionState = _currentplayerActionState;
-            _currentplayerActionState = playerActionState.InInventory;
+            LevelManager.ShowInventory();
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.UI);
         }
         else if (context.started && _currentplayerActionState == playerActionState.InInventory)
         {
             LevelManager.HideInventory();
-            _currentplayerActionState = _oldPlayerActionState;
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }
     }
@@ -575,9 +572,24 @@ public class PlayerController : MonoBehaviour
         return _inventory;
     }
 
+    public void SetOldPlayerState(playerActionState ps)
+    {
+        _oldPlayerActionState = ps;
+    }
+
     public void SetPlayerState(playerActionState ps)
     {
         _currentplayerActionState = ps;
+    }
+
+    public playerActionState GetOldPlayerActionState()
+    {
+        return _oldPlayerActionState;
+    }
+
+    public playerActionState GetPlayerActionState()
+    {
+        return _currentplayerActionState;
     }
 
     public void SetPlayerExitPosition(Transform playerExit)

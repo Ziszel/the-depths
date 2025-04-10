@@ -21,7 +21,7 @@ public class LevelManager : MonoBehaviour
     private GameManager _gameManager;
     private FPSCamera _fpsCamera;
     private PostProcessManager _postProcessManager;
-    private PlayerController _player;
+    private static PlayerController _player;
     private Monster _monster;
     private SetMonsterStateTrigger[] _monsterStateTriggers;
     /* UI */
@@ -95,18 +95,33 @@ public class LevelManager : MonoBehaviour
             _timer += Time.unscaledDeltaTime;
         }
     }
-    
-    public static void ShowInventory(Inventory inventory)
+
+    // This function MUST also open the inventory for the game to function as per design
+    public static void ShowFileReaderUIImmediately(FileData? fileData)
     {
+        _player.SetOldPlayerState(_player.GetPlayerActionState());
+        _player.SetPlayerState(playerActionState.InInventory);
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-        _inventoryUI.ShowOnOpen(inventory);
+        _inventoryUI.ShowOnOpenFileReader(GetInventoryFromPlayer(), fileData);
+        OnInventoryOpened?.Invoke();
+    }
+    
+    public static void ShowInventory()
+    {
+        _player.SetOldPlayerState(_player.GetPlayerActionState());
+        _player.SetPlayerState(playerActionState.InInventory);
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        _inventoryUI.ShowOnOpen(GetInventoryFromPlayer());
         OnInventoryOpened?.Invoke();
     }
 
     public static void HideInventory()
     {
+        _player.SetPlayerState(_player.GetOldPlayerActionState());
         _fileReader.DisableFileReaderUI();
         _inventoryUI.CloseInventory();
         Time.timeScale = 1f;
@@ -213,7 +228,7 @@ public class LevelManager : MonoBehaviour
         ApplySettingsToGame();
     }
 
-    public Inventory GetInventoryFromPlayer()
+    public static Inventory GetInventoryFromPlayer()
     {
         return _player.GetPlayerInventory();
     }

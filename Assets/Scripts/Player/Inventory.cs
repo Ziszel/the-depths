@@ -105,4 +105,9 @@ public class Inventory : MonoBehaviour
 
         return null;
     }
+
+    public FileData? GetFileDataByFileItem(FileItem fi)
+    {
+        return GetFileDataByIndex(fi.fileId);
+    }
 }
