@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
                 monster.OnChaseStateExited += HandleMonsterExitChaseState;
             }
         }
-        if (SceneManager.GetActiveScene().name.Contains("MainMenu"))
+        if (scene.name.Contains("MainMenu"))
         {
             InitialiseGame();
         }

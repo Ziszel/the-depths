@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -65,6 +66,13 @@ public class LevelManager : MonoBehaviour
         
         // Apply settings values to objects in game
         ApplySettingsToGame();
+        
+        // Potential code to run after everything else is loaded.
+        // Update the status text if applicable.
+        if (gameObject.TryGetComponent(out UpdatePlayerGoalText updatePlayerGoalText))
+        {
+            updatePlayerGoalText.UpdateStatusText();
+        }
     }
 
     // Update is called once per frame
