@@ -8,6 +8,7 @@ public abstract class DoorBase : MonoBehaviour
     [SerializeField] protected bool isKeyPowered;
     [SerializeField] protected InventoryItem keyItem;
     [SerializeField] protected bool lockedFromOtherSideDoor;
+    [SerializeField] protected bool updateGoalTextOnOpenOnly;
     [SerializeField] protected GameObject doorCollisionHelperOpen;
     [SerializeField] protected GameObject doorCollisionHelperLocked;
     [SerializeField] protected GameObject childDoorMeshObject;

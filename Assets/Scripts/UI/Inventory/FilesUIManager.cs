@@ -68,6 +68,15 @@ public class FilesUIManager : MonoBehaviour
     {
         _inventory = inventory;
     }
+
+    public void OpenSpecificFileImmediately(FileData? fd)
+    {
+        if (fd.HasValue)
+        {
+            fileReader.EnableFileReaderUI();
+            fileReader.SetupPageData(fd.Value.content, fd.Value.name);
+        }
+    }
     
     // Hook up buttons 
     private void OnFile01Pressed()

@@ -71,11 +71,19 @@ public class InventoryManagerUI : MonoBehaviour
         _optionsButton.onClick.AddListener(ShowOptionsUI);
     }
 
-    // Entry point from GameManager
+    // Entry point from LevelManager (ShowInventory)
     public void ShowOnOpen(Inventory updatedInventory)
     {
         SetupInventory(updatedInventory);
         ShowInitialUI();
+    }
+
+    public void ShowOnOpenFileReader(Inventory updatedInventory, FileData? fileData)
+    {
+        SetupInventory(updatedInventory);
+        ShowInitialUI();
+        ShowFileUI();
+        _filesUIManager.OpenSpecificFileImmediately(fileData);
     }
     
     // UI Elements
@@ -141,5 +149,6 @@ public class InventoryManagerUI : MonoBehaviour
     {
         _itemsUIManager.SetInventory(updatedInventory);
         _filesUIManager.SetInventory(updatedInventory);
+        _statusUIManager.SetInventory(updatedInventory);
     }
 }

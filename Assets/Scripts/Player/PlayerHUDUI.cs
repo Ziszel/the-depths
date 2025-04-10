@@ -8,6 +8,7 @@ public class PlayerHUDUI : MonoBehaviour
     [SerializeField] private Sprite lightWounds;
     [SerializeField] private Sprite heavyWounds;
     [SerializeField] private Image activeInteractable;
+    [SerializeField] private Image inputSprite;
     [SerializeField] private TMP_Text pickupText;
     [SerializeField] private string pickupTextInventory;
     [SerializeField] private string pickupTextFile;
@@ -64,12 +65,14 @@ public class PlayerHUDUI : MonoBehaviour
     public void SetActiveInteractable(Sprite sprite)
     {
         activeInteractable.enabled = true;
+        inputSprite.enabled = true;
         activeInteractable.sprite = sprite;
     }
     
     public void DisableActiveInteractable()
     {
         activeInteractable.enabled = false;
+        inputSprite.enabled = false;
     }
     
     private void ShowDescriptiveText(string text)
