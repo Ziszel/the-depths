@@ -35,7 +35,7 @@ public class MainMenuManager : MonoBehaviour
         _creditsBtn.onClick.AddListener(OnCreditsClicked);
         _returnToMainMenuBtn.onClick.AddListener(OnCreditsToMainMenuClicked);
         
-        Cursor.lockState = CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
     }
 
