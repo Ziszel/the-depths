@@ -99,6 +99,7 @@ public class LevelManager : MonoBehaviour
     // This function MUST also open the inventory for the game to function as per design
     public static void ShowFileReaderUIImmediately(FileData? fileData)
     {
+        Debug.Log("ShowFileReaderUIImmediately");
         _player.SetOldPlayerState(_player.GetPlayerActionState());
         _player.SetPlayerState(playerActionState.InInventory);
         Time.timeScale = 0;

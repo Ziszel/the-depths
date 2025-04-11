@@ -71,6 +71,10 @@ public class FilesUIManager : MonoBehaviour
 
     public void OpenSpecificFileImmediately(FileData? fd)
     {
+        Debug.Log("OpenSpecificFileImmediately");
+        Debug.Log(fd.Value.content);
+        Debug.Log(fd.Value.name);
+        
         if (fd.HasValue)
         {
             fileReader.EnableFileReaderUI();
