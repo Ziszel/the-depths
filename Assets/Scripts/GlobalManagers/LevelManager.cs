@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -99,7 +98,6 @@ public class LevelManager : MonoBehaviour
     // This function MUST also open the inventory for the game to function as per design
     public static void ShowFileReaderUIImmediately(FileData? fileData)
     {
-        Debug.Log("ShowFileReaderUIImmediately");
         _player.SetOldPlayerState(_player.GetPlayerActionState());
         _player.SetPlayerState(playerActionState.InInventory);
         Time.timeScale = 0;
@@ -122,7 +120,6 @@ public class LevelManager : MonoBehaviour
 
     public static void HideInventory()
     {
-        Debug.Log("HideInventory");
         _player.SetPlayerState(_player.GetOldPlayerActionState());
         _fileReader.DisableFileReaderUI();
         _inventoryUI.CloseInventory();
@@ -240,5 +237,12 @@ public class LevelManager : MonoBehaviour
         _fpsCamera.SetGain(PlayerPrefs.GetFloat("MouseSensitivity"));
         _gameManager.SetMusicMixerValue();
         _gameManager.SetSFXMixerValue();
+    }
+
+    private void OnDisable()
+    {
+        _player.OnPlayerDeath -= PrepareForRespawn;
+        _player.OnPausePressed -= HandlePause;
+        OnInventoryClosed -= ApplySettingsToGame;
     }
 }
