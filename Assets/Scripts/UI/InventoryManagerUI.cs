@@ -82,7 +82,8 @@ public class InventoryManagerUI : MonoBehaviour
     {
         SetupInventory(updatedInventory);
         ShowInitialUI();
-        ShowFileUI();
+        _filesUIManager.InitialiseFiles();
+        SetActiveUIElements(false, false, true, false);
         _filesUIManager.OpenSpecificFileImmediately(fileData);
     }
     

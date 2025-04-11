@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -238,5 +237,12 @@ public class LevelManager : MonoBehaviour
         _fpsCamera.SetGain(PlayerPrefs.GetFloat("MouseSensitivity"));
         _gameManager.SetMusicMixerValue();
         _gameManager.SetSFXMixerValue();
+    }
+
+    private void OnDisable()
+    {
+        _player.OnPlayerDeath -= PrepareForRespawn;
+        _player.OnPausePressed -= HandlePause;
+        OnInventoryClosed -= ApplySettingsToGame;
     }
 }

@@ -612,5 +612,7 @@ public class PlayerController : MonoBehaviour
         {
             _monster.OnPlayerWithinDamageDistance -= OnKillPlayer;
         }
+
+        _stamina.OnStaminaReachedZero -= SetPlayerValuesToWalk;
     }
 }
