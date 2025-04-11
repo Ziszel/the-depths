@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -188,5 +189,14 @@ public class RotatingDoor : DoorBase, ISwitchable, IInteractable
         interactable.enabled = false;
         interactable.NoActivePickup();
         _isPlayerOnLockedSide = false;
+    }
+
+    private void OnDisable()
+    {
+        if (lockedFromOtherSideDoor)
+        {
+            DoorCollisionHelper.OnColliderEntered -= PlayerEnteredChildCollider;
+            DoorCollisionHelper.OnColliderExited -= PlayerExitedChildCollider;
+        }
     }
 }

@@ -72,8 +72,6 @@ public class FilesUIManager : MonoBehaviour
     public void OpenSpecificFileImmediately(FileData? fd)
     {
         Debug.Log("OpenSpecificFileImmediately");
-        Debug.Log(fd.Value.content);
-        Debug.Log(fd.Value.name);
         
         if (fd.HasValue)
         {
@@ -85,6 +83,7 @@ public class FilesUIManager : MonoBehaviour
     // Hook up buttons 
     private void OnFile01Pressed()
     {
+        Debug.Log("OnFile01Pressed");
         FileData? fd = _inventory.GetFileDataByIndex(1);
 
         if (fd.HasValue)
@@ -96,6 +95,7 @@ public class FilesUIManager : MonoBehaviour
     
     private void OnFile02Pressed()
     {
+        Debug.Log("OnFile02Pressed");
         FileData? fd = _inventory.GetFileDataByIndex(2);
 
         if (fd.HasValue)
@@ -107,6 +107,7 @@ public class FilesUIManager : MonoBehaviour
     
     private void OnFile03Pressed()
     {
+        Debug.Log("OnFile03Pressed");
         FileData? fd = _inventory.GetFileDataByIndex(3);
 
         if (fd.HasValue)
@@ -118,6 +119,7 @@ public class FilesUIManager : MonoBehaviour
     
     private void OnFile04Pressed()
     {
+        Debug.Log("OnFile04Pressed");
         FileData? fd = _inventory.GetFileDataByIndex(4);
 
         if (fd.HasValue)
@@ -129,6 +131,7 @@ public class FilesUIManager : MonoBehaviour
     
     private void OnFile05Pressed()
     {
+        Debug.Log("OnFile05Pressed");
         FileData? fd = _inventory.GetFileDataByIndex(5);
 
         if (fd.HasValue)
@@ -140,6 +143,7 @@ public class FilesUIManager : MonoBehaviour
     
     private void OnFile99Pressed()
     {
+        Debug.Log("OnFile99Pressed");
         FileData? fd = _inventory.GetFileDataByIndex(99);
 
         if (fd.HasValue)

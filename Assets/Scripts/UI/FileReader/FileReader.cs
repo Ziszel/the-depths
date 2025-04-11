@@ -48,6 +48,7 @@ public class FileReader : MonoBehaviour
 
     private void OnCloseFileReaderPressed()
     {
+        Debug.Log("CloseFileReaderPressed");
         DisableFileReaderUI();
     }
     
@@ -79,6 +80,7 @@ public class FileReader : MonoBehaviour
 
     public void SetupPageData(string message, string title)
     {
+        Debug.Log("SetupPageData");
         _pageData = new List<string>(); // double check this is ok even if it works
         
         // NOTE: If a string looks incorrect, then you need to fix it at the JSON level.
@@ -87,6 +89,7 @@ public class FileReader : MonoBehaviour
         string[] splitString = message.Split('|');
         foreach (string str in splitString)
         {
+            Debug.Log(str);
             _pageData.Add(str);
         }
         
@@ -114,6 +117,14 @@ public class FileReader : MonoBehaviour
 
     public void EnableFileReaderUI()
     {
+        Debug.Log("EnableFileReaderUI");
+        Debug.Log(backgroundImageBlack.gameObject.name);
+        Debug.Log(backgroundImageLetter.gameObject.name);
+        Debug.Log(titleText.gameObject.name);
+        Debug.Log(textBlockText.gameObject.name);
+        Debug.Log(pageCountText.gameObject.name);
+        Debug.Log(previousTextBlockBtn.gameObject.name);
+        
         backgroundImageBlack.gameObject.SetActive(true);
         backgroundImageLetter.gameObject.SetActive(true);
         titleText.gameObject.SetActive(true);
@@ -125,6 +136,7 @@ public class FileReader : MonoBehaviour
 
     public void DisableFileReaderUI()
     {
+        Debug.Log("DisableFileReaderUI");
         backgroundImageBlack.gameObject.SetActive(false);
         backgroundImageLetter.gameObject.SetActive(false);
         titleText.gameObject.SetActive(false);

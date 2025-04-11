@@ -122,6 +122,7 @@ public class LevelManager : MonoBehaviour
 
     public static void HideInventory()
     {
+        Debug.Log("HideInventory");
         _player.SetPlayerState(_player.GetOldPlayerActionState());
         _fileReader.DisableFileReaderUI();
         _inventoryUI.CloseInventory();
