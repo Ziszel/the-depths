@@ -54,7 +54,6 @@ public class Flashlight : MonoBehaviour
 
     private void LateUpdate()
     {
-        // transform.position = _cameraToFollow.transform.position + _offset;
         transform.position = flashlightAnchorTransform.position;
         transform.rotation = Quaternion.Slerp(transform.rotation, _cameraToFollow.transform.rotation, 
             Time.deltaTime * rotationSpeed);
