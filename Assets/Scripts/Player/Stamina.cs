@@ -20,10 +20,10 @@ public class Stamina : MonoBehaviour
         _currentStamina = maxStamina;
     }
 
-    // this function is likely called every Tick when SPRINT modifier is held
+    // this function is called whenever the player is in a Sprinting 'state'. (holding down sprint modifier)
     public void DepleteStamina()
     {
-        // Debug.Log("Depleting stamina: " + _currentStamina);
+        Debug.Log("Depleting stamina: " + _currentStamina);
         _currentStamina -= depletionRate * Time.deltaTime;
         
         if (_currentStamina < 0)
