@@ -42,6 +42,7 @@ public class SettingsManager : MonoBehaviour
 
     private void OnExitBtnClicked()
     {
+        Time.timeScale = 1f;
         _globalSfxPlayer.PlaySfx(_globalSfxPlayer.menuBackward);
         // Update this to give the player a warning first (also asking if they want to cancel changes)
         PlayerPrefs.Save(); // These will be loaded next time the game is loaded so no LevelManager required

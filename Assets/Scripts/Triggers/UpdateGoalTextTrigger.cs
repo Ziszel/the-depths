@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class UpdateGoalTextTrigger : MonoBehaviour
 {
+    public static event Action OnJournalTextUpdateFromTrigger;
+    
     private UpdatePlayerGoalText _updatePlayerStatusText;
 
     private void Start()
@@ -15,6 +17,7 @@ public class UpdateGoalTextTrigger : MonoBehaviour
         if (other.CompareTag("PlayerTrigger"))
         {
             _updatePlayerStatusText.UpdateStatusText();
+            OnJournalTextUpdateFromTrigger?.Invoke();
             Destroy(gameObject);
         }
     }

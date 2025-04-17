@@ -74,6 +74,7 @@ public class PlayerController : MonoBehaviour
     private CinemachineCamera _fpsCamera;
     private CinemachineBasicMultiChannelPerlin _fpsCameraNoise;
     private Monster _monster;
+    private LevelManager _levelManager;
     private FloorCollider _floorCollider;
     private PlayerAudio _playerAudio;
     private Inventory _inventory;
@@ -89,6 +90,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _levelManager = FindFirstObjectByType<LevelManager>();
         _cameraManager = FindAnyObjectByType<CameraManager>();
         _playerHUDUI = GetComponentInChildren<PlayerHUDUI>();
         _healthManager = GetComponent<HealthManager>();
@@ -308,11 +310,11 @@ public class PlayerController : MonoBehaviour
             {
                 _cameraManager.SwitchCamera(_cameraManager.leftLeanCamera);
             }
-        }
-
-        if (context.canceled)
-        {
-            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            
+            if (context.canceled)
+            {
+                _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            }
         }
     }
     
@@ -325,11 +327,11 @@ public class PlayerController : MonoBehaviour
             {
                 _cameraManager.SwitchCamera(_cameraManager.rightLeanCamera);
             }
-        }
-
-        if (context.canceled)
-        {
-            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            
+            if (context.canceled)
+            {
+                _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            }
         }
     }
 
@@ -364,7 +366,7 @@ public class PlayerController : MonoBehaviour
         maxMovementVelocity = maxSprintVelocity;
     }
 
-    private void SetPlayerValuesToWalk()
+    public void SetPlayerValuesToWalk()
     {
         _fpsCameraNoise.AmplitudeGain = fpsCamWalkAmplitude;
         _fpsCameraNoise.FrequencyGain = fpsCamWalkFrequency;
@@ -400,12 +402,12 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started && _currentplayerActionState != playerActionState.InInventory)
         {
-            LevelManager.ShowInventory();
+            _levelManager.ShowInventory();
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.UI);
         }
         else if (context.started && _currentplayerActionState == playerActionState.InInventory)
         {
-            LevelManager.HideInventory();
+            _levelManager.HideInventory();
             // InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
         }
     }
@@ -528,14 +530,11 @@ public class PlayerController : MonoBehaviour
                     !_currentplayerActionState.Equals(playerActionState.Crouching)
                     && !_currentplayerActionState.Equals(playerActionState.Uncrouching))
                 {
+                    SetPlayerValuesToWalk();
                     _currentplayerActionState = playerActionState.Walking;
                 }
                 
             }
-        }
-        else
-        {
-            _currentplayerActionState = playerActionState.Standing;
         }
     }
 

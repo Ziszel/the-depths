@@ -15,12 +15,14 @@ public class UpdatePlayerGoalTextDoor : UpdatePlayerGoalText
         {
             if (!shouldUpdateOnOpenOnly)
             {
-                LevelManager.GetInventoryFromPlayer().SetCurrentGoalText(newGoalTextLocked); 
+                LevelManager.GetInventoryFromPlayer().SetCurrentGoalText(newGoalTextLocked);
+                UpdateJournalText();
             }
         }
         else
         {
             LevelManager.GetInventoryFromPlayer().SetCurrentGoalText(newStatusText);
+            UpdateJournalText();
         }
     }
 }

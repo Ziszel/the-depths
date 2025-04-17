@@ -107,7 +107,7 @@ public class LevelManager : MonoBehaviour
         OnInventoryOpened?.Invoke();
     }
     
-    public static void ShowInventory()
+    public void ShowInventory()
     {
         _player.SetOldPlayerState(_player.GetPlayerActionState());
         _player.SetPlayerState(playerActionState.InInventory);
@@ -118,7 +118,7 @@ public class LevelManager : MonoBehaviour
         OnInventoryOpened?.Invoke();
     }
 
-    public static void HideInventory()
+    public void HideInventory()
     {
         _player.SetPlayerState(_player.GetOldPlayerActionState());
         _fileReader.DisableFileReaderUI();
@@ -223,8 +223,6 @@ public class LevelManager : MonoBehaviour
         Time.timeScale = 1.0f;
         pauseOverlay.SetActive(false);
         _postProcessManager.SwitchVolume(_postProcessManager.gameplayVolume);
-        PlayerPrefs.Save();
-        ApplySettingsToGame();
     }
 
     public static Inventory GetInventoryFromPlayer()

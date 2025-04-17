@@ -36,6 +36,8 @@ public class FloorCollider : MonoBehaviour
             if (_isHighFall)
             {
                 _globalSfxPlayer.PlaySfx(landingGroundClip);
+                player.SetPlayerValuesToWalk();
+                player.SetPlayerState(playerActionState.Standing);
             }
             _isHighFall = false;
         }

@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class UpdatePlayerGoalText : MonoBehaviour
 {
+    public static event Action OnJournalTextUpdateFromText;
+    
     [SerializeField] protected string newStatusText;
     [SerializeField] private UpdatePlayerGoalText[] prerequisiteStatusTexts;
     
@@ -19,7 +22,8 @@ public class UpdatePlayerGoalText : MonoBehaviour
             return;
         }
         
-        LevelManager.GetInventoryFromPlayer().SetCurrentGoalText(newStatusText); 
+        LevelManager.GetInventoryFromPlayer().SetCurrentGoalText(newStatusText);
+        UpdateJournalText();
         enabled = false;
     }
 
@@ -36,7 +40,11 @@ public class UpdatePlayerGoalText : MonoBehaviour
                 }
             }
         }
-        
         return true;
+    }
+    
+    protected void UpdateJournalText()
+    {
+        OnJournalTextUpdateFromText?.Invoke();
     }
 }

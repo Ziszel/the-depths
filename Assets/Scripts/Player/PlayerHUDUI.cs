@@ -10,16 +10,19 @@ public class PlayerHUDUI : MonoBehaviour
     [SerializeField] private Image activeInteractable;
     [SerializeField] private Image inputSprite;
     [SerializeField] private TMP_Text pickupText;
+    [SerializeField] private TMP_Text journalText;
     [SerializeField] private string pickupTextInventory;
     [SerializeField] private string pickupTextFile;
     
     private Image _damageImage;
     private HealthManager _healthManager;
+    private AudioSource _journalAudioComponent;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _damageImage = GetComponent<Image>();
+        _journalAudioComponent = journalText.gameObject.GetComponent<AudioSource>();
     }
 
     public void SetImageFromHP(float health)
@@ -75,12 +78,20 @@ public class PlayerHUDUI : MonoBehaviour
         inputSprite.enabled = false;
     }
     
+    // DescriptiveText
     private void ShowDescriptiveText(string text)
     {
         pickupText.text = text;
         pickupText.enabled = true;
         StopCoroutine("HidePickupText");
         StartCoroutine("HidePickupText");
+    }
+
+    private void ShowJournalUpdateText()
+    {
+        journalText.enabled = true;
+        _journalAudioComponent.Play();
+        StartCoroutine("HideJournalUpdateText");
     }
     
     // Pickup text
@@ -102,6 +113,12 @@ public class PlayerHUDUI : MonoBehaviour
         StopCoroutine("HidePickupText");
         StartCoroutine("HidePickupText");
     }
+    
+    private IEnumerator HideJournalUpdateText()
+    {
+        yield return new WaitForSeconds(4.0f);
+        journalText.enabled = false;
+    }
 
     private IEnumerator HidePickupText()
     {
@@ -120,6 +137,8 @@ public class PlayerHUDUI : MonoBehaviour
         Pickup.OnPickupOccurred += ShowPickupText;
         DisplayDescriptiveText.OnTextUpdate += ShowDescriptiveText;
         LevelManager.OnInventoryOpened += HidePickupTextImmediately;
+        UpdateGoalTextTrigger.OnJournalTextUpdateFromTrigger += ShowJournalUpdateText;
+        UpdatePlayerGoalText.OnJournalTextUpdateFromText += ShowJournalUpdateText;
     }
 
     private void OnDisable()
@@ -128,5 +147,7 @@ public class PlayerHUDUI : MonoBehaviour
         Pickup.OnPickupOccurred -= ShowPickupText;
         DisplayDescriptiveText.OnTextUpdate -= ShowDescriptiveText;
         LevelManager.OnInventoryOpened -= HidePickupTextImmediately;
+        UpdateGoalTextTrigger.OnJournalTextUpdateFromTrigger -= ShowJournalUpdateText;
+        UpdatePlayerGoalText.OnJournalTextUpdateFromText -= ShowJournalUpdateText;
     }
 }
