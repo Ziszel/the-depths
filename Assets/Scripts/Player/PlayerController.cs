@@ -366,7 +366,7 @@ public class PlayerController : MonoBehaviour
         maxMovementVelocity = maxSprintVelocity;
     }
 
-    private void SetPlayerValuesToWalk()
+    public void SetPlayerValuesToWalk()
     {
         _fpsCameraNoise.AmplitudeGain = fpsCamWalkAmplitude;
         _fpsCameraNoise.FrequencyGain = fpsCamWalkFrequency;
@@ -530,14 +530,11 @@ public class PlayerController : MonoBehaviour
                     !_currentplayerActionState.Equals(playerActionState.Crouching)
                     && !_currentplayerActionState.Equals(playerActionState.Uncrouching))
                 {
+                    SetPlayerValuesToWalk();
                     _currentplayerActionState = playerActionState.Walking;
                 }
                 
             }
-        }
-        else
-        {
-            _currentplayerActionState = playerActionState.Standing;
         }
     }
 
