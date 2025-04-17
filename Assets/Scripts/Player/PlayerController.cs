@@ -310,11 +310,11 @@ public class PlayerController : MonoBehaviour
             {
                 _cameraManager.SwitchCamera(_cameraManager.leftLeanCamera);
             }
-        }
-
-        if (context.canceled)
-        {
-            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            
+            if (context.canceled)
+            {
+                _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            }
         }
     }
     
@@ -327,11 +327,11 @@ public class PlayerController : MonoBehaviour
             {
                 _cameraManager.SwitchCamera(_cameraManager.rightLeanCamera);
             }
-        }
-
-        if (context.canceled)
-        {
-            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            
+            if (context.canceled)
+            {
+                _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            }
         }
     }
 
