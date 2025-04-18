@@ -5,7 +5,8 @@ public enum ActiveFootsteps
 {
     Cement = 0,
     Wood = 1,
-    SolidSteel = 2
+    SolidSteel = 2,
+    Glass = 3
 }
 
 public class PlayerAudio : MonoBehaviour
@@ -17,6 +18,7 @@ public class PlayerAudio : MonoBehaviour
     [SerializeField] private AudioClip[] footstepCementClips;
     [SerializeField] private AudioClip[] footstepWoodClips;
     [SerializeField] private AudioClip[] footstepSolidSteelClips;
+    [SerializeField] private AudioClip[] footstepGlassClips;
     
     [Header("Event Audio")]
     [SerializeField] private AudioClip death;
@@ -72,6 +74,9 @@ public class PlayerAudio : MonoBehaviour
             case ActiveFootsteps.SolidSteel:
                 clips = footstepSolidSteelClips;
                 break;
+            case ActiveFootsteps.Glass:
+                clips = footstepGlassClips;
+                break;
             default:
                 clips = footstepCementClips;
                 break;
@@ -93,5 +98,10 @@ public class PlayerAudio : MonoBehaviour
     public void SetFootstepsToSolidSteel()
     {
         _activeFootstepClips = ActiveFootsteps.SolidSteel;
+    }
+
+    public void SetFootstepsToGlass()
+    {
+        _activeFootstepClips = ActiveFootsteps.Glass;
     }
 }

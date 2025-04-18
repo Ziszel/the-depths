@@ -45,24 +45,7 @@ public class FloorCollider : MonoBehaviour
             }
             _isHighFall = false;
             
-            // Update footstep sounds
-            if (other.tag.Contains("Cement"))
-            {
-                Debug.Log("Walking on cement");
-                playerAudio.SetFootstepsToCement();
-            }
-            
-            if (other.tag.Contains("Wood"))
-            {
-                Debug.Log("Walking on wood");
-                playerAudio.SetFootstepsToWood();
-            }
-            
-            if (other.tag.Contains("SolidSteel"))
-            {
-                Debug.Log("Walking on solid steel");
-                playerAudio.SetFootstepsToSolidSteel();
-            }
+            UpdateFootstepAudio(other.tag);
         }
     }
 
@@ -75,6 +58,7 @@ public class FloorCollider : MonoBehaviour
                 player.GetRigidBody().linearDamping = 5;
                 _onGround = true;
             }
+            UpdateFootstepAudio(other.tag);
         }
     }
 
@@ -91,5 +75,31 @@ public class FloorCollider : MonoBehaviour
     public bool IsOnGround()
     {
         return _onGround;
+    }
+
+    // Update footstep sounds
+    // Runs when entering (takes new tag, updates _oldSound to _currentSound and then updates _currentSound)
+    // Runs when exiting (compares if tag != _oldSound and then updates _currentSound to _oldSound)
+    private void UpdateFootstepAudio(string newSound)
+    {
+        if (newSound.Contains("Cement"))
+        {
+            playerAudio.SetFootstepsToCement();
+        }
+            
+        if (newSound.Contains("Wood"))
+        {
+            playerAudio.SetFootstepsToWood();
+        }
+
+        if (newSound.Contains("Glass"))
+        {
+            playerAudio.SetFootstepsToGlass();
+        }
+            
+        if (newSound.Contains("SolidSteel"))
+        {
+            playerAudio.SetFootstepsToSolidSteel();
+        }
     }
 }
