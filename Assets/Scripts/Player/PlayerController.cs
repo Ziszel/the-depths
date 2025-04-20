@@ -295,13 +295,11 @@ public class PlayerController : MonoBehaviour
             {
                 if (!_isFlashlightActive)
                 {
-                    Debug.Log("Enable flashlight by player input");
                     OnFlashlightActivated?.Invoke();
                     _isFlashlightActive = true;
                 }
                 else
                 {
-                    Debug.Log("Disable flashlight by player input");
                     OnFlashlightDeActivated?.Invoke();
                     _isFlashlightActive = false;
                 }

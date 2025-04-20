@@ -73,16 +73,18 @@ public class Flashlight : MonoBehaviour
 
     private void ActivateFlashlight()
     {
-        _flashlightAudio.PlaySfx();
+        StopCoroutine(_flashlightAudio.FadeOutFlashlightAudio());
+        StartCoroutine(_flashlightAudio.PlayFlashlightOnSound());
         StopCoroutine("LightDeActivationRoutine");
         StartCoroutine("LightActivationRoutine");
     }
 
     private void DeactivateFlashlight()
     {
+        StopCoroutine(_flashlightAudio.PlayFlashlightOnSound());
         StopCoroutine("LightActivationRoutine");
         StartCoroutine("LightDeActivationRoutine");
-        _flashlightAudio.StopSfx();
+        StartCoroutine(_flashlightAudio.FadeOutFlashlightAudio());
     }
 
     private void MoveFlashlightToCrouchPosition()
