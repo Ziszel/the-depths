@@ -3,14 +3,18 @@ using UnityEngine;
 
 public class FloorCollider : MonoBehaviour
 {
+    [Header("External Components")]
     public PlayerController player;
+    public PlayerAudio playerAudio;
+    
     [SerializeField] private AudioClip landingGroundClip;
     [SerializeField] private float longFlightTimeThreshold;
     
-    private bool _onGround;
-    
+    // Components
     private GlobalSFXPlayer _globalSfxPlayer;
+    
     private bool _isHighFall;
+    private bool _onGround;
 
     private void Start()
     {
@@ -31,7 +35,7 @@ public class FloorCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Floor"))
+        if (other.tag.Contains("Floor"))
         {
             if (_isHighFall)
             {
@@ -40,24 +44,27 @@ public class FloorCollider : MonoBehaviour
                 player.SetPlayerState(playerActionState.Standing);
             }
             _isHighFall = false;
+            
+            UpdateFootstepAudio(other.tag);
         }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Floor"))
+        if (other.tag.Contains("Floor"))
         {
             if (!_onGround)
             {
                 player.GetRigidBody().linearDamping = 5;
                 _onGround = true;
             }
+            UpdateFootstepAudio(other.tag);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Floor"))
+        if (other.tag.Contains("Floor"))
         {
             StartCoroutine(LongFlightTime());
             player.GetRigidBody().linearDamping = 1;
@@ -68,5 +75,31 @@ public class FloorCollider : MonoBehaviour
     public bool IsOnGround()
     {
         return _onGround;
+    }
+
+    // Update footstep sounds
+    // Runs when entering (takes new tag, updates _oldSound to _currentSound and then updates _currentSound)
+    // Runs when exiting (compares if tag != _oldSound and then updates _currentSound to _oldSound)
+    private void UpdateFootstepAudio(string newSound)
+    {
+        if (newSound.Contains("Cement"))
+        {
+            playerAudio.SetFootstepsToCement();
+        }
+            
+        if (newSound.Contains("Wood"))
+        {
+            playerAudio.SetFootstepsToWood();
+        }
+
+        if (newSound.Contains("Glass"))
+        {
+            playerAudio.SetFootstepsToGlass();
+        }
+            
+        if (newSound.Contains("SolidSteel"))
+        {
+            playerAudio.SetFootstepsToSolidSteel();
+        }
     }
 }

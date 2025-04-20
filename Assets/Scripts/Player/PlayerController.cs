@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour
     private float _timeUntilFootstep;
     private float _currentFootstepRate;
     Transform _playerHidingExitTransform; // Used for exiting hiding place. Not the best solution but easiest.
+    private bool _isFlashlightActive;
     
     // -- Components --
     public CapsuleCollider walkCollider;
@@ -106,6 +107,7 @@ public class PlayerController : MonoBehaviour
         _fpsCameraNoise = _fpsCamera.GetComponent<CinemachineBasicMultiChannelPerlin>();
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _currentFootstepRate = walkingRate;
+        _isFlashlightActive = false;
         
         _movement = InputManager.PlayerInputActions.Player.Move;
         InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
@@ -291,12 +293,17 @@ public class PlayerController : MonoBehaviour
         {
             if (context.started)
             {
-                OnFlashlightActivated?.Invoke();
-            }
-
-            if (context.canceled)
-            {
-                OnFlashlightDeActivated?.Invoke();
+                if (!_isFlashlightActive)
+                {
+                    OnFlashlightActivated?.Invoke();
+                    _isFlashlightActive = true;
+                }
+                else
+                {
+                    OnFlashlightDeActivated?.Invoke();
+                    _isFlashlightActive = false;
+                }
+                
             }
         }
     }
