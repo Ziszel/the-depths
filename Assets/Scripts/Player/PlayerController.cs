@@ -37,6 +37,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxWalkVelocity = 5.0f;
     [SerializeField] private float maxSprintVelocity = 10.0f;
     [SerializeField] private Transform cameraTransform;
+
+    private Vector3 _slopeMoveDirection;
+    private RaycastHit _slopeHit;
+    private LayerMask _floorLayerMask;
     
     [Header("Camera targets")]
     [SerializeField] private GameObject crouch; // update OnPlayerKill and look to remove this
@@ -108,6 +112,8 @@ public class PlayerController : MonoBehaviour
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _currentFootstepRate = walkingRate;
         _isFlashlightActive = false;
+        
+        _floorLayerMask = LayerMask.GetMask("Floor");
         
         _movement = InputManager.PlayerInputActions.Player.Move;
         InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
@@ -223,6 +229,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_floorCollider.IsOnGround())
         {
+            // Expand this with check against slope to determine speed?
             _rb.linearVelocity = Vector3.ClampMagnitude(_rb.linearVelocity, maxMovementVelocity);
         }
     }
@@ -515,32 +522,44 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        if (_floorCollider.IsOnGround())
+        // Move the player relative to the camera's rotation
+        _moveInput = _movement.ReadValue<Vector2>();
+        Vector3 move = cameraTransform.forward * _moveInput.y + cameraTransform.right * _moveInput.x;
+        move.y = 0.0f; // ensure player does not move vertically
+        
+        if (_floorCollider.IsOnGround() && !OnSlope())
         {
-            // Move the player relative to the camera's rotation and clamp the movement velocity
-            _moveInput = _movement.ReadValue<Vector2>();
-            Vector3 move = cameraTransform.forward * _moveInput.y + cameraTransform.right * _moveInput.x;
-            move.y = 0.0f;
+            Debug.Log("Moving on flat land");
+            Debug.Log(move.normalized * movementVelocity);
             _rb.AddForce(move.normalized * movementVelocity, ForceMode.VelocityChange);
-
-            if (move.x == 0.0f && move.y == 0.0f)
+        }
+        else if (_floorCollider.IsOnGround() && OnSlope())
+        {
+            // Get slope direction normal
+            _slopeMoveDirection =
+                Vector3.ProjectOnPlane(move, _slopeHit.normal);
+            
+            Debug.Log(_slopeMoveDirection.normalized * movementVelocity);
+            _rb.AddForce(_slopeMoveDirection.normalized * movementVelocity, ForceMode.VelocityChange);
+        }
+        
+        // Update player state based on input / movement
+        if (move.x == 0.0f && move.y == 0.0f)
+        {
+            if (_currentplayerActionState != playerActionState.Crouching &&
+                _currentplayerActionState != playerActionState.Uncrouching)
             {
-                if (_currentplayerActionState != playerActionState.Crouching &&
-                    _currentplayerActionState != playerActionState.Uncrouching)
-                {
-                    _currentplayerActionState = playerActionState.Standing;
-                }
+                _currentplayerActionState = playerActionState.Standing;
             }
-            else
+        }
+        else
+        {
+            if (!_currentplayerActionState.Equals(playerActionState.Sprinting) && 
+                !_currentplayerActionState.Equals(playerActionState.Crouching)
+                && !_currentplayerActionState.Equals(playerActionState.Uncrouching))
             {
-                if (!_currentplayerActionState.Equals(playerActionState.Sprinting) && 
-                    !_currentplayerActionState.Equals(playerActionState.Crouching)
-                    && !_currentplayerActionState.Equals(playerActionState.Uncrouching))
-                {
-                    SetPlayerValuesToWalk();
-                    _currentplayerActionState = playerActionState.Walking;
-                }
-                
+                SetPlayerValuesToWalk();
+                _currentplayerActionState = playerActionState.Walking;
             }
         }
     }
@@ -555,6 +574,21 @@ public class PlayerController : MonoBehaviour
             return true;
         }
 
+        return false;
+    }
+
+    private bool OnSlope()
+    {
+        Vector3 dir = walkCollider.transform.TransformDirection(Vector3.down);
+        Debug.DrawRay(walkCollider.transform.position, dir.normalized * (playerHeightRay + 0.5f), Color.red);
+        if (Physics.Raycast(walkCollider.transform.position, dir, out _slopeHit,
+                playerHeightRay + 0.5f, _floorLayerMask))
+        {
+            if (_slopeHit.normal != Vector3.up)
+            {
+                return true; // Ground is not flat as the normal is not pointing straight up
+            }
+        }
         return false;
     }
 
