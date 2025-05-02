@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -12,6 +14,11 @@ public class LevelManager : MonoBehaviour
     
     [Header("Spawn controls")]
     [SerializeField] private Transform playerSpawnPoint;
+    
+    // This should probably be its own script and will need re-writing eventually
+    // (larger levels with multiple arenas / monster types, etc...)
+    [Header("AI related")]
+    [SerializeField] private List<Vector3> allPathNodes;
     
     public Transform checkpointTransform;
     private static float _timer;
@@ -228,6 +235,20 @@ public class LevelManager : MonoBehaviour
     public static Inventory GetInventoryFromPlayer()
     {
         return _player.GetPlayerInventory();
+    }
+
+    public List<Vector3> GetClosestPathNodesToPlayer(int numberOfNodes)
+    {
+        allPathNodes = allPathNodes.OrderBy(node => Vector3.Distance(_player.transform.position, node)).ToList();
+
+        List<Vector3> closestNodes = new List<Vector3>();
+        
+        for (int i = 0; i < numberOfNodes; i++)
+        {
+            closestNodes.Add(allPathNodes[i]);
+        }
+        
+        return closestNodes;
     }
 
     private void ApplySettingsToGame()

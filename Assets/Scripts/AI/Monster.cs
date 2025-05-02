@@ -44,17 +44,20 @@ public class Monster : MonoBehaviour
     private MonsterAnimation _monsterAnimation;
     
     // path node logic
+    [Header("Path data")] // how often the monster looks for the closest nodes to the player
+    [SerializeField] private float updatePathNodeDelta = 10.0f; 
     private int _currentNodeIndicator;
     private int _previousNodeIndicator;
     private List<Vector3> _pathNodes;
     private List<Vector3> _previousPathNodes;
     private readonly float _minimumDistanceToNode = 2.0f;
+    private float _timeUntilUpdateNodes;
     
     // Chase helpers
     [SerializeField] private float minimumChaseTime = 2.0f;
     private float _currentChaseTime;
 
-    [Header("Control values")] 
+    [Header("Monster values")] 
     // Speed of the monster when walking a path
     [SerializeField] private float _pathSpeed = 2.0f;
     // Speed of the monster when chasing
@@ -75,6 +78,7 @@ public class Monster : MonoBehaviour
         _player = FindAnyObjectByType<PlayerController>();
         _monsterAudio = GetComponentInChildren<MonsterAudio>();
         _currentChaseTime = 0.0f;
+        _timeUntilUpdateNodes = 0.0f;
 
         // Animation
         _monsterAnimation = GetComponent<MonsterAnimation>();
@@ -120,6 +124,14 @@ public class Monster : MonoBehaviour
                 }
                 else
                 {
+                    _timeUntilUpdateNodes -= Time.deltaTime;
+                    // Depending on scenario this may need additional checks later
+                    if (_timeUntilUpdateNodes <= 0.0f)
+                    {
+                        _levelManager.GetClosestPathNodesToPlayer(3);
+                        _timeUntilUpdateNodes = updatePathNodeDelta;
+                    }
+                    
                     if (Vector3.Distance(transform.position, _agent.destination) < _minimumDistanceToNode)
                     {
                         RandomlySetNextNode();
@@ -190,7 +202,6 @@ public class Monster : MonoBehaviour
                 {
                     _pathNodes = _previousPathNodes;
                     SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
-                    _musicManager.PlayMusic(huntMusic, 2.0f);
                 }
                 break;
         }
@@ -272,6 +283,10 @@ public class Monster : MonoBehaviour
         else
         {
             _monsterAnimation.SetStateToWalk();
+            if (monsterState == MonsterState.ChasePath)
+            {
+                _musicManager.PlayMusic(huntMusic, 2.0f);
+            }
         }
 
         // Always plays an SFX when state changes | (is this desired?)

@@ -65,39 +65,12 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // We're in a game level or testing level TODO: Remove. GameManager should not know about the Monster
-        if (scene.name != "MainMenu")
-        {
-            //monster = GameObject.Find("Monster").GetComponentInChildren<Monster>(); // Get the monster stored so we're able to play chasing/wandering music
-            if (monster != null)
-            {
-                monster.OnChaseStateEntered += HandleMonsterEnterChaseState;
-                monster.OnChaseStateExited += HandleMonsterExitChaseState;
-            }
-        }
         if (scene.name.Contains("MainMenu"))
         {
             InitialiseGame();
         }
     }
-
-    // TODO: Old game jam hackery, remove.
-    private void HandleMonsterEnterChaseState()
-    {
-        // Need an if here otherwise this will get assigned chase and play every frame from the monster delegate
-        // if (!_musicManager.IsPlaying())
-        // {
-        //     _musicManager.AssignChaseMusic();
-        //     _musicManager.Play();
-        // }
-    }
-
-    // TODO: Old game jam hackery, remove.
-    private void HandleMonsterExitChaseState()
-    {
-        // _musicManager.TriggerFadeOutMusic(1.5f);
-    }
-
+    
     public int GetDeathCount()
     {
         return _deathCount;
