@@ -128,7 +128,10 @@ public class Monster : MonoBehaviour
                     // Depending on scenario this may need additional checks later
                     if (_timeUntilUpdateNodes <= 0.0f)
                     {
-                        _levelManager.GetClosestPathNodesToPlayer(3);
+                        // Currently UpdatePathNodes will get the closest X path nodes to the player
+                        // Eventually, this function may be able to do more with the path nodes specified
+                        // LevelManager itself does no work, the PathNodeManager component updates if it exists
+                        _pathNodes = _levelManager.UpdatePathNodes(3);
                         _timeUntilUpdateNodes = updatePathNodeDelta;
                     }
                     

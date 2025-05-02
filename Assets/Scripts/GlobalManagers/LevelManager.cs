@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using NUnit.Framework;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -15,16 +15,12 @@ public class LevelManager : MonoBehaviour
     [Header("Spawn controls")]
     [SerializeField] private Transform playerSpawnPoint;
     
-    // This should probably be its own script and will need re-writing eventually
-    // (larger levels with multiple arenas / monster types, etc...)
-    [Header("AI related")]
-    [SerializeField] private List<Vector3> allPathNodes;
-    
     public Transform checkpointTransform;
     private static float _timer;
     private bool _isPaused;
 
     private GameManager _gameManager;
+    private PathNodeManager _pathNodeManager;
     private FPSCamera _fpsCamera;
     private PostProcessManager _postProcessManager;
     private static PlayerController _player;
@@ -48,13 +44,19 @@ public class LevelManager : MonoBehaviour
     
     private void Start()
     {
-        _timer = 0;
-        _isPaused = false;
         _postProcessManager = FindAnyObjectByType<PostProcessManager>();
         _gameManager = FindAnyObjectByType<GameManager>();
         _player = FindAnyObjectByType<PlayerController>();
         _monster = FindAnyObjectByType<Monster>();
         _fpsCamera = GameObject.Find("FPSCamera").GetComponent<FPSCamera>();
+
+        if (TryGetComponent(out PathNodeManager pathNodeManager))
+        {
+            _pathNodeManager = pathNodeManager;
+        }
+            
+        _timer = 0;
+        _isPaused = false;
         _playerDead = false;
 
         _monsterStateTriggers = FindObjectsByType<SetMonsterStateTrigger>(FindObjectsSortMode.None);
@@ -237,18 +239,9 @@ public class LevelManager : MonoBehaviour
         return _player.GetPlayerInventory();
     }
 
-    public List<Vector3> GetClosestPathNodesToPlayer(int numberOfNodes)
+    public List<Vector3> UpdatePathNodes(int numberOfNodes)
     {
-        allPathNodes = allPathNodes.OrderBy(node => Vector3.Distance(_player.transform.position, node)).ToList();
-
-        List<Vector3> closestNodes = new List<Vector3>();
-        
-        for (int i = 0; i < numberOfNodes; i++)
-        {
-            closestNodes.Add(allPathNodes[i]);
-        }
-        
-        return closestNodes;
+        return _pathNodeManager.GetClosestPathNodesToPlayer(numberOfNodes);
     }
 
     private void ApplySettingsToGame()
