@@ -10,11 +10,11 @@ public class MusicManager : MonoBehaviour
         _musicSource = GetComponent<AudioSource>();
     }
 
-    public void PlayMusic(AudioClip musicToPlay)
+    public void PlayMusic(AudioClip musicToPlay, float fadeDuration)
     {
         if (_musicSource.isPlaying)
         {
-            StartCoroutine(FadeOutAndPlayMusic(3.0f, musicToPlay));
+            StartCoroutine(FadeOutAndPlayMusic(fadeDuration, musicToPlay));
         }
         else
         {

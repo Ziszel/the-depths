@@ -12,16 +12,21 @@ public class Monster : MonoBehaviour
     public enum MonsterState
     {
         None, // no state, do nothing
-        ChasePath, // Follow a path but allow for chasing the player
+        ChasePath, // Follow a path but allow for chasing the player (maybe rename this Patrol)
         Chase,
         SafePath, // Follow a path but do NOT allow for chasing the player (story elements)
-        Investigate // Move to a specific location, then chase OR decide new path (ChasePath state)
+        Investigate // Move to a specific location, then chase OR decide new path. (ChasePath state)
     }
 
     [Header("How far the monster can see")]
     [SerializeField] private float maxViewDistance;
     
-    private bool isChasing = false;
+    // Not convinced this is the best location for this, but for now it's ok
+    [Header("Monster arena music")]
+    [SerializeField] private AudioClip chaseMusic;
+    [SerializeField] private AudioClip huntMusic;
+    
+    private bool _isChasing = false;
 
     // Delegates
     public delegate void ChaseStateEnterHandler();
@@ -34,6 +39,7 @@ public class Monster : MonoBehaviour
     private NavMeshAgent _agent;
     private MonsterState _monsterState;
     private LevelManager _levelManager;
+    private MusicManager _musicManager;
     private MonsterAudio _monsterAudio;
     private MonsterAnimation _monsterAnimation;
     
@@ -64,6 +70,7 @@ public class Monster : MonoBehaviour
     {
         _monsterState = MonsterState.None;
         _levelManager = FindAnyObjectByType<LevelManager>();
+        _musicManager = FindFirstObjectByType<MusicManager>();
         _agent = GetComponent<NavMeshAgent>();
         _player = FindAnyObjectByType<PlayerController>();
         _monsterAudio = GetComponentInChildren<MonsterAudio>();
@@ -97,11 +104,11 @@ public class Monster : MonoBehaviour
         switch (_monsterState)
         {
             case MonsterState.None:
-                if (isChasing)
+                if (_isChasing)
                 {
                     OnChaseStateExited?.Invoke();
                 }
-                isChasing = false;
+                _isChasing = false;
                 _agent.speed = _pathSpeed;
                 break;
             case MonsterState.ChasePath:
@@ -122,11 +129,11 @@ public class Monster : MonoBehaviour
                 break;
             case MonsterState.Chase:
                 _agent.speed = _chaseSpeed;
-                if (!isChasing)
+                if (!_isChasing)
                 {
                     OnChaseStateEntered?.Invoke();
                 }
-                isChasing = true;
+                _isChasing = true;
 
                 if (_currentChaseTime > minimumChaseTime)
                 {
@@ -134,7 +141,7 @@ public class Monster : MonoBehaviour
                     {
                         _currentChaseTime = minimumChaseTime;
                     }
-                    else
+                    else // Monster is exiting chase and returning to patrol
                     {
                         // We can safely set the same _pathNodes as before
                         SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
@@ -146,11 +153,11 @@ public class Monster : MonoBehaviour
                 break;
             case MonsterState.SafePath:
                 _agent.speed = _pathSpeed;
-                if (isChasing)
+                if (_isChasing)
                 {
                     OnChaseStateExited?.Invoke();
                 }
-                isChasing = false;
+                _isChasing = false;
 
                 // Traverse a path
                 if (Vector3.Distance(transform.position, _pathNodes[_currentNodeIndicator]) 
@@ -183,6 +190,7 @@ public class Monster : MonoBehaviour
                 {
                     _pathNodes = _previousPathNodes;
                     SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
+                    _musicManager.PlayMusic(huntMusic, 2.0f);
                 }
                 break;
         }
@@ -259,6 +267,7 @@ public class Monster : MonoBehaviour
         if (monsterState == MonsterState.Chase)
         {
             _monsterAnimation.SetStateToSprint();
+            _musicManager.PlayMusic(chaseMusic, 0.2f);
         }
         else
         {
