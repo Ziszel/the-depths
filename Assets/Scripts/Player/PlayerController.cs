@@ -12,7 +12,8 @@ public enum playerActionState
     Walking = 4,
     Sprinting = 5,
     InInventory = 6,
-    Hiding = 7
+    Hiding = 7,
+    IsPaused = 8
 }
 
 public class PlayerController : MonoBehaviour
@@ -437,17 +438,21 @@ public class PlayerController : MonoBehaviour
 
     public void OnPause(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.started && !_currentplayerActionState.Equals(playerActionState.InInventory))
         {
+            Debug.Log("paused");
             // Pause the game if we're not paused
             if (Mathf.Approximately(Time.timeScale, 1.0f))
             {
                 OnPausePressed?.Invoke(true);
+                SetOldPlayerState(_currentplayerActionState);
+                _currentplayerActionState = playerActionState.IsPaused;
             }
             // Unpause the game if we are paused
             else
             {
                 OnPausePressed?.Invoke(false);
+                SetPlayerState(_oldPlayerActionState);
             }
             
         }
