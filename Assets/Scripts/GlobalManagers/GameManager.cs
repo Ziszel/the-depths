@@ -131,12 +131,12 @@ public class GameManager : MonoBehaviour
     // Settings and backend values (Level manager is responsible for some, game manager for others)
     public void SetMusicMixerValue()
     {
-        musicMixer.SetFloat("MusicVolume", PlayerPrefs.GetFloat("MusicVolume", 0.5f));
+        musicMixer.SetFloat("MusicVolume", Mathf.Log10(PlayerPrefs.GetFloat("MusicVolume", 0.5f)) * 20);
     }
 
     public void SetSFXMixerValue()
     {
-        SFXMixer.SetFloat("SFXVolume", PlayerPrefs.GetFloat("SFXVolume", 0.5f));
+        SFXMixer.SetFloat("SFXVolume", Mathf.Log10(PlayerPrefs.GetFloat("SFXVolume", 0.5f)) * 20);
     }
 
     private void InitialiseGame()
@@ -148,6 +148,8 @@ public class GameManager : MonoBehaviour
         _saveCount = 0;
         // TODO: Attempt to load from disk a best time, if it fails put the default value here
         _bestTime = 999999;
+        SetMusicMixerValue();
+        SetSFXMixerValue();
     }
     
 }

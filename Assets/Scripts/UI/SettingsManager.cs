@@ -10,11 +10,13 @@ public class SettingsManager : MonoBehaviour
     
     private GlobalSFXPlayer _globalSfxPlayer;
     private MusicManager _musicManager;
+    private GameManager _gameManager;
 
     private void Start()
     {
         _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
         _musicManager = FindFirstObjectByType<MusicManager>();
+        _gameManager = FindFirstObjectByType<GameManager>();
     }
     
     // Load values from PlayerPrefs and update UI elements to match
@@ -49,6 +51,8 @@ public class SettingsManager : MonoBehaviour
         _globalSfxPlayer.PlaySfx(_globalSfxPlayer.menuBackward);
         // Update this to give the player a warning first (also asking if they want to cancel changes)
         PlayerPrefs.Save(); // These will be loaded next time the game is loaded so no LevelManager required
+        _gameManager.SetSFXMixerValue();
+        _gameManager.SetMusicMixerValue();
         GameManager.Instance.LoadLevel("MainMenu");
     }
 }
