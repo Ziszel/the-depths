@@ -456,6 +456,10 @@ public class PlayerController : MonoBehaviour
             }
             
         }
+        else if (_currentplayerActionState.Equals(playerActionState.InInventory))
+        {
+            _levelManager.HideInventory();
+        }
     }
 
     // Was used for AcitonMap (Hiding) but due to ActionMap bugs this has been removed.
