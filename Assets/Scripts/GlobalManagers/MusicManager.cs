@@ -8,6 +8,7 @@ public class MusicManager : MonoBehaviour
     private void Start()
     {
         _musicSource = GetComponent<AudioSource>();
+        _musicSource.volume = _musicSource.volume;
     }
 
     public void PlayMusic(AudioClip musicToPlay, float fadeDuration)
@@ -21,6 +22,14 @@ public class MusicManager : MonoBehaviour
             _musicSource.clip = musicToPlay;
             _musicSource.volume = 1.0f;
             _musicSource.Play();
+        }
+    }
+
+    public void StopMusic()
+    {
+        if (_musicSource.isPlaying)
+        {
+            _musicSource.Stop();
         }
     }
     

@@ -529,8 +529,8 @@ public class PlayerController : MonoBehaviour
         
         if (_floorCollider.IsOnGround() && !OnSlope())
         {
-            Debug.Log("Moving on flat land");
-            Debug.Log(move.normalized * movementVelocity);
+            // Debug.Log("Moving on flat land");
+            // Debug.Log(move.normalized * movementVelocity);
             _rb.AddForce(move.normalized * movementVelocity, ForceMode.VelocityChange);
         }
         else if (_floorCollider.IsOnGround() && OnSlope())
@@ -539,7 +539,8 @@ public class PlayerController : MonoBehaviour
             _slopeMoveDirection =
                 Vector3.ProjectOnPlane(move, _slopeHit.normal);
             
-            Debug.Log(_slopeMoveDirection.normalized * movementVelocity);
+            // Debug.Log("Moving on slope");
+            // Debug.Log(_slopeMoveDirection.normalized * movementVelocity);
             _rb.AddForce(_slopeMoveDirection.normalized * movementVelocity, ForceMode.VelocityChange);
         }
         

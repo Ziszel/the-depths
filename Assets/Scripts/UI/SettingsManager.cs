@@ -9,10 +9,12 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private Button returnToMainMenuButton;
     
     private GlobalSFXPlayer _globalSfxPlayer;
+    private MusicManager _musicManager;
 
     private void Start()
     {
         _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
+        _musicManager = FindFirstObjectByType<MusicManager>();
     }
     
     // Load values from PlayerPrefs and update UI elements to match
@@ -42,6 +44,7 @@ public class SettingsManager : MonoBehaviour
 
     private void OnExitBtnClicked()
     {
+        _musicManager.StopMusic();
         Time.timeScale = 1f;
         _globalSfxPlayer.PlaySfx(_globalSfxPlayer.menuBackward);
         // Update this to give the player a warning first (also asking if they want to cancel changes)

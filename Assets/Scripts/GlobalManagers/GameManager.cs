@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string initialGoalText;
     
     public static GameManager Instance;
+    /* Audio */
+    public MusicManager musicManager;
     
     public AudioMixer musicMixer;
     public AudioMixer SFXMixer;
@@ -22,9 +24,6 @@ public class GameManager : MonoBehaviour
     private List<InventoryItem> _persistedPlayerItems;
     private List<FileData> _persistedFileData;
     private string _persistedGoalText;
-
-    /* Audio */
-    private MusicManager _musicManager;
 
     /* Monster */ // (this DEFINITELY should not be here. Look to clean-up when implementing Level2)
     Monster monster;
