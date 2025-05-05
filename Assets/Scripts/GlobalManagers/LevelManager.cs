@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using NUnit.Framework;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -18,6 +20,7 @@ public class LevelManager : MonoBehaviour
     private bool _isPaused;
 
     private GameManager _gameManager;
+    private PathNodeManager _pathNodeManager;
     private FPSCamera _fpsCamera;
     private PostProcessManager _postProcessManager;
     private static PlayerController _player;
@@ -41,13 +44,19 @@ public class LevelManager : MonoBehaviour
     
     private void Start()
     {
-        _timer = 0;
-        _isPaused = false;
         _postProcessManager = FindAnyObjectByType<PostProcessManager>();
         _gameManager = FindAnyObjectByType<GameManager>();
         _player = FindAnyObjectByType<PlayerController>();
         _monster = FindAnyObjectByType<Monster>();
         _fpsCamera = GameObject.Find("FPSCamera").GetComponent<FPSCamera>();
+
+        if (TryGetComponent(out PathNodeManager pathNodeManager))
+        {
+            _pathNodeManager = pathNodeManager;
+        }
+            
+        _timer = 0;
+        _isPaused = false;
         _playerDead = false;
 
         _monsterStateTriggers = FindObjectsByType<SetMonsterStateTrigger>(FindObjectsSortMode.None);
@@ -228,6 +237,11 @@ public class LevelManager : MonoBehaviour
     public static Inventory GetInventoryFromPlayer()
     {
         return _player.GetPlayerInventory();
+    }
+
+    public List<Vector3> UpdatePathNodes(int numberOfNodes)
+    {
+        return _pathNodeManager.GetClosestPathNodesToPlayer(numberOfNodes);
     }
 
     private void ApplySettingsToGame()

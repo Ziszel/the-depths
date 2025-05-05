@@ -15,7 +15,7 @@ public class MusicTrigger : MonoBehaviour
     {
         if (other.CompareTag("PlayerTrigger"))
         {
-            _musicManager.PlayMusic(musicToPlay);
+            _musicManager.PlayMusic(musicToPlay, 3.0f);
             Destroy(gameObject);
         }
     }

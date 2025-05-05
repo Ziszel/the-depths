@@ -8,13 +8,14 @@ public class MusicManager : MonoBehaviour
     private void Start()
     {
         _musicSource = GetComponent<AudioSource>();
+        _musicSource.volume = _musicSource.volume;
     }
 
-    public void PlayMusic(AudioClip musicToPlay)
+    public void PlayMusic(AudioClip musicToPlay, float fadeDuration)
     {
         if (_musicSource.isPlaying)
         {
-            StartCoroutine(FadeOutAndPlayMusic(3.0f, musicToPlay));
+            StartCoroutine(FadeOutAndPlayMusic(fadeDuration, musicToPlay));
         }
         else
         {
@@ -22,6 +23,19 @@ public class MusicManager : MonoBehaviour
             _musicSource.volume = 1.0f;
             _musicSource.Play();
         }
+    }
+
+    public void StopMusic()
+    {
+        if (_musicSource.isPlaying)
+        {
+            _musicSource.Stop();
+        }
+    }
+
+    public void StopMusicWithDelay(float fadeDuration)
+    {
+        StartCoroutine(FadeOutAndStop(fadeDuration));
     }
     
     // Possibly wrap these two functions into one another?

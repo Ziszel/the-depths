@@ -70,7 +70,7 @@ public class HealthManager : MonoBehaviour
             _currentHealth += restoreHealth;
             HealthChanged?.Invoke(_currentHealth);
             
-            Debug.Log($"Health changed to {_currentHealth}");
+            // Debug.Log($"Health changed to {_currentHealth}");
 
             if (_currentHealth < maxHealth)
             {

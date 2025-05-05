@@ -20,6 +20,7 @@ public class GlobalSFXPlayer : MonoBehaviour
     
     public void PlaySfx(AudioClip audioClip)
     {
+        // Debug.Log("playing audio sfx clip");
         _clip = audioClip;
         _audioSource.clip = _clip;
         _audioSource.Play();

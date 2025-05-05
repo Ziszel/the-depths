@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private string initialGoalText;
     
     public static GameManager Instance;
+    /* Audio */
+    public MusicManager musicManager;
     
     public AudioMixer musicMixer;
     public AudioMixer SFXMixer;
@@ -22,9 +24,6 @@ public class GameManager : MonoBehaviour
     private List<InventoryItem> _persistedPlayerItems;
     private List<FileData> _persistedFileData;
     private string _persistedGoalText;
-
-    /* Audio */
-    private MusicManager _musicManager;
 
     /* Monster */ // (this DEFINITELY should not be here. Look to clean-up when implementing Level2)
     Monster monster;
@@ -65,39 +64,12 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // We're in a game level or testing level TODO: Remove. GameManager should not know about the Monster
-        if (scene.name != "MainMenu")
-        {
-            //monster = GameObject.Find("Monster").GetComponentInChildren<Monster>(); // Get the monster stored so we're able to play chasing/wandering music
-            if (monster != null)
-            {
-                monster.OnChaseStateEntered += HandleMonsterEnterChaseState;
-                monster.OnChaseStateExited += HandleMonsterExitChaseState;
-            }
-        }
         if (scene.name.Contains("MainMenu"))
         {
             InitialiseGame();
         }
     }
-
-    // TODO: Old game jam hackery, remove.
-    private void HandleMonsterEnterChaseState()
-    {
-        // Need an if here otherwise this will get assigned chase and play every frame from the monster delegate
-        // if (!_musicManager.IsPlaying())
-        // {
-        //     _musicManager.AssignChaseMusic();
-        //     _musicManager.Play();
-        // }
-    }
-
-    // TODO: Old game jam hackery, remove.
-    private void HandleMonsterExitChaseState()
-    {
-        // _musicManager.TriggerFadeOutMusic(1.5f);
-    }
-
+    
     public int GetDeathCount()
     {
         return _deathCount;
@@ -159,12 +131,12 @@ public class GameManager : MonoBehaviour
     // Settings and backend values (Level manager is responsible for some, game manager for others)
     public void SetMusicMixerValue()
     {
-        musicMixer.SetFloat("MusicVolume", PlayerPrefs.GetFloat("MusicVolume", 0.5f));
+        musicMixer.SetFloat("MusicVolume", Mathf.Log10(PlayerPrefs.GetFloat("MusicVolume", 0.5f)) * 20);
     }
 
     public void SetSFXMixerValue()
     {
-        SFXMixer.SetFloat("SFXVolume", PlayerPrefs.GetFloat("SFXVolume", 0.5f));
+        SFXMixer.SetFloat("SFXVolume", Mathf.Log10(PlayerPrefs.GetFloat("SFXVolume", 0.5f)) * 20);
     }
 
     private void InitialiseGame()
@@ -176,6 +148,8 @@ public class GameManager : MonoBehaviour
         _saveCount = 0;
         // TODO: Attempt to load from disk a best time, if it fails put the default value here
         _bestTime = 999999;
+        SetMusicMixerValue();
+        SetSFXMixerValue();
     }
     
 }
