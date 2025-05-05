@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 // Scare Event Manager classes are bespoke and used to control the order of execution of scare events
@@ -8,6 +9,8 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
     [SerializeField] private AudioClip monsterScreech;
     [SerializeField] private AudioClip chaseMusic;
     [SerializeField] private float phaseTwoDelayTime;
+    [SerializeField] private Vector3[] initialMonsterPathNodes;
+    [SerializeField] private Vector3 initialInvestigationPosition;
     private MusicManager _musicManager;
     private GlobalSFXPlayer _sfxPlayer;
     private Monster _monster;
@@ -47,6 +50,8 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
         _scarePush.TriggerScareEvent();
         _scareRotateByTorque.TriggerScareEvent();
         _musicManager.StopMusicWithDelay(2.0f);
+        _monster.SetMonsterState(Monster.MonsterState.Investigate, initialMonsterPathNodes.ToList(), 
+            _monster.transform.position, initialInvestigationPosition);
     }
     
     private IEnumerator DelaySFX(float delayTime)

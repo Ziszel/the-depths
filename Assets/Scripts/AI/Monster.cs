@@ -88,7 +88,7 @@ public class Monster : MonoBehaviour
     IEnumerator AttackAnimation(float animationTime)
     {
         yield return new WaitForSeconds(animationTime);
-        SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+        SetMonsterState(MonsterState.Chase, _pathNodes, transform.position, Vector3.zero);
     }
     
     private void Update()
@@ -96,6 +96,7 @@ public class Monster : MonoBehaviour
         // Regardless of state, if the player walks up to the monster, they take damage
         if (!_levelManager.IsPlayerDead())
         {
+            Debug.Log(Vector3.Distance(transform.position, _player.transform.position));
             if (Vector3.Distance(transform.position, _player.transform.position) < _killRange)
             {
                 OnPlayerWithinDamageDistance?.Invoke();
@@ -120,7 +121,8 @@ public class Monster : MonoBehaviour
                 if (CanMonsterSeePlayer())
                 {
                     _agent.destination = _player.transform.position;
-                    SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+                    SetMonsterState(MonsterState.Chase, _pathNodes, 
+                        transform.position, Vector3.zero);
                 }
                 else
                 {
@@ -159,7 +161,8 @@ public class Monster : MonoBehaviour
                     else // Monster is exiting chase and returning to patrol
                     {
                         // We can safely set the same _pathNodes as before
-                        SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
+                        SetMonsterState(MonsterState.ChasePath, _pathNodes, 
+                            transform.position, Vector3.zero);
                     }
                 }
                 _agent.destination = _player.transform.position;
@@ -197,14 +200,16 @@ public class Monster : MonoBehaviour
                 if (CanMonsterSeePlayer())
                 {
                     _agent.destination = _player.transform.position;
-                    SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+                    SetMonsterState(MonsterState.Chase, _pathNodes, 
+                        transform.position, Vector3.zero);
                 }
 
                 // Reached destination without seeing player, reset to hunting
                 if (Vector3.Distance(transform.position, _agent.destination) < _minimumDistanceToNode)
                 {
-                    _pathNodes = _previousPathNodes;
-                    SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
+                    // _pathNodes = _previousPathNodes;
+                    SetMonsterState(MonsterState.ChasePath, _pathNodes, 
+                        transform.position, Vector3.zero);
                 }
                 break;
         }
@@ -217,6 +222,13 @@ public class Monster : MonoBehaviour
 
     private bool CanMonsterSeePlayer()
     {
+        // Check if player is hiding
+        if (_player.GetPlayerActionState() == playerActionState.Hiding)
+        {
+            // TODO: If the monster sees the player run into a hiding place, they should still kill the player.
+            return false;
+        }
+        
         // Check if player is very close to monster
         if (Vector3.Distance(_player.transform.position, transform.position) < 5)
         {
@@ -255,7 +267,7 @@ public class Monster : MonoBehaviour
         return Random.Range(minMonsterScreechRate, maxMonsterScreechRate);
     }
 
-    // Only used for when monster state is setup to none (no path nodes required)
+    // Only used for when monster state is set to none (no path nodes required)
     public void SetMonsterState(MonsterState monsterState)
     {
         _agent.destination = transform.position;
@@ -266,35 +278,56 @@ public class Monster : MonoBehaviour
         _monsterAnimation.SetStateToWalk();
     }
 
-    public void SetMonsterState(MonsterState monsterState, List<Vector3> newPathNodes, Vector3 newPosition)
+    // Only used for when monster state is set to Investigate
+    public void SetMonsterState(List<Vector3> newPathNodes, Vector3 newPosition,
+        Vector3 newDestination)
     {
         // Disable agent to allow for teleporting to new position
         _agent.enabled = false;
         transform.position = newPosition;
         _agent.enabled = true;
         
-        _monsterState = monsterState;
+        _monsterState = MonsterState.Investigate;
         _currentNodeIndicator = 0;
         _pathNodes = newPathNodes;
-        _agent.destination = _pathNodes[_currentNodeIndicator];
+        _agent.destination = newDestination;
+        
+    }
 
-        if (monsterState == MonsterState.Chase)
+    public void SetMonsterState(MonsterState monsterState, List<Vector3> newPathNodes, Vector3 newPosition,
+        Vector3 newDestination)
+    {
+        // Disable agent to allow for teleporting to new position
+        _agent.enabled = false;
+        transform.position = newPosition;
+        _agent.enabled = true;
+        
+        _currentNodeIndicator = 0;
+        _pathNodes = newPathNodes;
+        
+        switch (monsterState)
         {
-            _monsterAnimation.SetStateToSprint();
-            _musicManager.PlayMusic(chaseMusic, 0.2f);
-        }
-        else
-        {
-            _monsterAnimation.SetStateToWalk();
-            if (monsterState == MonsterState.ChasePath)
-            {
+            case MonsterState.Investigate:
+                _agent.destination = newDestination;
                 _musicManager.PlayMusic(huntMusic, 2.0f);
-            }
+                _monsterAnimation.SetStateToWalk();
+                break;
+            case MonsterState.Chase:
+                _agent.destination = _player.transform.position;
+                _monsterAnimation.SetStateToSprint();
+                _musicManager.PlayMusic(chaseMusic, 0.2f);
+                break;
+            case MonsterState.ChasePath:
+                _agent.destination = _pathNodes[_currentNodeIndicator];
+                _musicManager.PlayMusic(huntMusic, 2.0f);
+                _monsterAnimation.SetStateToWalk();
+                break;
         }
 
         // Always plays an SFX when state changes | (is this desired?)
         _monsterAudio.PlaySFX();
         _timeUntilScreech = SetMonsterScreamTimer();
+        _monsterState = monsterState;
     }
 
     public MonsterState GetMonsterState()
@@ -313,9 +346,10 @@ public class Monster : MonoBehaviour
                 _previousPathNodes = _pathNodes;
                 // re-using a list but may be better to overwrite SetMonsterState
                 // again in the future
-                List<Vector3> investigationPoints = new List<Vector3>();
-                investigationPoints.Add(soundPosition);
-                SetMonsterState(MonsterState.Investigate, investigationPoints, transform.position);
+                // List<Vector3> investigationPoints = new List<Vector3>();
+                // investigationPoints.Add(soundPosition);
+                SetMonsterState(MonsterState.Investigate, _pathNodes, transform.position,
+                    soundPosition);
             }
         }
     }

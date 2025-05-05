@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+/* NOTE: Old game jam class which did not support investigate monster state, will likely need updating if ever reused.
+ 
+ Candidate for deprecation! Consider complete re-write or removal!
+ */
 public class SetMonsterStateTrigger : MonoBehaviour
 {
     [SerializeField] private Monster.MonsterState _monsterState;
@@ -28,8 +31,9 @@ public class SetMonsterStateTrigger : MonoBehaviour
             }
             else
             {
-                // paths and chase need the alternative SetMonsterState call
-                _monster.SetMonsterState(_monsterState, pathNodes, monsterPosition);
+                // NOTE: Old class which did not support investigate, will likely need updating if ever reused.
+                _monster.SetMonsterState(_monsterState, pathNodes, monsterPosition,
+                    Vector3.zero);
             }
         }
     }
