@@ -96,7 +96,7 @@ public class Monster : MonoBehaviour
         // Regardless of state, if the player walks up to the monster, they take damage
         if (!_levelManager.IsPlayerDead())
         {
-            Debug.Log(Vector3.Distance(transform.position, _player.transform.position));
+            // Debug.Log(Vector3.Distance(transform.position, _player.transform.position));
             if (Vector3.Distance(transform.position, _player.transform.position) < _killRange)
             {
                 OnPlayerWithinDamageDistance?.Invoke();

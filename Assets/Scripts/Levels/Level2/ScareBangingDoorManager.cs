@@ -14,6 +14,7 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
     private MusicManager _musicManager;
     private GlobalSFXPlayer _sfxPlayer;
     private Monster _monster;
+    private FlyingDoor _flyingDoor;
     
     // Components | NOTE Unity does not support exposing interfaces in the inspector so I am using these as
     // classes since I know how they work. This isn't ideal but will work for my use-case for now
@@ -29,6 +30,7 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
         _scareRotateByTorque = GetComponent<ScareRotateByTorque>();
         _scareShake = GetComponent<ScareShake>();
         _monster = FindAnyObjectByType<Monster>();
+        _flyingDoor = GetComponentInChildren<FlyingDoor>();
     }
 
     private IEnumerator DelayPhaseTwo(float delayTime)
@@ -52,6 +54,8 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
         _musicManager.StopMusicWithDelay(2.0f);
         _monster.SetMonsterState(Monster.MonsterState.Investigate, initialMonsterPathNodes.ToList(), 
             _monster.transform.position, initialInvestigationPosition);
+        _flyingDoor.SetFlyingDoor(true);
+        _flyingDoor.SetWalkableTag();
     }
     
     private IEnumerator DelaySFX(float delayTime)
