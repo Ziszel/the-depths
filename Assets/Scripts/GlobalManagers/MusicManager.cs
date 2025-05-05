@@ -32,6 +32,11 @@ public class MusicManager : MonoBehaviour
             _musicSource.Stop();
         }
     }
+
+    public void StopMusicWithDelay(float fadeDuration)
+    {
+        StartCoroutine(FadeOutAndStop(fadeDuration));
+    }
     
     // Possibly wrap these two functions into one another?
     private IEnumerator FadeOutAndStop(float fadeDuration)
