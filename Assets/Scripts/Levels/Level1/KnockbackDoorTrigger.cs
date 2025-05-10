@@ -4,6 +4,8 @@ using UnityEngine;
 public class KnockbackDoorTrigger : MonoBehaviour
 {
     [SerializeField] private AudioClip audioClip;
+    [SerializeField] private DisplayDescriptiveText displayDescriptiveText;
+    [SerializeField] private string updatedDescriptionText;
     
     private Level1Flags _level1Flags;
     private AudioSource _audioSource;
@@ -26,6 +28,7 @@ public class KnockbackDoorTrigger : MonoBehaviour
         {
             _audioSource.PlayOneShot(audioClip);
             _hasTriggered = true;
+            displayDescriptiveText.UpdateDescriptionTextLocally(updatedDescriptionText);
             StartCoroutine(DeleteAfterDelay());
         }
     }

@@ -17,4 +17,9 @@ public class DisplayDescriptiveText : MonoBehaviour
         descriptionText = text;
         OnTextUpdate?.Invoke(descriptionText);
     }
+
+    public void UpdateDescriptionTextLocally(string text)
+    {
+        descriptionText = text;
+    }
 }
