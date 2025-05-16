@@ -23,6 +23,14 @@ public class SoundTrigger : MonoBehaviour
 
     public void TriggerSound()
     {
+        // Sound is triggering
+        // Debug.Log("TriggerSound() from: " + gameObject.name);
         OnSoundTriggered?.Invoke(triggerLocation, triggerVolume);
+    }
+
+    // Certain classes may need to overwrite this at certain times (player footsteps for different surfaces)
+    public void SetTriggerVolume(float volume)
+    {
+        triggerVolume = volume;
     }
 }

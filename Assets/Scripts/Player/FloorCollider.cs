@@ -82,24 +82,27 @@ public class FloorCollider : MonoBehaviour
     // Runs when exiting (compares if tag != _oldSound and then updates _currentSound to _oldSound)
     private void UpdateFootstepAudio(string newSound)
     {
+        bool isCrouching = (player.GetPlayerActionState() == playerActionState.Crouching);
+        bool isSprinting = (player.GetPlayerActionState() == playerActionState.Sprinting);
+        
         if (newSound.Contains("Cement"))
         {
-            playerAudio.SetFootstepsToCement();
+            playerAudio.SetFootstepsToCement(isCrouching, isSprinting);
         }
             
         if (newSound.Contains("Wood"))
         {
-            playerAudio.SetFootstepsToWood();
+            playerAudio.SetFootstepsToWood(isCrouching, isSprinting);
         }
 
         if (newSound.Contains("Glass"))
         {
-            playerAudio.SetFootstepsToGlass();
+            playerAudio.SetFootstepsToGlass(isCrouching, isSprinting);
         }
             
         if (newSound.Contains("SolidSteel"))
         {
-            playerAudio.SetFootstepsToSolidSteel();
+            playerAudio.SetFootstepsToSolidSteel(isCrouching, isSprinting);
         }
     }
 }
