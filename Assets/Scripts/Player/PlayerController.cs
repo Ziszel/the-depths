@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -43,9 +44,11 @@ public class PlayerController : MonoBehaviour
     private RaycastHit _slopeHit;
     private LayerMask _floorLayerMask;
     
-    [Header("Camera targets")]
-    [SerializeField] private GameObject crouch; // update OnPlayerKill and look to remove this
-    [SerializeField] private Transform head;
+    [Header("Camera targets / transition values")]
+    [SerializeField] private Transform head; // head will be ALWAYS tracked by FPSCamera
+    [SerializeField] private Vector3 standingCameraPosition;
+    [SerializeField] private Vector3 crouchingCameraPosition;
+    [SerializeField] private float headCrouchTransitionTime;
 
     [Header("Footstep play rates (Audio)")] 
     [SerializeField] private float walkingRate = 1.0f;
@@ -113,6 +116,7 @@ public class PlayerController : MonoBehaviour
         _timeUntilFootstep = 0.0f; // stops it playing immediately or causing error
         _currentFootstepRate = walkingRate;
         _isFlashlightActive = false;
+        head.localPosition = standingCameraPosition;
         
         _floorLayerMask = LayerMask.GetMask("Floor");
         
@@ -480,7 +484,8 @@ public class PlayerController : MonoBehaviour
             walkCollider.enabled = false;
             crouchCollider.enabled = true;
             OnCrouchEnabled?.Invoke();
-            _cameraManager.SwitchCamera(_cameraManager.crouchCamera);
+            StopCoroutine("MoveToStandingPosition");
+            StartCoroutine("MoveToCrouchPosition");
             movementVelocity = crouchVelocity;
             maxMovementVelocity = maxCrouchVelocity;
             _currentplayerActionState = playerActionState.Crouching;
@@ -490,12 +495,41 @@ public class PlayerController : MonoBehaviour
             walkCollider.enabled = true;
             crouchCollider.enabled = false;
             OnCrouchDisabled?.Invoke();
-            _cameraManager.SwitchCamera(_cameraManager.fpsCamera);
+            StopCoroutine("MoveToCrouchPosition");
+            StartCoroutine("MoveToStandingPosition");
             movementVelocity = walkVelocity;
             maxMovementVelocity = maxWalkVelocity;
             _currentFootstepRate = walkingRate;
             _currentplayerActionState = playerActionState.Standing;
         }
+    }
+
+    IEnumerator MoveToCrouchPosition()
+    {
+        float elapsedTime = 0.0f;
+        Vector3 endPosition = crouchingCameraPosition;
+
+        while (elapsedTime < headCrouchTransitionTime)
+        {
+            head.localPosition = Vector3.Lerp(head.localPosition, endPosition, elapsedTime / headCrouchTransitionTime);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        head.localPosition = endPosition;
+    }
+    
+    IEnumerator MoveToStandingPosition()
+    {
+        float elapsedTime = 0.0f;
+        Vector3 endPosition = standingCameraPosition;
+
+        while (elapsedTime < headCrouchTransitionTime)
+        {
+            head.localPosition = Vector3.Lerp(head.localPosition, endPosition, elapsedTime / headCrouchTransitionTime);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        head.localPosition = endPosition;
     }
 
     // Restoring health will currently make the player fully healthy again
@@ -525,7 +559,8 @@ public class PlayerController : MonoBehaviour
         DisableInputActions();
         _playerAudio.PlayDeathSound();
         _fpsCamera.Lens.Dutch = 90.0f;
-        _fpsCamera.Target.TrackingTarget = crouch.transform;
+        head.localPosition = crouchingCameraPosition;
+        //_fpsCamera.Target.TrackingTarget = crouch.transform;
         OnPlayerDeath?.Invoke();
     }
 
@@ -612,9 +647,9 @@ public class PlayerController : MonoBehaviour
         return _fpsCamera;
     }
 
-    public GameObject GetCrouchTransform()
+    public void ResetFPSCameraPositionRelativeToPlayer()
     {
-        return crouch;
+        head.localPosition = standingCameraPosition;
     }
 
     public Inventory GetPlayerInventory()
