@@ -357,10 +357,16 @@ public class Monster : MonoBehaviour
     private void OnEnable()
     {
         SoundTrigger.OnSoundTriggered += ListenForSound;
+        LightMonsterTrigger.OnLightHitMonster += () =>
+            SetMonsterState(MonsterState.Chase, _pathNodes, transform.position,
+            _player.transform.position);
     }
 
     private void OnDisable()
     {
         SoundTrigger.OnSoundTriggered -= ListenForSound;
+        LightMonsterTrigger.OnLightHitMonster -= () =>
+            SetMonsterState(MonsterState.Chase, _pathNodes, transform.position,
+                _player.transform.position);
     }
 }
