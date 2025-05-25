@@ -560,7 +560,6 @@ public class PlayerController : MonoBehaviour
         _playerAudio.PlayDeathSound();
         _fpsCamera.Lens.Dutch = 90.0f;
         head.localPosition = crouchingCameraPosition;
-        //_fpsCamera.Target.TrackingTarget = crouch.transform;
         OnPlayerDeath?.Invoke();
     }
 

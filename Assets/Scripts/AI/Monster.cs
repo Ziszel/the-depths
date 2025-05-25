@@ -59,6 +59,8 @@ public class Monster : MonoBehaviour
     // monster audio timers including how often it screeches based on those timers
     [SerializeField] private float minMonsterScreechRate = 7.5f; // seconds
     [SerializeField] private float maxMonsterScreechRate = 12.0f; // seconds
+    [SerializeField] private Vector3 monsterRespawnPosition;
+    
     private float _timeUntilScreech;
     
     private void Start()
@@ -313,6 +315,16 @@ public class Monster : MonoBehaviour
     public MonsterState GetMonsterState()
     {
         return _monsterState;
+    }
+
+    public void SetRespawnPosition(Vector3 newPosition, Vector3 newRotation)
+    {
+        monsterRespawnPosition = newPosition;
+    }
+
+    public Vector3 GetRespawnPosition()
+    {
+        return monsterRespawnPosition;
     }
 
     public void ListenForSound(Vector3 soundPosition, float soundVolume)

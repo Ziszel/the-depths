@@ -88,6 +88,7 @@ public class LevelManager : MonoBehaviour
     {
         if (_playerDead)
         {
+            Debug.Log("Player dead:" + _timeUntilRespawn);
             if (_timeUntilRespawn > 0)
             {
                 // TODO: We could add a fade to black animation here if we get time
@@ -162,17 +163,11 @@ public class LevelManager : MonoBehaviour
 
     public void RespawnPlayer()
     {
-        // Old game jam code. We now ALWAYS want to attempt to load the player
-        // if (checkpointTransform.position == new Vector3(0.0f, 0.0f, 0.0f))
-        // {
-        //     _gameManager.LoadLevel("MainLevel");
-        // }
-        // else
-        // {
-        //     _player.transform.position = checkpointTransform.position;
-        //     _player.transform.rotation = checkpointTransform.rotation;
-        // }
-        // Make sure of no unexpected behaviour
+        // --- RESET PLAYER ---
+        // move player / camera
+        _player.transform.position = checkpointTransform.position;
+        CameraManager.ForceCurrentCameraRotation(Quaternion.LookRotation(checkpointTransform.forward, Vector3.up));
+        
         _playerDead = false;
         _player.EnableInputActions();
         _player.GetCinemachineCamera().Lens.Dutch = 0.0f;
@@ -185,22 +180,29 @@ public class LevelManager : MonoBehaviour
             healthManager.ResetCooldownTimer();
         }
         
-        ResetMonster();
+        // --- RESET LEVEL ---
+        // Currently just reset the monster state to none. Working out doors, items, etc...
+        // to reset may be difficult without doing a state sweep and saving. Tieing this into the save system
+        // is the best bet moving forward.
+        ResetMonster(Monster.MonsterState.None);
 
+        // NOTE: Old game jam code but may be useful later.
         // Re-enable each of the monster state triggers so that the same setup can occur
-        foreach (var ms in _monsterStateTriggers)
-        {
-            ms.SetColliderOn();
-        }
+        // foreach (var ms in _monsterStateTriggers)
+        // {
+        //     ms.SetColliderOn();
+        // }
     }
 
-    public void ResetMonster()
+    private void ResetMonster(Monster.MonsterState ms)
     {
-        _monster.SetMonsterState(Monster.MonsterState.None);
+        _monster.transform.position = _monster.GetRespawnPosition();
+        _monster.SetMonsterState(ms);
     }
 
     private void PrepareForRespawn()
     {
+        Debug.Log("PrepareForRespawn");
         GameManager.Instance.IncrementDeathCount();
         _timeUntilRespawn = respawnTime;
         _playerDead = true;
