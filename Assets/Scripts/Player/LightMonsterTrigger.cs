@@ -6,6 +6,7 @@ public class LightMonsterTrigger : MonoBehaviour
     public static Action OnLightHitMonster;
 
     [SerializeField] private float fieldOfViewAngle;
+    [SerializeField] private float lightRayRange;
     
     private Light _flashlightSource;
     private Monster _monster;
@@ -39,16 +40,16 @@ public class LightMonsterTrigger : MonoBehaviour
     {
         Vector3 directionOfRay = (_monster.transform.position - transform.position).normalized;
         Ray ray = new Ray(transform.position, directionOfRay);
-        // Debug.DrawRay(transform.position, directionOfRay * _flashlightSource.range, Color.red);
+        // Debug.DrawRay(transform.position, directionOfRay * lightRayRange, Color.red);
         
         if (Vector3.Angle(directionOfRay, transform.forward) < fieldOfViewAngle / 2)
         {
-            if (Physics.Raycast(ray, out RaycastHit hit, _flashlightSource.range, _layerMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, lightRayRange, _layerMask))
             {
-                Debug.Log(hit.collider.name);
+                // Debug.Log(hit.collider.name);
                 if (hit.collider.gameObject.CompareTag("Monster"))
                 {
-                    Debug.Log("ray hit monster");
+                    // Debug.Log("ray hit monster");
                     return true;
                 }
             }
