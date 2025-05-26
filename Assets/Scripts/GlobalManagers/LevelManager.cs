@@ -14,7 +14,6 @@ public class LevelManager : MonoBehaviour
     [Header("Spawn controls")]
     [SerializeField] private Transform playerSpawnPoint;
     
-    public Transform checkpointTransform;
     private static float _timer;
     private bool _isPaused;
 
@@ -162,19 +161,18 @@ public class LevelManager : MonoBehaviour
         return _playerDead;
     }
 
-    public void SetCheckpoint(Transform newCheckpoint)
+    public void SetCheckpoint(Vector3 respawnPosition, Vector3 respawnRotation)
     {
-        checkpointTransform.position = newCheckpoint.position;
-        checkpointTransform.rotation = _player.transform.rotation;
+        _checkpointManager.SetPlayerCheckpointValues(respawnPosition, respawnRotation, GetInventoryFromPlayer());
     }
 
     public void RespawnPlayer()
     {
-        // --- RESET PLAYER ---
-        // move player / camera
-        _player.transform.position = checkpointTransform.position;
-        CameraManager.ForceCurrentCameraRotation(Quaternion.LookRotation(checkpointTransform.forward, Vector3.up));
+        // --- RESET LEVEL ---
+        // Restore specific values to point in time such as position, inventory, etc...
+        _checkpointManager.RestorePlayerCheckpointValues(_player);
         
+        // undo death
         _playerDead = false;
         _player.EnableInputActions();
         _player.GetCinemachineCamera().Lens.Dutch = 0.0f;

@@ -110,4 +110,12 @@ public class Inventory : MonoBehaviour
     {
         return GetFileDataByIndex(fi.fileId);
     }
+
+    public void ResetToCheckpointData(string previousGoalText, List<InventoryItem> invItems, 
+        List<FileData> fileData)
+    {
+        _currentGoalText = previousGoalText;
+        _items = invItems;
+        _foundFileData = fileData;
+    }
 }

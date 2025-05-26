@@ -324,6 +324,7 @@ public class Monster : MonoBehaviour
 
     public Vector3 GetRespawnPosition()
     {
+        _agent.enabled = false; // seeing if this fixes the error with respawning, not the best place for this.
         return monsterRespawnPosition;
     }
 
