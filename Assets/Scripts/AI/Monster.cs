@@ -221,7 +221,7 @@ public class Monster : MonoBehaviour
         Ray ray = new Ray(transform.position, directionOfRay);
         if (Physics.Raycast(ray, out RaycastHit hit, maxViewDistance))
         {
-            if (hit.collider.CompareTag("PlayerMonsterCollider"))
+            if (hit.collider.CompareTag("PlayerTrigger"))
             {
                 return true;
             }

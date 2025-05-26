@@ -14,7 +14,7 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("PlayerTrigger"))
         {
             _levelManager.SetCheckpoint(spawnLocation);
             // TODO: Add UI to tell the player they have reached a checkpoint
