@@ -12,7 +12,7 @@ public class FileDataManager : MonoBehaviour
         LoadFilesFromDisk();
     }
     
-    // Does not order the files
+    // Does not order the files, LevelManager must have FileDataManager script attached for this to run!
     private void LoadFilesFromDisk()
     {
         string filesFolder = Application.streamingAssetsPath + "/FileJSON";

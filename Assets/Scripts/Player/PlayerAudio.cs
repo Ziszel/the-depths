@@ -20,15 +20,23 @@ public class PlayerAudio : MonoBehaviour
     [SerializeField] private AudioClip[] footstepSolidSteelClips;
     [SerializeField] private AudioClip[] footstepGlassClips;
     
+    [Header("SoundTrigger audio volumes in meters")]
+    [SerializeField] private float cementTriggerVolume;
+    [SerializeField] private float woodTriggerVolume;
+    [SerializeField] private float glassTriggerVolume;
+    [SerializeField] private float solidSteelTriggerVolume;
+    
     [Header("Event Audio")]
     [SerializeField] private AudioClip death;
     
+    private SoundTrigger _soundTrigger;
     private ActiveFootsteps _activeFootstepClips;
 
     private void Start()
     {
         _activeFootstepClips = ActiveFootsteps.Cement;
         sfxSource.clip = GetRandomFootstepClip();
+        _soundTrigger = GetComponent<SoundTrigger>();
     }
 
     private IEnumerator SwapFeetWithDelay()
@@ -50,6 +58,7 @@ public class PlayerAudio : MonoBehaviour
     {
         if (!sfxSource.isPlaying)
         {
+            _soundTrigger.TriggerSound();
             sfxSource.Play();
         }
     }
@@ -85,23 +94,44 @@ public class PlayerAudio : MonoBehaviour
         return clips[Random.Range(0, clips.Length)];
     }
 
-    public void SetFootstepsToCement()
+    public void SetFootstepsToCement(bool isCrouching, bool isSprinting)
     {
+        SetLocalTriggerVolumeFromPlayerState(isCrouching, isSprinting, cementTriggerVolume);
         _activeFootstepClips = ActiveFootsteps.Cement;
     }
 
-    public void SetFootstepsToWood()
+    public void SetFootstepsToWood(bool isCrouching, bool isSprinting)
     {
+        SetLocalTriggerVolumeFromPlayerState(isCrouching, isSprinting, woodTriggerVolume);
         _activeFootstepClips = ActiveFootsteps.Wood;
     }
 
-    public void SetFootstepsToSolidSteel()
+    public void SetFootstepsToSolidSteel(bool isCrouching, bool isSprinting)
     {
+        SetLocalTriggerVolumeFromPlayerState(isCrouching, isSprinting, solidSteelTriggerVolume);
         _activeFootstepClips = ActiveFootsteps.SolidSteel;
     }
 
-    public void SetFootstepsToGlass()
+    public void SetFootstepsToGlass(bool isCrouching, bool isSprinting)
     {
+        SetLocalTriggerVolumeFromPlayerState(isCrouching, isSprinting, glassTriggerVolume);
         _activeFootstepClips = ActiveFootsteps.Glass;
+    }
+
+    // Sets the trigger volume based on the material volume itself and whether or not the player is crouching / sprinting
+    private void SetLocalTriggerVolumeFromPlayerState(bool isCrouching, bool isSprinting, float materialVolume)
+    {
+        if (isCrouching)
+        {
+            _soundTrigger.SetTriggerVolume(0.0f);
+        }
+        else if (isSprinting)
+        {
+            _soundTrigger.SetTriggerVolume(materialVolume * 2);
+        }
+        else
+        {
+            _soundTrigger.SetTriggerVolume(materialVolume);
+        }
     }
 }

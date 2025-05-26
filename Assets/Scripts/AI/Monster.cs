@@ -12,16 +12,21 @@ public class Monster : MonoBehaviour
     public enum MonsterState
     {
         None, // no state, do nothing
-        ChasePath, // Follow a path but allow for chasing the player
+        ChasePath, // Follow a path but allow for chasing the player (maybe rename this Patrol)
         Chase,
         SafePath, // Follow a path but do NOT allow for chasing the player (story elements)
-        Investigate // Move to a specific location, then chase OR decide new path (ChasePath state)
+        Investigate // Move to a specific location, then chase OR decide new path. (ChasePath state)
     }
 
     [Header("How far the monster can see")]
     [SerializeField] private float maxViewDistance;
     
-    private bool isChasing = false;
+    // Not convinced this is the best location for this, but for now it's ok
+    [Header("Monster arena music")]
+    [SerializeField] private AudioClip chaseMusic;
+    [SerializeField] private AudioClip huntMusic;
+    
+    private bool _isChasing = false;
 
     // Delegates
     public delegate void ChaseStateEnterHandler();
@@ -34,21 +39,25 @@ public class Monster : MonoBehaviour
     private NavMeshAgent _agent;
     private MonsterState _monsterState;
     private LevelManager _levelManager;
+    private MusicManager _musicManager;
     private MonsterAudio _monsterAudio;
     private MonsterAnimation _monsterAnimation;
     
     // path node logic
+    [Header("Path data")] // how often the monster looks for the closest nodes to the player
+    [SerializeField] private float updatePathNodeDelta = 10.0f; 
     private int _currentNodeIndicator;
     private int _previousNodeIndicator;
     private List<Vector3> _pathNodes;
     private List<Vector3> _previousPathNodes;
     private readonly float _minimumDistanceToNode = 2.0f;
+    private float _timeUntilUpdateNodes;
     
     // Chase helpers
     [SerializeField] private float minimumChaseTime = 2.0f;
     private float _currentChaseTime;
 
-    [Header("Control values")] 
+    [Header("Monster values")] 
     // Speed of the monster when walking a path
     [SerializeField] private float _pathSpeed = 2.0f;
     // Speed of the monster when chasing
@@ -64,10 +73,12 @@ public class Monster : MonoBehaviour
     {
         _monsterState = MonsterState.None;
         _levelManager = FindAnyObjectByType<LevelManager>();
+        _musicManager = FindFirstObjectByType<MusicManager>();
         _agent = GetComponent<NavMeshAgent>();
         _player = FindAnyObjectByType<PlayerController>();
         _monsterAudio = GetComponentInChildren<MonsterAudio>();
         _currentChaseTime = 0.0f;
+        _timeUntilUpdateNodes = 0.0f;
 
         // Animation
         _monsterAnimation = GetComponent<MonsterAnimation>();
@@ -77,7 +88,7 @@ public class Monster : MonoBehaviour
     IEnumerator AttackAnimation(float animationTime)
     {
         yield return new WaitForSeconds(animationTime);
-        SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+        SetMonsterState(MonsterState.Chase, _pathNodes, transform.position, Vector3.zero);
     }
     
     private void Update()
@@ -85,6 +96,7 @@ public class Monster : MonoBehaviour
         // Regardless of state, if the player walks up to the monster, they take damage
         if (!_levelManager.IsPlayerDead())
         {
+            // Debug.Log(Vector3.Distance(transform.position, _player.transform.position));
             if (Vector3.Distance(transform.position, _player.transform.position) < _killRange)
             {
                 OnPlayerWithinDamageDistance?.Invoke();
@@ -97,11 +109,11 @@ public class Monster : MonoBehaviour
         switch (_monsterState)
         {
             case MonsterState.None:
-                if (isChasing)
+                if (_isChasing)
                 {
                     OnChaseStateExited?.Invoke();
                 }
-                isChasing = false;
+                _isChasing = false;
                 _agent.speed = _pathSpeed;
                 break;
             case MonsterState.ChasePath:
@@ -109,10 +121,22 @@ public class Monster : MonoBehaviour
                 if (CanMonsterSeePlayer())
                 {
                     _agent.destination = _player.transform.position;
-                    SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+                    SetMonsterState(MonsterState.Chase, _pathNodes, 
+                        transform.position, Vector3.zero);
                 }
                 else
                 {
+                    _timeUntilUpdateNodes -= Time.deltaTime;
+                    // Depending on scenario this may need additional checks later
+                    if (_timeUntilUpdateNodes <= 0.0f)
+                    {
+                        // Currently UpdatePathNodes will get the closest X path nodes to the player
+                        // Eventually, this function may be able to do more with the path nodes specified
+                        // LevelManager itself does no work, the PathNodeManager component updates if it exists
+                        _pathNodes = _levelManager.UpdatePathNodes(3);
+                        _timeUntilUpdateNodes = updatePathNodeDelta;
+                    }
+                    
                     if (Vector3.Distance(transform.position, _agent.destination) < _minimumDistanceToNode)
                     {
                         RandomlySetNextNode();
@@ -122,11 +146,11 @@ public class Monster : MonoBehaviour
                 break;
             case MonsterState.Chase:
                 _agent.speed = _chaseSpeed;
-                if (!isChasing)
+                if (!_isChasing)
                 {
                     OnChaseStateEntered?.Invoke();
                 }
-                isChasing = true;
+                _isChasing = true;
 
                 if (_currentChaseTime > minimumChaseTime)
                 {
@@ -134,10 +158,11 @@ public class Monster : MonoBehaviour
                     {
                         _currentChaseTime = minimumChaseTime;
                     }
-                    else
+                    else // Monster is exiting chase and returning to patrol
                     {
                         // We can safely set the same _pathNodes as before
-                        SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
+                        SetMonsterState(MonsterState.ChasePath, _pathNodes, 
+                            transform.position, Vector3.zero);
                     }
                 }
                 _agent.destination = _player.transform.position;
@@ -146,11 +171,11 @@ public class Monster : MonoBehaviour
                 break;
             case MonsterState.SafePath:
                 _agent.speed = _pathSpeed;
-                if (isChasing)
+                if (_isChasing)
                 {
                     OnChaseStateExited?.Invoke();
                 }
-                isChasing = false;
+                _isChasing = false;
 
                 // Traverse a path
                 if (Vector3.Distance(transform.position, _pathNodes[_currentNodeIndicator]) 
@@ -175,14 +200,16 @@ public class Monster : MonoBehaviour
                 if (CanMonsterSeePlayer())
                 {
                     _agent.destination = _player.transform.position;
-                    SetMonsterState(MonsterState.Chase, _pathNodes, transform.position);
+                    SetMonsterState(MonsterState.Chase, _pathNodes, 
+                        transform.position, Vector3.zero);
                 }
 
                 // Reached destination without seeing player, reset to hunting
                 if (Vector3.Distance(transform.position, _agent.destination) < _minimumDistanceToNode)
                 {
-                    _pathNodes = _previousPathNodes;
-                    SetMonsterState(MonsterState.ChasePath, _pathNodes, transform.position);
+                    // _pathNodes = _previousPathNodes;
+                    SetMonsterState(MonsterState.ChasePath, _pathNodes, 
+                        transform.position, Vector3.zero);
                 }
                 break;
         }
@@ -195,6 +222,13 @@ public class Monster : MonoBehaviour
 
     private bool CanMonsterSeePlayer()
     {
+        // Check if player is hiding
+        if (_player.GetPlayerActionState() == playerActionState.Hiding)
+        {
+            // TODO: If the monster sees the player run into a hiding place, they should still kill the player.
+            return false;
+        }
+        
         // Check if player is very close to monster
         if (Vector3.Distance(_player.transform.position, transform.position) < 5)
         {
@@ -233,7 +267,7 @@ public class Monster : MonoBehaviour
         return Random.Range(minMonsterScreechRate, maxMonsterScreechRate);
     }
 
-    // Only used for when monster state is setup to none (no path nodes required)
+    // Only used for when monster state is set to none (no path nodes required)
     public void SetMonsterState(MonsterState monsterState)
     {
         _agent.destination = transform.position;
@@ -244,30 +278,56 @@ public class Monster : MonoBehaviour
         _monsterAnimation.SetStateToWalk();
     }
 
-    public void SetMonsterState(MonsterState monsterState, List<Vector3> newPathNodes, Vector3 newPosition)
+    // Only used for when monster state is set to Investigate
+    public void SetMonsterState(List<Vector3> newPathNodes, Vector3 newPosition,
+        Vector3 newDestination)
     {
         // Disable agent to allow for teleporting to new position
         _agent.enabled = false;
         transform.position = newPosition;
         _agent.enabled = true;
         
-        _monsterState = monsterState;
+        _monsterState = MonsterState.Investigate;
         _currentNodeIndicator = 0;
         _pathNodes = newPathNodes;
-        _agent.destination = _pathNodes[_currentNodeIndicator];
+        _agent.destination = newDestination;
+        
+    }
 
-        if (monsterState == MonsterState.Chase)
+    public void SetMonsterState(MonsterState monsterState, List<Vector3> newPathNodes, Vector3 newPosition,
+        Vector3 newDestination)
+    {
+        // Disable agent to allow for teleporting to new position
+        _agent.enabled = false;
+        transform.position = newPosition;
+        _agent.enabled = true;
+        
+        _currentNodeIndicator = 0;
+        _pathNodes = newPathNodes;
+        
+        switch (monsterState)
         {
-            _monsterAnimation.SetStateToSprint();
-        }
-        else
-        {
-            _monsterAnimation.SetStateToWalk();
+            case MonsterState.Investigate:
+                _agent.destination = newDestination;
+                _musicManager.PlayMusic(huntMusic, 2.0f);
+                _monsterAnimation.SetStateToWalk();
+                break;
+            case MonsterState.Chase:
+                _agent.destination = _player.transform.position;
+                _monsterAnimation.SetStateToSprint();
+                _musicManager.PlayMusic(chaseMusic, 0.2f);
+                break;
+            case MonsterState.ChasePath:
+                _agent.destination = _pathNodes[_currentNodeIndicator];
+                _musicManager.PlayMusic(huntMusic, 2.0f);
+                _monsterAnimation.SetStateToWalk();
+                break;
         }
 
         // Always plays an SFX when state changes | (is this desired?)
         _monsterAudio.PlaySFX();
         _timeUntilScreech = SetMonsterScreamTimer();
+        _monsterState = monsterState;
     }
 
     public MonsterState GetMonsterState()
@@ -286,9 +346,10 @@ public class Monster : MonoBehaviour
                 _previousPathNodes = _pathNodes;
                 // re-using a list but may be better to overwrite SetMonsterState
                 // again in the future
-                List<Vector3> investigationPoints = new List<Vector3>();
-                investigationPoints.Add(soundPosition);
-                SetMonsterState(MonsterState.Investigate, investigationPoints, transform.position);
+                // List<Vector3> investigationPoints = new List<Vector3>();
+                // investigationPoints.Add(soundPosition);
+                SetMonsterState(MonsterState.Investigate, _pathNodes, transform.position,
+                    soundPosition);
             }
         }
     }

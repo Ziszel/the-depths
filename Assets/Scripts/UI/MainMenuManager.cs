@@ -21,7 +21,6 @@ public class MainMenuManager : MonoBehaviour
     // Child scripts
     private SettingsManager _settingsManager;
     
-    // Credits (May require separate script for this eventually)
     private Button _returnToMainMenuBtn;
 
     // edit

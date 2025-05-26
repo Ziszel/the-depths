@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -11,6 +10,7 @@ public class HorizontalDoor : DoorBase, ISwitchable
         DoorAudio = GetComponent<DoorAudio>();
     }
 
+    // Horizontal door does not need to use dot parameter so pass in 0.0f
     protected override IEnumerator OpenDoor(float dot)
     {
         float timeElapsed = 0.0f;

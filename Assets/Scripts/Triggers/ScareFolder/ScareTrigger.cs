@@ -1,18 +1,33 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ScareTrigger : MonoBehaviour
 {
-    [SerializeField] private GameObject[] scareEvents;
+    [SerializeField] private GameObject[] scareEventObjects;
+    [SerializeField] private bool shouldPlayMultipleOnSameObject;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("PlayerTrigger"))
         {
-            foreach (var se in scareEvents)
+            foreach (var obj in scareEventObjects)
             {
-                if (se.TryGetComponent(out IScareEvent scareEvent))
+                if (shouldPlayMultipleOnSameObject)
                 {
-                    scareEvent.TriggerScareEvent();
+                    List<IScareEvent> childScareEvents = obj.GetComponents<IScareEvent>().ToList();
+
+                    foreach (var scareEvent in childScareEvents)
+                    {
+                        scareEvent.TriggerScareEvent();
+                    }
+                }
+                else
+                {
+                    if (obj.TryGetComponent(out IScareEvent scareEvent))
+                    {
+                        scareEvent.TriggerScareEvent();
+                    }
                 }
             }
             gameObject.SetActive(false);
