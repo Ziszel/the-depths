@@ -4,7 +4,6 @@ using Random = UnityEngine.Random;
 
 public class ScareShake : MonoBehaviour, IScareEvent
 {
-    [SerializeField] private float shakingSequenceLength;
     [SerializeField] private float timeBetweenShakes = 1.0f;
     [SerializeField] private float timeToShake = 0.5f;
     [SerializeField] private float shakeAmount;
@@ -62,11 +61,6 @@ public class ScareShake : MonoBehaviour, IScareEvent
         }
         _objectToShake.position = _startingPosition;
         _waitingToShake = true;
-    }
-
-    public void SetTimeToShake(float newSequenceLength)
-    {
-        shakingSequenceLength = newSequenceLength;
     }
 
     private void OnDisable()

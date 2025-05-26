@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using NUnit.Framework;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -21,11 +20,13 @@ public class LevelManager : MonoBehaviour
 
     private GameManager _gameManager;
     private PathNodeManager _pathNodeManager;
+    private CheckpointManager _checkpointManager;
     private FPSCamera _fpsCamera;
     private PostProcessManager _postProcessManager;
     private static PlayerController _player;
     private Monster _monster;
     private SetMonsterStateTrigger[] _monsterStateTriggers;
+    
     /* UI */
     private static InventoryManagerUI _inventoryUI;
     private static FileReader _fileReader;
@@ -53,6 +54,11 @@ public class LevelManager : MonoBehaviour
         if (TryGetComponent(out PathNodeManager pathNodeManager))
         {
             _pathNodeManager = pathNodeManager;
+        }
+
+        if (TryGetComponent(out CheckpointManager checkpointManager))
+        {
+            _checkpointManager = checkpointManager;
         }
             
         _timer = 0;
@@ -97,6 +103,7 @@ public class LevelManager : MonoBehaviour
             else
             {
                 RespawnPlayer();
+                _checkpointManager.ResetObjectsInLevel();
             }
         }
         else if (!_isPaused)

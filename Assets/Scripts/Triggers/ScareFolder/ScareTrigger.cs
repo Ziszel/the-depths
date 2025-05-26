@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ScareTrigger : MonoBehaviour
+public class ScareTrigger : MonoBehaviour, IResettable
 {
     [SerializeField] private GameObject[] scareEventObjects;
     [SerializeField] private bool shouldPlayMultipleOnSameObject;
@@ -32,5 +32,11 @@ public class ScareTrigger : MonoBehaviour
             }
             gameObject.SetActive(false);
         }
+    }
+
+    public void ResetObjectState()
+    {
+        Debug.Log("IScareTrigger Reset!");
+        gameObject.SetActive(true);
     }
 }
