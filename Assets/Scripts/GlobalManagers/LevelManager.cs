@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using NUnit.Framework;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -15,17 +14,18 @@ public class LevelManager : MonoBehaviour
     [Header("Spawn controls")]
     [SerializeField] private Transform playerSpawnPoint;
     
-    public Transform checkpointTransform;
     private static float _timer;
     private bool _isPaused;
 
     private GameManager _gameManager;
     private PathNodeManager _pathNodeManager;
+    private CheckpointManager _checkpointManager;
     private FPSCamera _fpsCamera;
     private PostProcessManager _postProcessManager;
     private static PlayerController _player;
     private Monster _monster;
     private SetMonsterStateTrigger[] _monsterStateTriggers;
+    
     /* UI */
     private static InventoryManagerUI _inventoryUI;
     private static FileReader _fileReader;
@@ -53,6 +53,11 @@ public class LevelManager : MonoBehaviour
         if (TryGetComponent(out PathNodeManager pathNodeManager))
         {
             _pathNodeManager = pathNodeManager;
+        }
+
+        if (TryGetComponent(out CheckpointManager checkpointManager))
+        {
+            _checkpointManager = checkpointManager;
         }
             
         _timer = 0;
@@ -88,6 +93,7 @@ public class LevelManager : MonoBehaviour
     {
         if (_playerDead)
         {
+            // Debug.Log("Player dead:" + _timeUntilRespawn);
             if (_timeUntilRespawn > 0)
             {
                 // TODO: We could add a fade to black animation here if we get time
@@ -96,6 +102,7 @@ public class LevelManager : MonoBehaviour
             else
             {
                 RespawnPlayer();
+                _checkpointManager.ResetObjectsInLevel();
             }
         }
         else if (!_isPaused)
@@ -154,25 +161,18 @@ public class LevelManager : MonoBehaviour
         return _playerDead;
     }
 
-    public void SetCheckpoint(Transform newCheckpoint)
+    public void SetCheckpoint(Vector3 respawnPosition, Vector3 respawnRotation)
     {
-        checkpointTransform.position = newCheckpoint.position;
-        checkpointTransform.rotation = _player.transform.rotation;
+        _checkpointManager.SetPlayerCheckpointValues(respawnPosition, respawnRotation, GetInventoryFromPlayer());
     }
 
     public void RespawnPlayer()
     {
-        // Old game jam code. We now ALWAYS want to attempt to load the player
-        // if (checkpointTransform.position == new Vector3(0.0f, 0.0f, 0.0f))
-        // {
-        //     _gameManager.LoadLevel("MainLevel");
-        // }
-        // else
-        // {
-        //     _player.transform.position = checkpointTransform.position;
-        //     _player.transform.rotation = checkpointTransform.rotation;
-        // }
-        // Make sure of no unexpected behaviour
+        // --- RESET LEVEL ---
+        // Restore specific values to point in time such as position, inventory, etc...
+        _checkpointManager.RestorePlayerCheckpointValues(_player);
+        
+        // undo death
         _playerDead = false;
         _player.EnableInputActions();
         _player.GetCinemachineCamera().Lens.Dutch = 0.0f;
@@ -185,22 +185,29 @@ public class LevelManager : MonoBehaviour
             healthManager.ResetCooldownTimer();
         }
         
-        ResetMonster();
+        // --- RESET LEVEL ---
+        // Currently just reset the monster state to none. Working out doors, items, etc...
+        // to reset may be difficult without doing a state sweep and saving. Tieing this into the save system
+        // is the best bet moving forward.
+        ResetMonster(Monster.MonsterState.None);
 
+        // NOTE: Old game jam code but may be useful later.
         // Re-enable each of the monster state triggers so that the same setup can occur
-        foreach (var ms in _monsterStateTriggers)
-        {
-            ms.SetColliderOn();
-        }
+        // foreach (var ms in _monsterStateTriggers)
+        // {
+        //     ms.SetColliderOn();
+        // }
     }
 
-    public void ResetMonster()
+    private void ResetMonster(Monster.MonsterState ms)
     {
-        _monster.SetMonsterState(Monster.MonsterState.None);
+        _monster.SetMonsterState(ms);
+        _monster.transform.position = _monster.GetRespawnPosition();
     }
 
     private void PrepareForRespawn()
     {
+        Debug.Log("PrepareForRespawn");
         GameManager.Instance.IncrementDeathCount();
         _timeUntilRespawn = respawnTime;
         _playerDead = true;

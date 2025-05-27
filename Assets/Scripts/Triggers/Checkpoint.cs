@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-    [SerializeField] private Transform spawnLocation;
+    [SerializeField] private Vector3 spawnLocation;
+    [SerializeField] private Vector3 respawnRotation;
     private LevelManager _levelManager;
     private BoxCollider _collider;
 
@@ -14,9 +15,9 @@ public class Checkpoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("PlayerTrigger"))
         {
-            _levelManager.SetCheckpoint(spawnLocation);
+            _levelManager.SetCheckpoint(spawnLocation, respawnRotation);
             // TODO: Add UI to tell the player they have reached a checkpoint
             Debug.Log("checkpoint reached");
             _collider.enabled = false;

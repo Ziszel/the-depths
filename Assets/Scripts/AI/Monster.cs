@@ -25,14 +25,6 @@ public class Monster : MonoBehaviour
     [Header("Monster arena music")]
     [SerializeField] private AudioClip chaseMusic;
     [SerializeField] private AudioClip huntMusic;
-    
-    private bool _isChasing = false;
-
-    // Delegates
-    public delegate void ChaseStateEnterHandler();
-    public event ChaseStateEnterHandler OnChaseStateEntered;
-    public delegate void ChaseStateExitHandler();
-    public event ChaseStateExitHandler OnChaseStateExited;
 
     // Components
     private PlayerController _player;
@@ -67,6 +59,8 @@ public class Monster : MonoBehaviour
     // monster audio timers including how often it screeches based on those timers
     [SerializeField] private float minMonsterScreechRate = 7.5f; // seconds
     [SerializeField] private float maxMonsterScreechRate = 12.0f; // seconds
+    [SerializeField] private Vector3 monsterRespawnPosition;
+    
     private float _timeUntilScreech;
     
     private void Start()
@@ -109,11 +103,6 @@ public class Monster : MonoBehaviour
         switch (_monsterState)
         {
             case MonsterState.None:
-                if (_isChasing)
-                {
-                    OnChaseStateExited?.Invoke();
-                }
-                _isChasing = false;
                 _agent.speed = _pathSpeed;
                 break;
             case MonsterState.ChasePath:
@@ -146,17 +135,14 @@ public class Monster : MonoBehaviour
                 break;
             case MonsterState.Chase:
                 _agent.speed = _chaseSpeed;
-                if (!_isChasing)
-                {
-                    OnChaseStateEntered?.Invoke();
-                }
-                _isChasing = true;
+                
+                // Debug.Log("currentChaseTime: " + _currentChaseTime);
 
                 if (_currentChaseTime > minimumChaseTime)
                 {
                     if (CanMonsterSeePlayer())
                     {
-                        _currentChaseTime = minimumChaseTime;
+                        _currentChaseTime = 0.0f;
                     }
                     else // Monster is exiting chase and returning to patrol
                     {
@@ -171,11 +157,6 @@ public class Monster : MonoBehaviour
                 break;
             case MonsterState.SafePath:
                 _agent.speed = _pathSpeed;
-                if (_isChasing)
-                {
-                    OnChaseStateExited?.Invoke();
-                }
-                _isChasing = false;
 
                 // Traverse a path
                 if (Vector3.Distance(transform.position, _pathNodes[_currentNodeIndicator]) 
@@ -240,7 +221,7 @@ public class Monster : MonoBehaviour
         Ray ray = new Ray(transform.position, directionOfRay);
         if (Physics.Raycast(ray, out RaycastHit hit, maxViewDistance))
         {
-            if (hit.collider.CompareTag("Player"))
+            if (hit.collider.CompareTag("PlayerTrigger"))
             {
                 return true;
             }
@@ -316,6 +297,7 @@ public class Monster : MonoBehaviour
                 _agent.destination = _player.transform.position;
                 _monsterAnimation.SetStateToSprint();
                 _musicManager.PlayMusic(chaseMusic, 0.2f);
+                _currentChaseTime = 0.0f;
                 break;
             case MonsterState.ChasePath:
                 _agent.destination = _pathNodes[_currentNodeIndicator];
@@ -333,6 +315,16 @@ public class Monster : MonoBehaviour
     public MonsterState GetMonsterState()
     {
         return _monsterState;
+    }
+
+    public void SetRespawnPosition(Vector3 newPosition, Vector3 newRotation)
+    {
+        monsterRespawnPosition = newPosition;
+    }
+
+    public Vector3 GetRespawnPosition()
+    {
+        return monsterRespawnPosition;
     }
 
     public void ListenForSound(Vector3 soundPosition, float soundVolume)
@@ -357,10 +349,16 @@ public class Monster : MonoBehaviour
     private void OnEnable()
     {
         SoundTrigger.OnSoundTriggered += ListenForSound;
+        LightMonsterTrigger.OnLightHitMonster += () =>
+            SetMonsterState(MonsterState.Chase, _pathNodes, transform.position,
+            _player.transform.position);
     }
 
     private void OnDisable()
     {
         SoundTrigger.OnSoundTriggered -= ListenForSound;
+        LightMonsterTrigger.OnLightHitMonster -= () =>
+            SetMonsterState(MonsterState.Chase, _pathNodes, transform.position,
+                _player.transform.position);
     }
 }

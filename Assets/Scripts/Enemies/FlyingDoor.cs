@@ -54,4 +54,13 @@ public class FlyingDoor : MonoBehaviour
         }
         _isFlying = false;
     }
+
+    public void SetInitialState()
+    {
+        _isFlying = false;
+        foreach (Transform child in transform)
+        {
+            child.tag = "Untagged";
+        }
+    }
 }

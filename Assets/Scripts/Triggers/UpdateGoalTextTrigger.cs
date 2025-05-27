@@ -18,7 +18,12 @@ public class UpdateGoalTextTrigger : MonoBehaviour
         {
             _updatePlayerStatusText.UpdateStatusText();
             OnJournalTextUpdateFromTrigger?.Invoke();
-            Destroy(gameObject);
+            enabled = false;
         }
+    }
+
+    public void ResetOnCheckpoint()
+    {
+        enabled = true;
     }
 }

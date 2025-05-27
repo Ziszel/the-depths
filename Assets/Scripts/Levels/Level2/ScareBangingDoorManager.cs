@@ -4,7 +4,7 @@ using UnityEngine;
 
 // Scare Event Manager classes are bespoke and used to control the order of execution of scare events
 // if playing multiple at the same time the player enters the trigger is not desirable.
-public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
+public class ScareBangingDoorManager : MonoBehaviour, IScareEvent, IResettable
 {
     [SerializeField] private AudioClip monsterScreech;
     [SerializeField] private AudioClip chaseMusic;
@@ -42,7 +42,6 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
     private void TriggerPhaseOneScareEvents()
     {
         _scareShake.enabled = true; // activate update loop
-        _scareShake.SetTimeToShake(phaseTwoDelayTime);
         _scareShake.TriggerScareEvent();
     }
 
@@ -70,5 +69,12 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent
         StartCoroutine(DelaySFX(2.0f)); // Play monster screech after music has started
         TriggerPhaseOneScareEvents();
         StartCoroutine(DelayPhaseTwo(phaseTwoDelayTime));
+    }
+
+    public void ResetObjectState()
+    {
+        _scareShake.SetInitialState();
+        _flyingDoor.SetInitialState();
+        _scarePush.SetInitialState();
     }
 }
