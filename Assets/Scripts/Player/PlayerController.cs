@@ -683,11 +683,11 @@ public class PlayerController : MonoBehaviour
 
     public void EnableInputActions()
     {
-        // _inputActions.Enable();
+        InputManager.ToggleActionMap(InputManager.PlayerInputActions.Player);
     }
     public void DisableInputActions()
     {
-        // _inputActions.Disable();
+        InputManager.ToggleActionMap(InputManager.PlayerInputActions.Hiding);
     }
 
     private void OnDisable()

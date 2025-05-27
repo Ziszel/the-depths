@@ -1,17 +1,21 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CheckpointManager : MonoBehaviour
 {
     [SerializeField] private GameObject[] resettableObjects;
     
-    private Inventory _inventory;
+    private string _checkpointGoalText;
+    private List<InventoryItem> _checkpointItemData;
+    private List<FileData> _checkpointfileData;
     public Transform respawnTransform;
 
     public void SetPlayerCheckpointValues(Vector3 respawnPosition, Vector3 respawnRotation, 
         Inventory currentInventory)
     {
-        _inventory = currentInventory;
-        Debug.Log(respawnPosition);
+        _checkpointGoalText = currentInventory.GetCurrentGoalText();
+        _checkpointItemData = currentInventory.GetItems();
+        _checkpointfileData = currentInventory.GetFileData();
         respawnTransform.position = respawnPosition;
         respawnTransform.rotation = Quaternion.Euler(respawnRotation);
     }
@@ -19,9 +23,9 @@ public class CheckpointManager : MonoBehaviour
     public void RestorePlayerCheckpointValues(PlayerController player)
     {
         // Inventory
-        player.GetPlayerInventory().ResetToCheckpointData(_inventory.GetCurrentGoalText(),
-            _inventory.GetItems(),
-            _inventory.GetFileData());
+        player.GetPlayerInventory().ResetToCheckpointData(_checkpointGoalText,
+            _checkpointItemData,
+            _checkpointfileData);
         player.transform.position = respawnTransform.position;
         CameraManager.ForceCurrentCameraRotation(Quaternion.LookRotation(respawnTransform.forward, Vector3.up));
     }

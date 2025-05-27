@@ -77,6 +77,8 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent, IResettable
     public void ResetObjectState()
     {
         Debug.Log("Moving door back to location");
+        _flyingDoor.SetInitialState();
+        _scarePush.SetInitialState();
         transform.position = _initialTransform.position;
         transform.rotation = _initialTransform.rotation;
     }

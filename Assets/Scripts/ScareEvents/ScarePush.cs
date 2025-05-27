@@ -24,4 +24,10 @@ public class ScarePush : MonoBehaviour, IScareEvent
         _rb.AddForce(forceToPush, ForceMode.Impulse);
         _rb.useGravity = isGravityActive;
     }
+
+    public void SetInitialState()
+    {
+        _rb.isKinematic = true;
+        _rb.useGravity = !isGravityActive;
+    }
 }
