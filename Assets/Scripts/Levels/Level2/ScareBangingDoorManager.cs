@@ -21,8 +21,6 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent, IResettable
     private ScarePush _scarePush;
     private ScareRotateByTorque _scareRotateByTorque;
     private ScareShake _scareShake;
-    
-    private Transform _initialTransform;
 
     private void Start()
     {
@@ -33,7 +31,6 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent, IResettable
         _scareShake = GetComponent<ScareShake>();
         _monster = FindAnyObjectByType<Monster>();
         _flyingDoor = GetComponentInChildren<FlyingDoor>();
-        _initialTransform = GetComponent<Transform>();
     }
 
     private IEnumerator DelayPhaseTwo(float delayTime)
@@ -76,10 +73,8 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent, IResettable
 
     public void ResetObjectState()
     {
-        Debug.Log("Moving door back to location");
+        _scareShake.SetInitialState();
         _flyingDoor.SetInitialState();
         _scarePush.SetInitialState();
-        transform.position = _initialTransform.position;
-        transform.rotation = _initialTransform.rotation;
     }
 }

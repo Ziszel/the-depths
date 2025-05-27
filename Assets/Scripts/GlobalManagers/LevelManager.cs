@@ -93,7 +93,7 @@ public class LevelManager : MonoBehaviour
     {
         if (_playerDead)
         {
-            Debug.Log("Player dead:" + _timeUntilRespawn);
+            // Debug.Log("Player dead:" + _timeUntilRespawn);
             if (_timeUntilRespawn > 0)
             {
                 // TODO: We could add a fade to black animation here if we get time

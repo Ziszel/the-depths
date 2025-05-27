@@ -11,6 +11,7 @@ public class ScareShake : MonoBehaviour, IScareEvent
     
     private Transform _objectToShake;
     private Vector3 _startingPosition;
+    private Quaternion _startingRotation;
     private float _shakeDelay;
     private bool _waitingToShake;
     private AudioSource _audioSource;
@@ -21,6 +22,7 @@ public class ScareShake : MonoBehaviour, IScareEvent
         _audioSource = GetComponentInChildren<AudioSource>();
         _audioSource.clip = bangingOnDoor;
         _startingPosition = _objectToShake.position;
+        _startingRotation = _objectToShake.rotation;
         _waitingToShake = false;
         enabled = false;
     }
@@ -66,5 +68,11 @@ public class ScareShake : MonoBehaviour, IScareEvent
     private void OnDisable()
     {
         _waitingToShake = false;
+    }
+
+    public void SetInitialState()
+    {
+        _objectToShake.position = _startingPosition;
+        _objectToShake.rotation = _startingRotation;
     }
 }

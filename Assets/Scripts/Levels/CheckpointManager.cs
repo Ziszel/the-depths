@@ -34,9 +34,15 @@ public class CheckpointManager : MonoBehaviour
     {
         foreach (GameObject obj in resettableObjects)
         {
-            Debug.Log(obj.name);
-            obj.SetActive(true);
-            if (TryGetComponent(out IResettable resettableObject))
+            // TODO: Investigate whether or not this is actually required.
+            MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
+
+            foreach (MonoBehaviour script in scripts)
+            {
+                script.enabled = true;
+            }
+            
+            if (obj.TryGetComponent(out IResettable resettableObject))
             {
                 resettableObject.ResetObjectState();
             }

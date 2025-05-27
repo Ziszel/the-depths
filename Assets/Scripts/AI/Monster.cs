@@ -136,7 +136,7 @@ public class Monster : MonoBehaviour
             case MonsterState.Chase:
                 _agent.speed = _chaseSpeed;
                 
-                Debug.Log("currentChaseTime: " + _currentChaseTime);
+                // Debug.Log("currentChaseTime: " + _currentChaseTime);
 
                 if (_currentChaseTime > minimumChaseTime)
                 {

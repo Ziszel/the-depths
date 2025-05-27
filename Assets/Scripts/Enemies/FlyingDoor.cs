@@ -60,7 +60,7 @@ public class FlyingDoor : MonoBehaviour
         _isFlying = false;
         foreach (Transform child in transform)
         {
-            child.tag = null;
+            child.tag = "Untagged";
         }
     }
 }
