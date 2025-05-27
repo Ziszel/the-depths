@@ -201,8 +201,8 @@ public class LevelManager : MonoBehaviour
 
     private void ResetMonster(Monster.MonsterState ms)
     {
-        _monster.transform.position = _monster.GetRespawnPosition();
         _monster.SetMonsterState(ms);
+        _monster.transform.position = _monster.GetRespawnPosition();
     }
 
     private void PrepareForRespawn()

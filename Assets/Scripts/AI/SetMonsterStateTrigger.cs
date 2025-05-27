@@ -22,7 +22,7 @@ public class SetMonsterStateTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("PlayerTrigger"))
         {
             if (_monsterState == Monster.MonsterState.None)
             {
@@ -40,7 +40,7 @@ public class SetMonsterStateTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("PlayerTrigger"))
         {
             _collider.enabled = false;
         }
