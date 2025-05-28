@@ -14,8 +14,15 @@ public class LightMonsterTrigger : MonoBehaviour
 
     void Start()
     {
-        _flashlightSource = GetComponentInChildren<Light>(true);
         _monster = FindAnyObjectByType<Monster>();
+
+        if (_monster == null)
+        {
+            enabled = false;
+        }
+        
+        _flashlightSource = GetComponentInChildren<Light>(true);
+        
         _layerMask = LayerMask.GetMask("Player");
         _layerMask = ~_layerMask;
     }
