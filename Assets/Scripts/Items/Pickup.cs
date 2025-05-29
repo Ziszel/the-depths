@@ -2,7 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class Pickup : MonoBehaviour, IInteractable
+public class Pickup : MonoBehaviour, IInteractable, IResettable
 {
     public static event Action<PickupItem> OnPickupOccurred;
     public PickupItem itemData;
@@ -91,6 +91,12 @@ public class Pickup : MonoBehaviour, IInteractable
         }
             
         // Clean-up
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+    }
+
+    public void ResetObjectState()
+    {
+        FindAnyObjectByType<PlayerInteractable>().NoActivePickup();
+        gameObject.SetActive(true);
     }
 }

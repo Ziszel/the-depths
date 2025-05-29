@@ -115,7 +115,7 @@ public class Inventory : MonoBehaviour
         List<FileData> fileData)
     {
         _currentGoalText = previousGoalText;
-        _items = invItems;
-        _foundFileData = fileData;
+        _items = new List<InventoryItem>(invItems);
+        _foundFileData = new List<FileData>(fileData);
     }
 }

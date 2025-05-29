@@ -19,7 +19,7 @@ public class Checkpoint : MonoBehaviour
         {
             _levelManager.SetCheckpoint(spawnLocation, respawnRotation);
             // TODO: Add UI to tell the player they have reached a checkpoint
-            Debug.Log("checkpoint reached");
+            // Debug.Log("checkpoint reached");
             _collider.enabled = false;
         }
     }
