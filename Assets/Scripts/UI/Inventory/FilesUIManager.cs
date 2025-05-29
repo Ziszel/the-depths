@@ -16,6 +16,7 @@ public class FilesUIManager : MonoBehaviour
     public Button File99;
     
     private Inventory _inventory;
+    private readonly string _defaultButtonText = "??????????";
 
     private void Start()
     {
@@ -30,6 +31,21 @@ public class FilesUIManager : MonoBehaviour
     // update the list of files so that those that are found are renamed from '???'.
     public void InitialiseFiles()
     {
+        // TODO: Make this generic and put it into a function. Other parts of this script could do with a refactor too.
+        // Ensure consistent set up, matching inventory, every time the UI is activated.
+        File01.interactable = false;
+        File01.GetComponentInChildren<TMP_Text>().text = _defaultButtonText;
+        File02.interactable = false;
+        File02.GetComponentInChildren<TMP_Text>().text = _defaultButtonText;
+        File03.interactable = false;
+        File03.GetComponentInChildren<TMP_Text>().text = _defaultButtonText;
+        File04.interactable = false;
+        File04.GetComponentInChildren<TMP_Text>().text = _defaultButtonText;
+        File05.interactable = false;
+        File05.GetComponentInChildren<TMP_Text>().text = _defaultButtonText;
+        File99.interactable = false;
+        File99.GetComponentInChildren<TMP_Text>().text = _defaultButtonText;
+        
         foreach (var file in _inventory.GetFileData())
         {
             switch (file.id)
