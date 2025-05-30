@@ -1,5 +1,5 @@
 {
 	"id": "99",
 	"name": "OPERATION MANUAL A",
-	"content": "OPERATION MANUAL A - BASIC MOVEMENT. \n\nUse WASD and the left mouse to move and rotate the camera. Click and hold the left mouse button to use the flashlight but be aware of the noise it generates.|Use Q and E to lean left and right. ESC will temporarily suspend the horror.\n\nF will allow you to interact with the environment when an indicator is displayed.|Use I to open your inventory to check your status, items, files, and change the options.\n\nFinally...|good luck."
+	"content": "OPERATION MANUAL A - BASIC MOVEMENT. \n\nUse WASD to move your character and the left mouse to rotate the camera.\n\nHolding shift whilst moving will allow you to sprint for a time.\n\nHolding C will allow you to crouch under certain obstacles.|Click and hold the left mouse button to use the flashlight but be aware of the noise it generates.\n\nF will allow you to interact with the environment when an indicator is displayed.|Use I to open your inventory to check your status, items, files, and change the options, I and ESC can be used to close the inventory when it is open.|Finally...|good luck."
 }
