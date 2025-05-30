@@ -7,13 +7,6 @@ public class UpdatePlayerGoalText : MonoBehaviour
     
     [SerializeField] protected string newStatusText;
     [SerializeField] private UpdatePlayerGoalText[] prerequisiteStatusTexts;
-    
-    protected LevelManager LevelManager;
-
-    private void Start()
-    {
-        LevelManager = FindFirstObjectByType<LevelManager>();
-    }
 
     public void UpdateStatusText()
     {

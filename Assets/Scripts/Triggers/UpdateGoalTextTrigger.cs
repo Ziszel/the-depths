@@ -18,7 +18,7 @@ public class UpdateGoalTextTrigger : MonoBehaviour
         {
             _updatePlayerStatusText.UpdateStatusText();
             OnJournalTextUpdateFromTrigger?.Invoke();
-            enabled = false;
+            gameObject.SetActive(false);
         }
     }
 
