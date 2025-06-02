@@ -30,13 +30,14 @@ public class ScareTrigger : MonoBehaviour, IResettable
                     }
                 }
             }
-            gameObject.SetActive(false);
+
+            enabled = false;
         }
     }
 
     public void ResetObjectState()
     {
         Debug.Log("IScareTrigger Reset!");
-        gameObject.SetActive(true);
+        enabled = true;
     }
 }
