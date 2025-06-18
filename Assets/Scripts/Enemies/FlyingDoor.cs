@@ -56,6 +56,7 @@ public class FlyingDoor : MonoBehaviour
     public void SetInitialState()
     {
         _isFlying = false;
+        tag = "Untagged";
         foreach (Transform child in transform)
         {
             child.tag = "Untagged";
