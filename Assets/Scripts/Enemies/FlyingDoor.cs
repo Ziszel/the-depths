@@ -5,13 +5,11 @@ public class FlyingDoor : MonoBehaviour
 {
     [SerializeField] private AudioClip _audioClip;
     [SerializeField] private float _flightTime;
-    
-    private AudioSource _audioSource;
+    [SerializeField] private AudioSource audioSource;
     private bool _isFlying;
 
     private void Start()
     {
-        _audioSource = GetComponentInChildren<AudioSource>();
         _isFlying = false;
     }
     
@@ -29,7 +27,7 @@ public class FlyingDoor : MonoBehaviour
             }
             else
             {
-                _audioSource.PlayOneShot(_audioClip);
+                audioSource.PlayOneShot(_audioClip);
             }
         }
     }
@@ -58,6 +56,7 @@ public class FlyingDoor : MonoBehaviour
     public void SetInitialState()
     {
         _isFlying = false;
+        tag = "Untagged";
         foreach (Transform child in transform)
         {
             child.tag = "Untagged";
