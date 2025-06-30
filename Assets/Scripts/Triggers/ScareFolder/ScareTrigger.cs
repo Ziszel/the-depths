@@ -39,5 +39,6 @@ public class ScareTrigger : MonoBehaviour, IResettable
     {
         Debug.Log("IScareTrigger Reset!");
         enabled = true;
+        gameObject.SetActive(true);
     }
 }

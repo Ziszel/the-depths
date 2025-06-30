@@ -30,7 +30,7 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent, IResettable
         _scareRotateByTorque = GetComponent<ScareRotateByTorque>();
         _scareShake = GetComponent<ScareShake>();
         _monster = FindAnyObjectByType<Monster>();
-        _flyingDoor = GetComponentInChildren<FlyingDoor>();
+        _flyingDoor = GetComponent<FlyingDoor>();
     }
 
     private IEnumerator DelayPhaseTwo(float delayTime)

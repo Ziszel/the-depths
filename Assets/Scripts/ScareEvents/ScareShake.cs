@@ -8,19 +8,18 @@ public class ScareShake : MonoBehaviour, IScareEvent
     [SerializeField] private float timeToShake = 0.5f;
     [SerializeField] private float shakeAmount;
     [SerializeField] private AudioClip bangingOnDoor;
+    [SerializeField] private AudioSource audioSource;
     
     private Transform _objectToShake;
     private Vector3 _startingPosition;
     private Quaternion _startingRotation;
     private float _shakeDelay;
     private bool _waitingToShake;
-    private AudioSource _audioSource;
 
     private void Start()
     {
         _objectToShake = GetComponent<Transform>();
-        _audioSource = GetComponentInChildren<AudioSource>();
-        _audioSource.clip = bangingOnDoor;
+        audioSource.clip = bangingOnDoor;
         _startingPosition = _objectToShake.position;
         _startingRotation = _objectToShake.rotation;
         _waitingToShake = false;
@@ -53,7 +52,7 @@ public class ScareShake : MonoBehaviour, IScareEvent
         // t is greater than duration
         
         float t = 0.0f;
-        _audioSource.Play();
+        audioSource.Play();
         while (t < timeToShake)
         {
             t += Time.deltaTime;
@@ -67,6 +66,7 @@ public class ScareShake : MonoBehaviour, IScareEvent
 
     private void OnDisable()
     {
+        StopAllCoroutines();
         _waitingToShake = false;
     }
 

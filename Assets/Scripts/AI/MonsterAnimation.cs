@@ -11,11 +11,13 @@ public class MonsterAnimation : MonoBehaviour
 
     public void SetStateToWalk()
     {
-        _animator.SetBool("Sprint", false);
+        // TODO: Run will always be active currently. Update later
+        //_animator.SetBool("Sprint", false);
     }
     
     public void SetStateToSprint()
     {
-        _animator.SetBool("Sprint", true);
+        // TODO: Run will always be active currently. Update later
+        //_animator.SetBool("Sprint", true);
     }
 }
