@@ -11,7 +11,7 @@ public class MusicManager : MonoBehaviour
         _musicSource.volume = _musicSource.volume;
     }
 
-    public void PlayMusic(AudioClip musicToPlay, float fadeDuration)
+    public void PlayMusic(AudioClip musicToPlay, float fadeDuration, float volume)
     {
         if (_musicSource.isPlaying)
         {
@@ -20,7 +20,7 @@ public class MusicManager : MonoBehaviour
         else
         {
             _musicSource.clip = musicToPlay;
-            _musicSource.volume = 1.0f;
+            _musicSource.volume = volume;
             _musicSource.Play();
         }
     }

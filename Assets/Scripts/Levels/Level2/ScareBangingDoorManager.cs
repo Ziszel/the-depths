@@ -65,7 +65,7 @@ public class ScareBangingDoorManager : MonoBehaviour, IScareEvent, IResettable
 
     public void TriggerScareEvent()
     {
-        _musicManager.PlayMusic(chaseMusic, 0.5f);
+        _musicManager.PlayMusic(chaseMusic, 0.5f, 1.0f);
         StartCoroutine(DelaySFX(2.0f)); // Play monster screech after music has started
         TriggerPhaseOneScareEvents();
         StartCoroutine(DelayPhaseTwo(phaseTwoDelayTime));
