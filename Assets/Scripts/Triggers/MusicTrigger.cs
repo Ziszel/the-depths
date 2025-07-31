@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MusicTrigger : MonoBehaviour
+public class MusicTrigger : MonoBehaviour, IResettable
 {
     [SerializeField] private AudioClip musicToPlay;
     
@@ -16,7 +16,13 @@ public class MusicTrigger : MonoBehaviour
         if (other.CompareTag("PlayerTrigger"))
         {
             _musicManager.PlayMusic(musicToPlay, 3.0f);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
+    }
+
+    public void ResetObjectState()
+    {
+        _musicManager.StopMusic();
+        gameObject.SetActive(true);
     }
 }
