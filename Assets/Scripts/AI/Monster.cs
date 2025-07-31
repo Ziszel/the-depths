@@ -290,18 +290,18 @@ public class Monster : MonoBehaviour
         {
             case MonsterState.Investigate:
                 _agent.destination = newDestination;
-                _musicManager.PlayMusic(huntMusic, 2.0f);
+                _musicManager.PlayMusic(huntMusic, 2.0f, 1.0f);
                 _monsterAnimation.SetStateToWalk();
                 break;
             case MonsterState.Chase:
                 _agent.destination = _player.transform.position;
                 _monsterAnimation.SetStateToSprint();
-                _musicManager.PlayMusic(chaseMusic, 0.2f);
+                _musicManager.PlayMusic(chaseMusic, 0.2f, 1.0f);
                 _currentChaseTime = 0.0f;
                 break;
             case MonsterState.ChasePath:
                 _agent.destination = _pathNodes[_currentNodeIndicator];
-                _musicManager.PlayMusic(huntMusic, 2.0f);
+                _musicManager.PlayMusic(huntMusic, 2.0f, 1.0f);
                 _monsterAnimation.SetStateToWalk();
                 break;
         }
