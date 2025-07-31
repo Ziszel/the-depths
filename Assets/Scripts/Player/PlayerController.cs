@@ -92,6 +92,7 @@ public class PlayerController : MonoBehaviour
     private PlayerHUDUI _playerHUDUI;
     private PlayerInteractable _playerInteractable;
     private CameraManager _cameraManager;
+    private SoundTrigger _soundTrigger;
     
     // DEBUG
     [Header("DEBUG")]
@@ -103,6 +104,7 @@ public class PlayerController : MonoBehaviour
         _cameraManager = FindAnyObjectByType<CameraManager>();
         _playerHUDUI = GetComponentInChildren<PlayerHUDUI>();
         _healthManager = GetComponent<HealthManager>();
+        _soundTrigger = GetComponent<SoundTrigger>();
         _rb = GetComponent<Rigidbody>();
         _inventory = GetComponent<Inventory>();
         _stamina = GetComponent<Stamina>();

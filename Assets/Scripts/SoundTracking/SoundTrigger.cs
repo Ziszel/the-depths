@@ -33,4 +33,9 @@ public class SoundTrigger : MonoBehaviour
     {
         triggerVolume = volume;
     }
+    
+    public float GetTriggerVolume()
+    {
+        return triggerVolume;
+    }
 }
