@@ -3,9 +3,6 @@ using UnityEngine;
 using Unity.Cinemachine;
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField] private float baseAmplitudeGain;
-    [SerializeField] private float baseFrequencyGain;
-    
     public CinemachineCamera[] cameras;
     
     public CinemachineCamera leftLeanCamera;
@@ -14,6 +11,9 @@ public class CameraManager : MonoBehaviour
 
     public CinemachineCamera startCamera;
     private static CinemachineCamera _currentCamera;
+    
+    private const float BaseAmplitudeGain = 0.5f;
+    private const float BaseFrequencyGain = 0.5f;
 
     private void Start()
     {
@@ -46,7 +46,8 @@ public class CameraManager : MonoBehaviour
         _currentCamera.ForceCameraPosition(_currentCamera.transform.position, rotation);
     }
 
-    public void SetCameraShake(float freqGain, float ampGain, float duration)
+    public void SetCameraShake(float freqGain, float ampGain, float duration, float freqGainStart = BaseFrequencyGain, 
+        float ampGainStart = BaseAmplitudeGain)
     {
         if (duration == 0)
         { 
@@ -57,10 +58,11 @@ public class CameraManager : MonoBehaviour
             }
         }
 
-        StartCoroutine(SetCameraShakeOverDuration(freqGain, ampGain, duration));
+        StartCoroutine(SetCameraShakeOverDuration(freqGain, ampGain, duration, freqGainStart, ampGainStart));
     }
 
-    IEnumerator SetCameraShakeOverDuration(float freqGainTarget, float ampGainTarget, float duration)
+    IEnumerator SetCameraShakeOverDuration(float freqGainTarget, float ampGainTarget, float duration, 
+        float freqGainStart, float ampGainStart)
     {
         float timeElapsed = 0;
 
@@ -68,8 +70,8 @@ public class CameraManager : MonoBehaviour
         {
             for (int i = 0; i < cameras.Length; i++)
             {
-                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().FrequencyGain = Mathf.SmoothStep(baseFrequencyGain, freqGainTarget, timeElapsed / duration);
-                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().AmplitudeGain = Mathf.SmoothStep(baseAmplitudeGain, ampGainTarget, timeElapsed / duration);;
+                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().FrequencyGain = Mathf.SmoothStep(freqGainStart, freqGainTarget, timeElapsed / duration);
+                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().AmplitudeGain = Mathf.SmoothStep(ampGainStart, ampGainTarget, timeElapsed / duration);;
             }
             timeElapsed += Time.deltaTime;
             yield return null;
@@ -81,8 +83,8 @@ public class CameraManager : MonoBehaviour
         {
             for (int i = 0; i < cameras.Length; i++)
             {
-                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().FrequencyGain = Mathf.SmoothStep(freqGainTarget, baseFrequencyGain, timeElapsed / duration);
-                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().AmplitudeGain = Mathf.SmoothStep(ampGainTarget, baseAmplitudeGain, timeElapsed / duration);;
+                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().FrequencyGain = Mathf.SmoothStep(freqGainTarget, freqGainStart, timeElapsed / duration);
+                cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().AmplitudeGain = Mathf.SmoothStep(ampGainTarget, ampGainStart, timeElapsed / duration);;
             }
             timeElapsed += Time.deltaTime;
             yield return null;
@@ -90,8 +92,8 @@ public class CameraManager : MonoBehaviour
         
         for (int i = 0; i < cameras.Length; i++)
         {
-            cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().FrequencyGain = 0.0f;
-            cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().AmplitudeGain = 0.0f;
+            cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().FrequencyGain = BaseFrequencyGain;
+            cameras[i].GetComponent<CinemachineBasicMultiChannelPerlin>().AmplitudeGain = BaseAmplitudeGain;
         }
     }
 }

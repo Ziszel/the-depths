@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Elevator : MonoBehaviour
 {
-    // public LightController elevatorLight;
     public HorizontalDoor doorOne;
     public HorizontalDoor doorTwo;
     
@@ -14,7 +13,7 @@ public class Elevator : MonoBehaviour
 
     private PlayerController _player;
     private CinemachineCamera _camera;
-    private CinemachineBasicMultiChannelPerlin _perlinComponent;
+    private CameraManager _cameraManager;
     private ElevatorAudio _elevatorAudio;
 
     private float _previousAmplitudeGain;
@@ -23,24 +22,18 @@ public class Elevator : MonoBehaviour
     private void Start()
     {
         _player = FindAnyObjectByType<PlayerController>();
-        _camera = FindAnyObjectByType<CinemachineCamera>();
-        _perlinComponent = _camera.GetComponent<CinemachineBasicMultiChannelPerlin>();
+        _cameraManager = FindAnyObjectByType<CameraManager>();
         _elevatorAudio = GetComponent<ElevatorAudio>();
-        _previousAmplitudeGain = _perlinComponent.AmplitudeGain;
-        _previousFrequencyGain = _perlinComponent.FrequencyGain;
     }
 
     public IEnumerator ElevatorSequence()
     {
         float timeElapsed = 0.0f;
-        
-        _perlinComponent.AmplitudeGain = wobbleAmplitude;
-        _perlinComponent.FrequencyGain = wobbleFrequency;
-        
+        _cameraManager.SetCameraShake(wobbleFrequency, wobbleAmplitude, sequenceDuration / 2, 
+            wobbleFrequency, wobbleAmplitude);
         _player.DisableInputActions();
-        
         _elevatorAudio.PlaySfx();
-        
+
         while (timeElapsed < sequenceDuration)
         {
             timeElapsed += Time.deltaTime;
@@ -50,17 +43,13 @@ public class Elevator : MonoBehaviour
         // TODO: Make sure to set the correct audio on the doors used for the elevator!!
         doorOne.Toggle();
         doorTwo.Toggle();
-        // elevatorLight.StopFlicker();
-        //elevatorLight.TurnOnLight();
-        _perlinComponent.AmplitudeGain = _previousAmplitudeGain;
-        _perlinComponent.FrequencyGain = _previousFrequencyGain;
         _elevatorAudio.StopSfx();
         _player.EnableInputActions();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("PlayerTrigger"))
         {
             StartCoroutine(ElevatorSequence());
         }
@@ -68,7 +57,7 @@ public class Elevator : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("PlayerTrigger"))
         {
             Destroy(this);
         }
