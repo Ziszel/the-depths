@@ -9,10 +9,12 @@ public class ChangeLevel : MonoBehaviour, IInteractable
     
     private GlobalSFXPlayer _globalSfxPlayer;
     private PlayerInteractable _storedPlayerInteractable;
+    private BlackFadeTransition _blackFadeTransition;
 
     void Start()
     {
         _globalSfxPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
+        _blackFadeTransition = FindFirstObjectByType<BlackFadeTransition>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -44,8 +46,23 @@ public class ChangeLevel : MonoBehaviour, IInteractable
     {
         _globalSfxPlayer.PlaySfx(interactClip);
         _storedPlayerInteractable.NoActivePickup();
-        enabled = false; // disable script not object
-        InputManager.PlayerInputActions.Disable(); 
+        InputManager.PlayerInputActions.Disable();
+        StartCoroutine(_blackFadeTransition.FadeToBlack(2.0f));
+    }
+    
+    private void TriggerLevelLoad()
+    {
         GameManager.Instance.LoadLevel(levelToLoad);
+        enabled = false; // disable script not object
+    }
+
+    private void OnEnable()
+    {
+        BlackFadeTransition.OnFadeInEventComplete += TriggerLevelLoad;
+    }
+
+    private void OnDisable()
+    {
+        BlackFadeTransition.OnFadeInEventComplete -= TriggerLevelLoad;
     }
 }

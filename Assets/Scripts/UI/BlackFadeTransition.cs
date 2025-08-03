@@ -5,7 +5,8 @@ using System.Collections;
 
 public class BlackFadeTransition : MonoBehaviour
 {
-    public static event Action OnFadeEventComplete;
+    public static event Action OnFadeInEventComplete;
+    public static event Action OnFadeOutEventComplete;
     
     public Image blackBackground;
     
@@ -25,7 +26,7 @@ public class BlackFadeTransition : MonoBehaviour
             yield return null;
         }
         SetBackgroundTransparency(1);
-        OnFadeEventComplete?.Invoke();
+        OnFadeInEventComplete?.Invoke();
     }
     
     public IEnumerator FadeFromBlack(float transitionDuration = DefaultFadeTransition)
@@ -42,7 +43,7 @@ public class BlackFadeTransition : MonoBehaviour
 
         SetBackgroundTransparency(0);
         blackBackground.gameObject.SetActive(false);
-        OnFadeEventComplete?.Invoke();
+        OnFadeOutEventComplete?.Invoke();
     }
 
     private void SetBackgroundTransparency(float transparency)

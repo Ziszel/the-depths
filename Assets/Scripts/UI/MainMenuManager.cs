@@ -118,11 +118,11 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnEnable()
     {
-        BlackFadeTransition.OnFadeEventComplete += TriggerLevelLoad;
+        BlackFadeTransition.OnFadeInEventComplete += TriggerLevelLoad;
     }
 
     private void OnDisable()
     {
-        BlackFadeTransition.OnFadeEventComplete -= TriggerLevelLoad;
+        BlackFadeTransition.OnFadeInEventComplete -= TriggerLevelLoad;
     }
 }
