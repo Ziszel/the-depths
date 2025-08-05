@@ -12,6 +12,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject creditsUIObj;
     
     private GlobalSFXPlayer _globalSFXPlayer;
+    private BlackFadeTransition _blackFadeTransition;
     
     // MainMenu
     private Button _startGameBtn;
@@ -27,6 +28,7 @@ public class MainMenuManager : MonoBehaviour
     private void Awake()
     {
         _globalSFXPlayer = FindFirstObjectByType<GlobalSFXPlayer>();
+        _blackFadeTransition = FindFirstObjectByType<BlackFadeTransition>();
         
         SetButtonReferences();
         _startGameBtn.onClick.AddListener(OnStartGameClicked);
@@ -48,7 +50,8 @@ public class MainMenuManager : MonoBehaviour
     private void OnStartGameClicked()
     {
         _globalSFXPlayer.PlaySfx(_globalSFXPlayer.menuForward);
-        GameManager.Instance.LoadLevel(levelToLoad);
+        Cursor.visible = false;
+        StartCoroutine(_blackFadeTransition.FadeToBlack(2.0f));
     }
 
     private void OnOptionsClicked()
@@ -106,5 +109,20 @@ public class MainMenuManager : MonoBehaviour
                 _returnToMainMenuBtn = b;
             }
         }
+    }
+
+    private void TriggerLevelLoad()
+    {
+        GameManager.Instance.LoadLevel(levelToLoad);
+    }
+
+    private void OnEnable()
+    {
+        BlackFadeTransition.OnFadeInEventComplete += TriggerLevelLoad;
+    }
+
+    private void OnDisable()
+    {
+        BlackFadeTransition.OnFadeInEventComplete -= TriggerLevelLoad;
     }
 }

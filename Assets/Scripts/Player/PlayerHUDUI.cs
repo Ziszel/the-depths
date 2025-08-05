@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -13,16 +14,24 @@ public class PlayerHUDUI : MonoBehaviour
     [SerializeField] private TMP_Text journalText;
     [SerializeField] private string pickupTextInventory;
     [SerializeField] private string pickupTextFile;
+    [SerializeField] private float levelLoadFadeDuration;
+    
+    private BlackFadeTransition _blackFadeTransition;
     
     private Image _damageImage;
     private HealthManager _healthManager;
     private AudioSource _journalAudioComponent;
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    private void Awake()
+    {
+        _blackFadeTransition = FindFirstObjectByType<BlackFadeTransition>();
+    }
+
+    private void Start()
     {
         _damageImage = GetComponent<Image>();
         _journalAudioComponent = journalText.gameObject.GetComponent<AudioSource>();
+        StartCoroutine(_blackFadeTransition.FadeFromBlack(levelLoadFadeDuration));
     }
 
     public void SetImageFromHP(float health)
