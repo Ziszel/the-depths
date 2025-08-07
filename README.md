@@ -12,6 +12,9 @@ This repository is focused on developing the game into a full-length indie game.
 ## Team Members
 
 - Calin Clement O'Ceallaigh (Programming, Production, Narrative Design, Writing)
-- Sebastian Adamov (Art, Level Design)
-- Luke Evans (Audio (SFX))
+
+### Former Team Members
+- Sebastian Adamov (Environmental art, level design)
+- Kali Hinder (Game jam UI programmer)
+- Luke Evans (Audio (Monster SFX))
 
