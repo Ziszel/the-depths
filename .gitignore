@@ -77,3 +77,21 @@ crashlytics-build.properties
 # MACOS
 .DS_Store
 **/.DS_Store
+
+# Art files (as to lower repo storage)
+*.mp4
+*.mp3
+*.ogg
+*.wav
+*.avi
+*.mov
+*.jpg
+*.png
+*.gif
+*.fbx
+*.FBX
+*.fbm
+/[Aa]ssets/Textures/
+/[Aa]ssets/Environments/
+/[Aa]ssets/Images/
+/[Aa]ssets/Tree_Packs/

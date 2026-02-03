@@ -1,3 +1,57 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2dbce26d3620257af5e1ac636c141695c5dd8959d7ce6cd355d6f16a147d63ea
-size 1917
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Dwellers_Level1v2 Variant 1
+  m_Shader: {fileID: -6465566751694194690, guid: e5db7820a00062a469a3906473f42c33, type: 3}
+  m_Parent: {fileID: 2100000, guid: 40edfb662fec884408205128877693e9, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _SampleTexture2D_23cab4f9da6c41a8a8ad1f8a80b7c859_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 45540441744f50545b3ec4ff33f27b91, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_911cb735d60e4585a3112d42e306fc9c_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 4e2382a7c82778f44b31d7c62f317541, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_9520a9194e77439b89d6752858864b82_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 23e98523cd1ed1a498b09b41b8f36d8c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _QueueControl: 0
+    m_Colors: []
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &4626075892062333466
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 10

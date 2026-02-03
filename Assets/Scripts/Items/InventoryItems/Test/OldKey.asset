@@ -1,3 +1,18 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0966605e3b5540d369c2c3e42d3a7a05abe8d4265882cafb149edc60e5137191
-size 559
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee210d4007f08d19bbbdc5b73fd28f34, type: 3}
+  m_Name: OldKey
+  m_EditorClassIdentifier: 
+  itemName: Old Key
+  itemDescription: An old rusty key.
+  itemImage: {fileID: 21300000, guid: 6c3f92d3af79ea89fbb80dd8a115d882, type: 3}
+  itemPrefab: {fileID: 0}
