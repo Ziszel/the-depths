@@ -8,7 +8,7 @@ After that jam, development continued part-time with the aim to fully develop th
 
 I have now removed various art assets from the project (leading to git-lfs fees for hosting) and pushed up the project as a public repository so that the code can be used as part of my portfolio.
 
-I have included a link to a video as it is highly unlikely the project will run properly after the removal of the art assets.
+I have included a link to a video demonstrating parts of the game as it is highly unlikely the project will run properly after the removal of the art assets.
 
 ## Video Link
 
